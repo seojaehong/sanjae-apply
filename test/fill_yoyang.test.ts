@@ -13,6 +13,7 @@ const FONT = process.env.SANJAE_FONT ?? "C:/Windows/Fonts/malgun.ttf";
 const ready = existsSync(PDF) && existsSync(FONT);
 
 // 합성 값. 실명·실제 주민번호·실제 사업장 금지.
+// ★ rrn 900101-1234567 은 검증숫자가 일부러 틀린 번호다(규칙대로면 끝자리 8). 「그럴듯하게」 고쳐 유효 번호를 만들지 말 것.
 export const SAMPLE = {
   name: "홍길동",
   rrn: "9001011234567",

@@ -19,6 +19,8 @@ LIST = "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp"
 # article_no → (서식 id 들, 게시글 제목)
 MAP: dict[str, tuple[list[str], str]] = {
     "2232720": (["F_YOYANG_APPLY", "F_YOYANG_OPINION"], "요양급여신청서 및 소견서(2026.7.7. 개정)"),
+    # ★ 발견(261026): 출퇴근재해 발생신고서는 단독 빈 서식이 없다. 「(작성예시)」hwp 와 「신청서+소견서+발생신고서(+제3자)」 합본 PDF 두 종뿐.
+    #   COMMUTE 분기는 서식을 「더 얹는」 게 아니라 「합본 PDF 를 고르는」 것이다. 합본 1쪽 레이아웃이 기본 PDF 와 같은지 M3 에서 잰다.
     "2232721": (["F_COMMUTE_REPORT"], "(출퇴근재해) 요양급여신청서 서식 모음(2026.7.7. 개정)"),
     "989916": (["F_THIRD_PARTY_REPORT"], "제3자의 행위에 따른 재해발생신고서 및 확인서"),
     "1182127": (["F_YUJOK_CLAIM"], "유족급여_진폐유족연금_장례비 청구서(2023.07.05 개정)"),
