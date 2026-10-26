@@ -25,6 +25,10 @@ Claude Desktop 은 `claude_desktop_config.json` 에:
 ```
 Cursor·Windsurf 등도 같은 command/args 를 MCP 설정에 넣습니다.
 
+> npm 에 게시되기 전에는 `sanjae-apply` 자리에 릴리스 파일 주소를 씁니다:
+> `npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.2.0/sanjae-apply-0.2.0.tgz mcp`
+> (`claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.2.0/sanjae-apply-0.2.0.tgz mcp`)
+
 **명령줄로 쓰기**
 ```
 npx -y sanjae-apply check YOYANG --accident COMMUTE --third-party yes     # 필요 서식·첨부·근거
