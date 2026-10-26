@@ -24,7 +24,7 @@
 
 | 하는 일 | 설명 |
 |---|---|
-| 📋 **필요 서식 판정** | 급여 9종(요양·휴업·장해·유족·간병료 등) × 사고/출퇴근/질병 × 제3자 유무를 받아 `REQUIRED` / `CONDITIONAL` / `NOT_APPLICABLE` 로 돌려줍니다 |
+| 📋 **필요 서식 확인** | 급여 9종(요양·휴업·장해·유족·간병료 등) × 사고/출퇴근/질병 × 제3자 유무를 받아 `REQUIRED` / `CONDITIONAL` / `NOT_APPLICABLE` 로 돌려줍니다 |
 | 📎 **첨부 점검** | 이미 가진 것은 `PROVIDED`, 없는 것은 `MISSING`, 다른 서류로 갈음되는 것은 `SUBSTITUTABLE` |
 | ⚖️ **근거 조문** | 산재보험법·시행령·시행규칙 조문 번호와 제목을 함께 붙입니다(법제처 국가법령정보 Open API) |
 | ❓ **남은 질문** | 아직 답이 없는 분기는 `open_confirmations` 로 되돌려 줍니다. 모르는 것을 지어내지 않습니다 |
@@ -156,7 +156,7 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
 같은 도구 4개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다.
 
 <details>
-<summary>🏠 직접 호스팅하기 (Vercel)</summary>
+<summary>🏠 직접 호스팅하기(Vercel)</summary>
 
 이 레포를 Vercel 에 올리고 환경변수를 넣으면 `/api/mcp/mcp` 가 열립니다.
 
