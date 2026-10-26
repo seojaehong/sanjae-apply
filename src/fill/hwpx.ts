@@ -355,7 +355,7 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
     return empty ?? last;
   };
 
-  const apply = (name: string, op: HwpxOp | HwpxTemplate, value: string | boolean, isTemplate = false) => {
+  const apply = (name: string, op: HwpxOp | HwpxTemplate, value: string | boolean, isTemplate = false, originalText = "") => {
     const s = ("s" in op ? op.s : undefined) ?? 0;
     const edit = edits[s]!;
     const xml = xmls[s];
@@ -365,8 +365,10 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       const cell = cellOf(s, o.t, o.r, o.c);
       const para = pickPara(xml, cell, o.p);
       if (isTemplate) {
-        // 템플릿은 한 줄 문단 — 칸 폭을 넘으면 글자를 줄인다
-        edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, cell.width) });
+        // 템플릿: 원문이 한 줄이면 한 줄에 맞춰 글자를 줄이고, 원문이 이미 여러 줄(확인서 머리문단 같은 글 덩어리)이면 칸 높이 안에서만 본다
+        const baseId = fixer.black(/charPrIDRef="(\d+)"/.exec(xml.slice(para.start, para.end))?.[1] ?? "0");
+        const origLines = cell.width > 0 ? Math.ceil(textWidthHwp(originalText, fixer.height(baseId)) / cell.width) : 1;
+        edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, cell.width, origLines > 1 ? cell.height : 0) });
         return;
       }
       // 값 칸: 여러 줄로 감기는 글은 칸 높이 안에 들어가게 줄이고, 감긴 줄 수만큼 뒤따르는 빈 문단을 지워 표가 커지지 않게 한다
@@ -547,8 +549,9 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
           if (v === undefined || v === false) return "";
           return v === true ? "V" : String(v);
         });
-        const text = fitToOriginalWidth(raw, tpl.text.replace(/\{\w+\}/g, ""));
-        apply(op.template, tpl, text, true);
+        const blank = tpl.text.replace(/\{\w+\}/g, "");
+        const text = fitToOriginalWidth(raw, blank);
+        apply(op.template, tpl, text, true, blank);
         for (const k of refs) if (opts.values[k] !== undefined && opts.values[k] !== "") report.filled.push(k);
         continue;
       }

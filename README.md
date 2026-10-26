@@ -13,7 +13,7 @@
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20http-7c3aed)](https://modelcontextprotocol.io)
 [![tests](https://img.shields.io/badge/tests-159%20passing-2ea44f)](test/)
 
-<img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서 — 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
+<img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서. 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
 
 <sub>합성 값으로 채운 요양급여신청서. 왼쪽이 PDF 출력, 오른쪽이 한글(.hwpx) 출력을 한글에서 연 모습입니다.</sub>
 
@@ -111,7 +111,7 @@ npx -y sanjae-apply catalog F_YOYANG_APPLY
 # 공단 정본 PDF 위에 채우기
 npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.pdf
 
-# 같은 값을 한글 문서(.hwpx)로 — 확장자만 바꾸면 됩니다
+# 같은 값을 한글 문서(.hwpx)로. 확장자만 바꾸면 됩니다
 npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx
 ```
 
