@@ -1,0 +1,23 @@
+{
+  "name": "sanjae-apply",
+  "version": "0.0.1",
+  "private": true,
+  "description": "산재 신청 도우미 엔진 — 급여 종류·재해 분기에 따라 필요한 서식·첨부를 정하고 제출 패키지를 조립한다. 순수 코어(무저장) + CLI. 승인 가능성은 계산하지 않는다.",
+  "type": "module",
+  "bin": {
+    "sanjae-apply": "dist/src/cli.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "24.0.4",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  }
+}
