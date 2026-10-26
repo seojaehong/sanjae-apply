@@ -1,23 +1,314 @@
 {
   "_about": "공단 서식 정본 대장. 파일은 forms/raw/(미커밋)에 두고 여기에는 파일명·개정일·sha256 만 적는다. 법제처 별표서식 API(licbyl)에는 산재 시행규칙 별지 서식이 안 잡혀(실측 261026) 정본 출처는 근로복지공단 서식자료실이다.",
   "source": {
-    "name": "근로복지공단 홈페이지 > 정보공개 > 자료실 > 서식자료",
-    "url": null,
-    "note": "261026 추정 URL /comwel/info/data/form.jsp 는 오류 페이지. 실제 URL 확인 또는 수동 다운로드 필요(M1 잔여)."
+    "name": "근로복지공단 > 정보공개 > 자료실 > 서식자료 (board_no=224, 산재보험 분류 157)",
+    "url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp",
+    "download": "/_custom/kcom/_common/board/download.jsp?attach_no=N — 세션 쿠키 + Referer(상세 페이지) 필수",
+    "fetched_at": "2026-10-26",
+    "tool": "scripts/comwel_forms.py"
   },
   "forms": [
-    { "id": "F_YOYANG_APPLY|F_YOYANG_OPINION", "file": "[별지_제2,3호서식]요양급여신청서_및_소견서(2024.7.15.개정).hwp", "revised": "2024-07-15", "sha256": null },
-    { "id": "F_COMMUTE_REPORT", "file": "출퇴근재해발생신고서.hwp", "revised": null, "sha256": null },
-    { "id": "F_THIRD_PARTY_REPORT", "file": "(출퇴근재해)제3자의 행위에 따른 재해발생 신고서 및 확인서.hwp", "revised": null, "sha256": null },
-    { "id": "F_YUJOK_CLAIM", "file": "[별지_제15호_서식]_유족급여_진폐유족연금_장례비_청구서(20230705_개정).hwp", "revised": "2023-07-05", "sha256": null },
-    { "id": "F_SELF_PAY_CLAIM", "file": "본인부담치료비_청구서(요양비,_본인부담금확인).hwp", "revised": null, "sha256": null },
-    { "id": "F_HUYEOP_CLAIM", "file": "[별지_제7호_서식]_휴업급여_및_상병보상연금_청구서(20230705_개정).hwp", "revised": "2023-07-05", "sha256": null },
-    { "id": "F_CARE_TRANSPORT_DEVICE_CLAIM", "file": "간병료이송비보조기_청구서.hwp", "revised": null, "sha256": null },
-    { "id": "F_DEVICE_PRESCRIPTION", "file": "산재보험_재활보조기구_처방전_및_검수확인서.hwp", "revised": null, "sha256": null },
-    { "id": "F_UNPAID_CLAIM", "file": "[별지_제29호_서식]_미지급_보험급여_청구서(20230705_개정).hwp", "revised": "2023-07-05", "sha256": null },
-    { "id": "F_JANGHAE_CLAIM|F_LIMB_OPINION|F_NOISE_WORK_CERT", "file": "[별지_제11호_제12호_서식]_장해급여(합병증등_예방관리)_청구(신청)서_소음작업종사사실_확인서_장해진단서_소견서_일시금연금_선택확인서(20230705_).hwp", "revised": "2023-07-05", "sha256": null },
-    { "id": "(병원 제출) 진료계획서", "file": "[1005]진료계획서.hwp", "revised": null, "sha256": null },
-    { "id": "F_ADDITIONAL_DISEASE_APPLY", "file": "[별지_제30,31호서식]_추가상병_신청서_및_소견서.hwp", "revised": null, "sha256": null },
-    { "id": "F_RE_YOYANG_APPLY", "file": "[별지_제33호,제33의2서식]_재요양_신청서_및_소견서.hwp", "revised": null, "sha256": null }
+    {
+      "ids": [
+        "F_YOYANG_APPLY",
+        "F_YOYANG_OPINION"
+      ],
+      "article_no": "2232720",
+      "article_title": "요양급여신청서 및 소견서(2026.7.7. 개정)",
+      "revised": "2026-07-07",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=2232720",
+      "files": [
+        {
+          "file": "요양급여신청서 및 소견서(2026.7.7. 개정).hwp",
+          "bytes": 38912,
+          "sha256": "05e09f9e2a791018c5975807e8622a5674e6afb1b360538cc6ad92d5fa63bc3c",
+          "attach_no": "2651711"
+        },
+        {
+          "file": "요양급여신청서 및 소견서(2026.7.7. 개정).pdf",
+          "bytes": 522978,
+          "sha256": "25cd22b8d7dfd8dacd2829097b1a782f5e3acd6515cea2fb31fd65a26a86f24e",
+          "attach_no": "2651710"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_COMMUTE_REPORT"
+      ],
+      "article_no": "2232721",
+      "article_title": "(출퇴근재해) 요양급여신청서 서식 모음(2026.7.7. 개정)",
+      "revised": "2026-07-07",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=2232721",
+      "files": [
+        {
+          "file": "(작성예시)출퇴근재해발생신고서.hwp",
+          "bytes": 39936,
+          "sha256": "ebbdca7758174f50b411b1288851063fb0e8abb0d48c509aa0503af12291683f",
+          "attach_no": "2626143"
+        },
+        {
+          "file": "(출퇴근재해)요양급여신청서및소견서(2026.7.7. 개정).hwp",
+          "bytes": 42496,
+          "sha256": "bec4e8bd628b629dfba6fda1da378c590799af98acd50876f1395b698a29b6eb",
+          "attach_no": "2651715"
+        },
+        {
+          "file": "(출퇴근재해)요양급여신청서및소견서(2026.7.7. 개정).pdf",
+          "bytes": 533527,
+          "sha256": "938ef1d63c68bef0ee76e5b1bfcea4aa5213bbcb790915eeebaa6e34d8ccbb71",
+          "attach_no": "2651714"
+        },
+        {
+          "file": "(출퇴근재해)요양급여신청서및소견서+제3자재해(2026.7.7. 개정).hwp",
+          "bytes": 49152,
+          "sha256": "5d3b9c23b1fe690f42682ced24a1462abf3738facb07258e45aeb2f647860bf5",
+          "attach_no": "2651713"
+        },
+        {
+          "file": "(출퇴근재해)요양급여신청서및소견서+제3자재해(2026.7.7. 개정).pdf",
+          "bytes": 629553,
+          "sha256": "1476e1f1eb58cc189bb1bc0a08c6d1daf245a8c5f6e66debb118b6310bcd8341",
+          "attach_no": "2651712"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_THIRD_PARTY_REPORT"
+      ],
+      "article_no": "989916",
+      "article_title": "제3자의 행위에 따른 재해발생신고서 및 확인서",
+      "revised": null,
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=989916",
+      "files": [
+        {
+          "file": "제3자 행위에 따른 재해발생신고서 및 확인서.hwp",
+          "bytes": 19968,
+          "sha256": "11972aaafeb29d12a9d95ce14f561820421536aa2220d35124a579f1fe0953ab",
+          "attach_no": "2649737"
+        },
+        {
+          "file": "제3자 행위에 따른 재해발생신고서 및 확인서.pdf",
+          "bytes": 126301,
+          "sha256": "e179cbf85ca2bef405ae3ac757cd46e96e3ec29df600ae3e75742058cc4cc8ef",
+          "attach_no": "2649736"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_YUJOK_CLAIM"
+      ],
+      "article_no": "1182127",
+      "article_title": "유족급여_진폐유족연금_장례비 청구서(2023.07.05 개정)",
+      "revised": "2023-07-05",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182127",
+      "files": [
+        {
+          "file": "[별지 제15호 서식] 유족급여_진폐유족연금_장례비 청구서(20230705 개정).hwp",
+          "bytes": 28160,
+          "sha256": "cfb69c1f0b4862e064b8d6ec544ad6d68067859d0b6c74c37ba1e8bf87c6c82e",
+          "attach_no": "2559932"
+        },
+        {
+          "file": "[별지 제15호 서식] 유족급여_진폐유족연금_장례비 청구서(20230705 개정).pdf",
+          "bytes": 187566,
+          "sha256": "0833327fcfd1515b1c977ea27374e2c95023e02153935bccb43fc601b1165d44",
+          "attach_no": "2559931"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_SELF_PAY_CLAIM"
+      ],
+      "article_no": "1182796",
+      "article_title": "[별지 제10호서식]본인부담치료비 청구서(요양비, 본인부담금확인)",
+      "revised": null,
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182796",
+      "files": [
+        {
+          "file": "본인부담금_확인_리플렛.pdf",
+          "bytes": 3417485,
+          "sha256": "36f284116db6770897a23ef045dd8f54506aea29685a3a84b78b5f5b80589118",
+          "attach_no": "2582304"
+        },
+        {
+          "file": "본인부담치료비 청구서(요양비, 본인부담금확인).pdf",
+          "bytes": 657967,
+          "sha256": "038c6533bd286364c66b74441ea637dc1905cf6dcd88abec58fbf51d99b19677",
+          "attach_no": "2581301"
+        },
+        {
+          "file": "본인부담치료비 청구서(요양비, 본인부담금확인).hwp",
+          "bytes": 27136,
+          "sha256": "b2f0dd0719b93f03c2c971dfb2b551e1fd00f4360ec4f24ad326958b5ca9cd76",
+          "attach_no": "2581300"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_HUYEOP_CLAIM"
+      ],
+      "article_no": "1182036",
+      "article_title": "휴업급여 및 상병보상연금 청구서(2023.07.05 개정)",
+      "revised": "2023-07-05",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182036",
+      "files": [
+        {
+          "file": "[별지 제7호 서식] 휴업급여 및 상병보상연금 청구서(20230705 개정).hwp",
+          "bytes": 32768,
+          "sha256": "cf91242af7b45861371596c002e3be7a42de22fb21038c765dee1ee161c42a0e",
+          "attach_no": "2559719"
+        },
+        {
+          "file": "[별지 제7호 서식] 휴업급여 및 상병보상연금 청구서(20230705 개정).pdf",
+          "bytes": 204078,
+          "sha256": "c28510564c4ad1537b2a28d7b42998daf62b1db031a6262cb4a0a16d1da7ff5b",
+          "attach_no": "2559718"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_CARE_TRANSPORT_DEVICE_CLAIM"
+      ],
+      "article_no": "1204346",
+      "article_title": "간병료/이송비/보조기 청구서",
+      "revised": null,
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1204346",
+      "files": [
+        {
+          "file": "간병료,이송비,보조기 청구서.pdf",
+          "bytes": 729135,
+          "sha256": "f4641312746e71e82ca368e35d6f7ee0f36cbc2c1264cd0fac5d3b9fc8173a3b",
+          "attach_no": "2581303"
+        },
+        {
+          "file": "간병료이송비보조기 청구서.hwp",
+          "bytes": 52736,
+          "sha256": "51a43d1b4d7dfda35b99e1c5ac55edae8fc642e4b8b5e836d623bb51016d5814",
+          "attach_no": "2581302"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_DEVICE_PRESCRIPTION"
+      ],
+      "article_no": "2252219",
+      "article_title": "재활보조기구 처방전 및 검수확인서(별지 제1호~별지 제8호 서식)25.12.31.개정",
+      "revised": "2025-12-31",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=2252219",
+      "files": [
+        {
+          "file": "별지1호서식~별지 제8호서식(재활보조기 처방검수료)25.12.31.pdf",
+          "bytes": 233596,
+          "sha256": "d267ad91d0c5c0e85436ab5532952af3af48d01f7d2cfcc0feacaaccb05d29f4",
+          "attach_no": "2643848"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_UNPAID_CLAIM"
+      ],
+      "article_no": "1182141",
+      "article_title": "미지급 보험급여 청구서(2023.07.05 개정)",
+      "revised": "2023-07-05",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182141",
+      "files": [
+        {
+          "file": "[별지 제29호 서식] 미지급 보험급여 청구서(20230705 개정).hwp",
+          "bytes": 21504,
+          "sha256": "56a50d1d07bd23e79649176272309c06478a455a5c9158d5eea39a5a91346101",
+          "attach_no": "2559952"
+        },
+        {
+          "file": "[별지 제29호 서식] 미지급 보험급여 청구서(20230705 개정).pdf",
+          "bytes": 82755,
+          "sha256": "eab33ab2144a20d913084bb1fdccfa85382d0da4c0c4c534589772416d1ad002",
+          "attach_no": "2559951"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_JANGHAE_CLAIM",
+        "F_LIMB_OPINION",
+        "F_NOISE_WORK_CERT"
+      ],
+      "article_no": "1182065",
+      "article_title": "장해급여 청구서_합병증등 예방관리 신청서_소음작업종사사실 확인서_장해진단서_소견서_일시금연금 선택확인서(2023.07.05 개정)",
+      "revised": "2023-07-05",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182065",
+      "files": [
+        {
+          "file": "[별지 제11호_제12호 서식] 장해급여(합병증등 예방관리) 청구(신청)서_소음작업종사사실 확인서_장해진단서_소견서_일시금연금 선택확인서(20230705 개정).hwp",
+          "bytes": 52224,
+          "sha256": "273e063997542e0f2ad8ef5bcbad28685121a7de208764d62a19153d39d29beb",
+          "attach_no": "2559769"
+        },
+        {
+          "file": "[별지 제11호_제12호 서식] 장해급여(합병증등 예방관리) 청구(신청)서_소음작업종사사실 확인서_장해진단서_소견서_일시금연금 선택확인서(20230705 개정).pdf",
+          "bytes": 468054,
+          "sha256": "254e265500568ec7d05693d5c609a6f3749902e16ffdb5748a2e5b3de3f6dde8",
+          "attach_no": "2559768"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "(병원 제출) 진료계획서"
+      ],
+      "article_no": "1182805",
+      "article_title": "[별지제7호서식]진료계획서(2024.7.15. 개정)",
+      "revised": "2024-07-15",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182805",
+      "files": [
+        {
+          "file": "[1005]진료계획서.hwp",
+          "bytes": 34816,
+          "sha256": "1af4ee259e3b3f921d26431d1f7a9ef47bc0d8043c977b5a3ce26fadd3f0a615",
+          "attach_no": "2599640"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_ADDITIONAL_DISEASE_APPLY"
+      ],
+      "article_no": "1182798",
+      "article_title": "[별지 제30,31호서식] 추가상병신청서+소견서(2023.7.5.개정)",
+      "revised": "2023-07-05",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182798",
+      "files": [
+        {
+          "file": "[별지 제30,31호서식] 추가상병 신청서 및 소견서.hwp",
+          "bytes": 32768,
+          "sha256": "03d5b4a98a3abecf05289382a98d94b746ac79b3235c11d94994d057b5b3fde1",
+          "attach_no": "2561503"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "F_RE_YOYANG_APPLY"
+      ],
+      "article_no": "1182803",
+      "article_title": "[별지 제33호, 33의2서식] 재요양신청서+소견서(2023.7.5. 개정)",
+      "revised": "2023-07-05",
+      "view_url": "https://www.comwel.or.kr/comwel/info/data/papr/papr_lst.jsp?mode=view&article_no=1182803",
+      "files": [
+        {
+          "file": "[별지 제33호,제33의2서식] 재요양 신청서 및 소견서.hwp",
+          "bytes": 26624,
+          "sha256": "8c2b4c123961cf9e888bb511f3f5695e157bc6c5f4e9fc7e911be18483a5a8a6",
+          "attach_no": "2561427"
+        }
+      ]
+    }
   ]
 }
