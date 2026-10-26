@@ -205,14 +205,18 @@ class CharPrFixer {
    * 값이 칸 폭을 넘으면 글자를 줄인 사본(검정 정체)을 만든다 — PDF 오버레이의 자동 축소와 같은 역할.
    * 하한 6pt. 그래도 넘치면 줄이 바뀐다(표가 커져 뒤가 밀릴 수 있다 — 렌더 쪽수로 본다).
    */
-  fit(id: string, text: string, cellWidth: number, cellHeight = 0): string {
+  fit(id: string, text: string, cellWidth: number, cellHeight = 0, maxLines = 0): string {
     const base = this.black(id);
     if (!cellWidth) return base;
     const h = this.height(base);
     const lines = text.split(/\r?\n/);
-    // 줄 수 추정: 줄마다 폭/칸 폭 올림. 한 줄짜리 칸(cellHeight 0)은 1줄, 여러 줄 칸은 줄수×글자높이×1.3 이 칸 높이 안에
+    // 줄 수 추정: 줄마다 폭/칸 폭 올림. maxLines 가 있으면(템플릿 = 원문 줄 수) 그 안에, 아니면 한 줄짜리 칸(cellHeight 0)은 1줄,
+    // 여러 줄 칸은 줄수×글자높이×1.3 이 칸 높이 안에
     const fits = (size: number) => {
-      const n = lines.reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, size) / cellWidth)), 0);
+      // 폭 추정은 근사치라 여유 10% 를 둔다 — 원문 줄 수에 딱 맞춘 글은 실제 렌더에서 한 줄 넘치기 쉽다(제3자 확인서 실측)
+      const usable = maxLines > 0 ? cellWidth * 0.9 : cellWidth;
+      const n = lines.reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, size) / usable)), 0);
+      if (maxLines > 0) return n <= maxLines;
       return cellHeight > 0 ? n * size * 1.3 <= cellHeight || n === lines.length : n <= lines.length;
     };
     if (fits(h)) return base;
@@ -289,7 +293,7 @@ function fitToOriginalWidth(filled: string, original: string): string {
 }
 
 /** 문단의 글자를 value 로 바꾼다. 첫 run 의 charPr(검정 정체로 교정)을 쓰고 나머지 run 글자는 비운다. 줄바꿈은 문단 복제. */
-function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0, cellHeight = 0): string {
+function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0, cellHeight = 0, maxLines = 0): string {
   const lines = value.split(/\r?\n/);
   const one = (line: string): string => {
     let out = stripLineseg(pxml);
@@ -299,7 +303,7 @@ function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth
       const keep = (body ?? "").replace(/<hp:t(?:\s[^>]*)?>.*?<\/hp:t>/gs, "");
       if (first) {
         first = false;
-        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, value, cellWidth, cellHeight)}"`);
+        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, value, cellWidth, cellHeight, maxLines)}"`);
         return `<hp:run${fixed}>${keep}<hp:t>${esc(line)}</hp:t></hp:run>`;
       }
       return keep.trim() ? `<hp:run${attrs}>${keep}</hp:run>` : "";
@@ -367,8 +371,9 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       if (isTemplate) {
         // 템플릿: 원문이 한 줄이면 한 줄에 맞춰 글자를 줄이고, 원문이 이미 여러 줄(확인서 머리문단 같은 글 덩어리)이면 칸 높이 안에서만 본다
         const baseId = fixer.black(/charPrIDRef="(\d+)"/.exec(xml.slice(para.start, para.end))?.[1] ?? "0");
-        const origLines = cell.width > 0 ? Math.ceil(textWidthHwp(originalText, fixer.height(baseId)) / cell.width) : 1;
-        edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, cell.width, origLines > 1 ? cell.height : 0) });
+        const origLines = Math.max(1, cell.width > 0 ? Math.ceil(textWidthHwp(originalText, fixer.height(baseId)) / cell.width) : 1);
+        // 원문 줄 수를 넘지 않게 — 한 줄 문단은 한 줄로, 여러 줄 머리글은 그 줄 수 안에서 글자를 줄인다
+        edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, cell.width, 0, origLines) });
         return;
       }
       // 값 칸: 여러 줄로 감기는 글은 칸 높이 안에 들어가게 줄이고, 감긴 줄 수만큼 뒤따르는 빈 문단을 지워 표가 커지지 않게 한다
