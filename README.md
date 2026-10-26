@@ -11,31 +11,49 @@
 
 > 공인노무사법 제27조에 따라 청구의 대행·대리와 서류의 작성·확인은 공인노무사의 직무입니다. 이 도구는 그 일을 돕는 도구이지 대신하지 않습니다.
 
-## 바로 쓰기 — 원격 MCP
+## 가장 쉬운 방법 — 내 PC 에서(설치 없음, 토큰 없음)
+
+Node.js 20 이상이 있으면 끝입니다. 서버에 아무것도 보내지 않습니다.
+
+**Claude Desktop / Claude Code 에 붙이기(로컬 stdio MCP)**
+```
+claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp
+```
+Claude Desktop 은 `claude_desktop_config.json` 에:
+```json
+{ "mcpServers": { "sanjae-apply": { "command": "npx", "args": ["-y", "sanjae-apply", "mcp"] } } }
+```
+Cursor·Windsurf 등도 같은 command/args 를 MCP 설정에 넣습니다.
+
+**명령줄로 쓰기**
+```
+npx -y sanjae-apply check YOYANG --accident COMMUTE --third-party yes     # 필요 서식·첨부·근거
+npx -y sanjae-apply check JANGHAE --tags NOISE_HEARING_LOSS --json
+npx -y sanjae-apply catalog F_YOYANG_APPLY                                # 서식 정본·채울 수 있는 칸
+npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.pdf       # 공단 정본 위에 채우기
+```
+`values.json` 의 칸 이름은 `catalog <FORM_ID>` 의 `slots` 에 나옵니다. 서식이 갱신되면 `npx -y sanjae-apply@latest`.
+
+MCP 도구 4개: `list_required_forms` · `get_form_catalog` · `fill_form`(form_id + 값 → base64 PDF) · `fill_yoyang_apply`(호환).
+
+## 원격 MCP(운영자가 토큰을 주는 경우)
 
 ```
 claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.vercel.app/api/mcp/mcp \
   --header "Authorization: Bearer <발급받은 토큰>"
 ```
+같은 도구 4개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다. 주민번호는 보내지 않아도 됩니다(빈칸으로 남습니다).
 
-도구 3개: `list_required_forms` · `get_form_catalog` · `fill_yoyang_apply`(base64 PDF).
-Claude Desktop·Cursor 등 MCP 클라이언트는 같은 URL 과 헤더를 설정에 넣으면 됩니다. 토큰은 운영자에게 받습니다.
-
-## 직접 돌리기
+## 개발
 
 ```
 git clone https://github.com/seojaehong/sanjae-apply && cd sanjae-apply
-npm ci && npm run build && npm test
+npm ci && npm test            # build + vitest (규칙·조문 대조·대장 대조·오버레이·MCP http/stdio·CLI)
 
-# 규칙만(CLI)
-node dist/src/cli.js YOYANG --accident COMMUTE --third-party yes
-node dist/src/cli.js JANGHAE --tags NOISE_HEARING_LOSS --json
-
-# 서식 채우기(로컬)
-node scripts/fill_local.mjs forms/maps/F_YOYANG_APPLY.json forms/bundled/F_YOYANG_APPLY.pdf \
-  fonts/NanumGothic-Regular.ttf test/samples/F_YOYANG_APPLY.json out.pdf
+# 채운 PDF 를 눈과 픽셀로 검사
 python scripts/verify_fill.py out.pdf forms/maps/F_YOYANG_APPLY.json test/samples/F_YOYANG_APPLY.json out.jpg forms/bundled/F_YOYANG_APPLY.pdf
 ```
+새 서식의 좌표 지도를 만드는 법은 `docs/좌표지도_작성법.md`.
 
 자체 호스팅(Vercel): 이 레포를 올리고 env `SANJAE_MCP_TOKENS`(쉼표 구분 토큰)을 넣으면 `/api/mcp/mcp` 가 열립니다. 법령 실시간 조회를 쓰려면 `LAW_GO_KR_OC`(법제처 인증키).
 
