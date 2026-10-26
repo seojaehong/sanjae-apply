@@ -1,0 +1,1472 @@
+{
+  "form_id": "F_JANGHAE_CLAIM",
+  "source_file": "[별지 제11호_제12호 서식] 장해급여(합병증등 예방관리) 청구(신청)서_소음작업종사사실 확인서_장해진단서_소견서_일시금연금 선택확인서(20230705 개정).pdf",
+  "source_sha256": "254e265500568ec7d05693d5c609a6f3749902e16ffdb5748a2e5b3de3f6dde8",
+  "page_size": {
+    "width": 595.0,
+    "height": 841.0
+  },
+  "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 261026 probe_form.py 실측. p1 장해급여 청구서(신청인란), p2 소음작업 종사 사실확인서(재해자란, noise_*), p7 일시금·연금 선택 확인서(choice_*). p3~p6 진단서·소견서는 의사 기재라 뺐다. 녹색 상자 스캔(green_boxes)이 자릿수와 어긋나(p1 8→9·10, p2 13→14) 상자는 위·아래 가로선 조각(hlines)의 x0·x1 로 잡았다. 체크 x 는 「[」x1 과 「]」x0 의 중점.",
+  "slots": {
+    "claim_type_janghae": {
+      "kind": "check",
+      "page": 1,
+      "x": 201.1,
+      "y": 98.05,
+      "size": 12
+    },
+    "claim_type_complication": {
+      "kind": "check",
+      "page": 1,
+      "x": 201.1,
+      "y": 114.55,
+      "size": 12
+    },
+    "name": {
+      "kind": "text",
+      "page": 1,
+      "x": 130,
+      "y": 171,
+      "size": 10,
+      "maxWidth": 88
+    },
+    "birth_date": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 279.2,
+          "y0": 161.7,
+          "x1": 293.6,
+          "y1": 179.9
+        },
+        {
+          "x0": 296.1,
+          "y0": 161.7,
+          "x1": 310.5,
+          "y1": 179.9
+        },
+        {
+          "x0": 313.0,
+          "y0": 161.7,
+          "x1": 327.4,
+          "y1": 179.9
+        },
+        {
+          "x0": 329.9,
+          "y0": 161.7,
+          "x1": 344.3,
+          "y1": 179.9
+        },
+        {
+          "x0": 361.0,
+          "y0": 161.7,
+          "x1": 375.4,
+          "y1": 179.9
+        },
+        {
+          "x0": 377.9,
+          "y0": 161.7,
+          "x1": 392.3,
+          "y1": 179.9
+        },
+        {
+          "x0": 409.0,
+          "y0": 161.7,
+          "x1": 423.4,
+          "y1": 179.9
+        },
+        {
+          "x0": 425.9,
+          "y0": 161.7,
+          "x1": 440.3,
+          "y1": 179.9
+        }
+      ]
+    },
+    "accident_date": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 95.8,
+          "y0": 192.6,
+          "x1": 110.2,
+          "y1": 211.0
+        },
+        {
+          "x0": 112.7,
+          "y0": 192.6,
+          "x1": 127.1,
+          "y1": 211.0
+        },
+        {
+          "x0": 129.8,
+          "y0": 192.6,
+          "x1": 144.0,
+          "y1": 211.0
+        },
+        {
+          "x0": 146.7,
+          "y0": 192.6,
+          "x1": 161.1,
+          "y1": 211.0
+        },
+        {
+          "x0": 177.6,
+          "y0": 192.6,
+          "x1": 192.0,
+          "y1": 211.0
+        },
+        {
+          "x0": 194.7,
+          "y0": 192.6,
+          "x1": 209.0,
+          "y1": 211.0
+        },
+        {
+          "x0": 225.6,
+          "y0": 192.6,
+          "x1": 240.0,
+          "y1": 211.0
+        },
+        {
+          "x0": 242.5,
+          "y0": 192.6,
+          "x1": 256.9,
+          "y1": 211.0
+        }
+      ]
+    },
+    "account_change_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 286.35,
+      "y": 222.95
+    },
+    "account_change_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 361.1,
+      "y": 222.95
+    },
+    "bank_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 182,
+      "y": 246,
+      "size": 9,
+      "maxWidth": 200
+    },
+    "account_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 154,
+      "y": 265,
+      "size": 9,
+      "maxWidth": 232
+    },
+    "account_holder": {
+      "kind": "text",
+      "page": 1,
+      "x": 442,
+      "y": 265,
+      "size": 9,
+      "maxWidth": 59
+    },
+    "account_type_normal": {
+      "kind": "check",
+      "page": 1,
+      "x": 120.25,
+      "y": 280.4
+    },
+    "account_type_protected": {
+      "kind": "check",
+      "page": 1,
+      "x": 222.65,
+      "y": 280.4
+    },
+    "prior_disability_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 434.05,
+      "y": 302.9
+    },
+    "prior_disability_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 483.05,
+      "y": 302.9
+    },
+    "other_compensation_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 429.25,
+      "y": 331.9
+    },
+    "other_compensation_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 470.15,
+      "y": 331.9
+    },
+    "comp_date": {
+      "kind": "text",
+      "page": 1,
+      "x": 100,
+      "y": 383,
+      "size": 8.5,
+      "maxWidth": 60
+    },
+    "comp_amount": {
+      "kind": "text",
+      "page": 1,
+      "x": 168,
+      "y": 383,
+      "size": 8.5,
+      "maxWidth": 88
+    },
+    "comp_payer": {
+      "kind": "text",
+      "page": 1,
+      "x": 264,
+      "y": 383,
+      "size": 8.5,
+      "maxWidth": 66
+    },
+    "transport_cost": {
+      "kind": "text",
+      "page": 1,
+      "x": 147,
+      "y": 407,
+      "size": 9,
+      "maxWidth": 68
+    },
+    "transport_detail": {
+      "kind": "text",
+      "page": 1,
+      "x": 284,
+      "y": 407,
+      "size": 9,
+      "maxWidth": 253
+    },
+    "complication_part": {
+      "kind": "text",
+      "page": 1,
+      "x": 98,
+      "y": 450.5,
+      "size": 8.5,
+      "maxWidth": 279
+    },
+    "complication_hospital": {
+      "kind": "text",
+      "page": 1,
+      "x": 386,
+      "y": 450.5,
+      "size": 8.5,
+      "maxWidth": 151
+    },
+    "apply_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 394,
+      "y": 506.5,
+      "size": 9.5
+    },
+    "apply_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 437,
+      "y": 506.5,
+      "size": 9.5
+    },
+    "apply_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 469,
+      "y": 506.5,
+      "size": 9.5
+    },
+    "applicant_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 300,
+      "y": 518.5,
+      "size": 9.5,
+      "maxWidth": 58
+    },
+    "mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 452,
+      "y": 518.5,
+      "size": 9,
+      "maxWidth": 85
+    },
+    "proxy_consent_janghae": {
+      "kind": "check",
+      "page": 1,
+      "x": 103.25,
+      "y": 557.5
+    },
+    "proxy_consent_complication": {
+      "kind": "check",
+      "page": 1,
+      "x": 192.75,
+      "y": 557.5
+    },
+    "proxy_consent_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 110,
+      "y": 586.5,
+      "size": 9,
+      "maxWidth": 104
+    },
+    "privacy_agree_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 210.9,
+      "y": 696.9
+    },
+    "privacy_agree_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 243.4,
+      "y": 696.9
+    },
+    "privacy_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 211,
+      "y": 713.5,
+      "size": 9
+    },
+    "privacy_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 259,
+      "y": 713.5,
+      "size": 9
+    },
+    "privacy_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 296,
+      "y": 713.5,
+      "size": 9
+    },
+    "privacy_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 370,
+      "y": 713.5,
+      "size": 9,
+      "maxWidth": 73
+    },
+    "noise_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 237,
+      "y": 155.5,
+      "size": 10,
+      "maxWidth": 296
+    },
+    "noise_rrn": {
+      "kind": "boxes",
+      "page": 2,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 271.2,
+          "y0": 163.0,
+          "x1": 285.6,
+          "y1": 179.9
+        },
+        {
+          "x0": 288.1,
+          "y0": 163.0,
+          "x1": 302.5,
+          "y1": 179.9
+        },
+        {
+          "x0": 305.1,
+          "y0": 163.0,
+          "x1": 319.5,
+          "y1": 179.9
+        },
+        {
+          "x0": 322.0,
+          "y0": 163.0,
+          "x1": 336.4,
+          "y1": 179.9
+        },
+        {
+          "x0": 338.9,
+          "y0": 163.0,
+          "x1": 353.5,
+          "y1": 179.9
+        },
+        {
+          "x0": 356.0,
+          "y0": 163.0,
+          "x1": 370.4,
+          "y1": 179.9
+        },
+        {
+          "x0": 381.9,
+          "y0": 163.0,
+          "x1": 396.3,
+          "y1": 179.9
+        },
+        {
+          "x0": 398.9,
+          "y0": 163.0,
+          "x1": 413.3,
+          "y1": 179.9
+        },
+        {
+          "x0": 415.8,
+          "y0": 163.0,
+          "x1": 430.2,
+          "y1": 179.9
+        },
+        {
+          "x0": 432.8,
+          "y0": 163.0,
+          "x1": 447.2,
+          "y1": 179.9
+        },
+        {
+          "x0": 449.8,
+          "y0": 163.0,
+          "x1": 464.1,
+          "y1": 179.9
+        },
+        {
+          "x0": 466.7,
+          "y0": 163.0,
+          "x1": 481.1,
+          "y1": 179.9
+        },
+        {
+          "x0": 483.7,
+          "y0": 163.0,
+          "x1": 498.1,
+          "y1": 179.9
+        }
+      ]
+    },
+    "noise_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 138,
+      "y": 203,
+      "size": 9,
+      "maxWidth": 395
+    },
+    "noise_employed_yes": {
+      "kind": "check",
+      "page": 2,
+      "x": 316.45,
+      "y": 222.8
+    },
+    "noise_employed_no": {
+      "kind": "check",
+      "page": 2,
+      "x": 401.2,
+      "y": 222.8
+    },
+    "noise_hire_date": {
+      "kind": "boxes",
+      "page": 2,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 135.6,
+          "y0": 239.0,
+          "x1": 150.0,
+          "y1": 255.9
+        },
+        {
+          "x0": 152.7,
+          "y0": 239.0,
+          "x1": 167.1,
+          "y1": 255.9
+        },
+        {
+          "x0": 169.6,
+          "y0": 239.0,
+          "x1": 184.0,
+          "y1": 255.9
+        },
+        {
+          "x0": 186.5,
+          "y0": 239.0,
+          "x1": 200.9,
+          "y1": 255.9
+        },
+        {
+          "x0": 209.4,
+          "y0": 239.0,
+          "x1": 223.9,
+          "y1": 255.9
+        },
+        {
+          "x0": 226.4,
+          "y0": 239.0,
+          "x1": 240.8,
+          "y1": 255.9
+        },
+        {
+          "x0": 249.3,
+          "y0": 239.0,
+          "x1": 263.7,
+          "y1": 255.9
+        },
+        {
+          "x0": 266.3,
+          "y0": 239.0,
+          "x1": 280.6,
+          "y1": 255.9
+        }
+      ]
+    },
+    "noise_retire_date": {
+      "kind": "boxes",
+      "page": 2,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 359.1,
+          "y0": 239.0,
+          "x1": 373.5,
+          "y1": 255.9
+        },
+        {
+          "x0": 376.0,
+          "y0": 239.0,
+          "x1": 390.4,
+          "y1": 255.9
+        },
+        {
+          "x0": 392.9,
+          "y0": 239.0,
+          "x1": 407.4,
+          "y1": 255.9
+        },
+        {
+          "x0": 409.9,
+          "y0": 239.0,
+          "x1": 424.3,
+          "y1": 255.9
+        },
+        {
+          "x0": 432.8,
+          "y0": 239.0,
+          "x1": 447.2,
+          "y1": 255.9
+        },
+        {
+          "x0": 449.8,
+          "y0": 239.0,
+          "x1": 464.1,
+          "y1": 255.9
+        },
+        {
+          "x0": 472.7,
+          "y0": 239.0,
+          "x1": 487.2,
+          "y1": 255.9
+        },
+        {
+          "x0": 489.7,
+          "y0": 239.0,
+          "x1": 504.1,
+          "y1": 255.9
+        }
+      ]
+    },
+    "noise_work_start": {
+      "kind": "text",
+      "page": 2,
+      "x": 137,
+      "y": 278,
+      "size": 9,
+      "maxWidth": 88
+    },
+    "noise_work_end": {
+      "kind": "text",
+      "page": 2,
+      "x": 300,
+      "y": 278,
+      "size": 9,
+      "maxWidth": 78
+    },
+    "noise_job": {
+      "kind": "text",
+      "page": 2,
+      "x": 463,
+      "y": 278,
+      "size": 9,
+      "maxWidth": 70
+    },
+    "noise_employer_none": {
+      "kind": "check",
+      "page": 2,
+      "x": 200.35,
+      "y": 289.8
+    },
+    "noise_employer_actual": {
+      "kind": "check",
+      "page": 2,
+      "x": 200.35,
+      "y": 305.7
+    },
+    "noise_employer_sub": {
+      "kind": "check",
+      "page": 2,
+      "x": 317.15,
+      "y": 305.7
+    },
+    "noise_relative_none": {
+      "kind": "check",
+      "page": 2,
+      "x": 200.35,
+      "y": 321.4
+    },
+    "noise_relative_spouse": {
+      "kind": "check",
+      "page": 2,
+      "x": 200.35,
+      "y": 337.2
+    },
+    "noise_relative_parent": {
+      "kind": "check",
+      "page": 2,
+      "x": 250.05,
+      "y": 337.2
+    },
+    "noise_relative_child": {
+      "kind": "check",
+      "page": 2,
+      "x": 294.1,
+      "y": 337.2
+    },
+    "noise_relative_sibling": {
+      "kind": "check",
+      "page": 2,
+      "x": 341.8,
+      "y": 337.2
+    },
+    "noise_relative_other": {
+      "kind": "check",
+      "page": 2,
+      "x": 397.35,
+      "y": 337.2
+    },
+    "noise_relative_other_text": {
+      "kind": "text",
+      "page": 2,
+      "x": 454,
+      "y": 341,
+      "size": 8.5,
+      "maxWidth": 44
+    },
+    "noise_worker_employee": {
+      "kind": "check",
+      "page": 2,
+      "x": 198.5,
+      "y": 351.0
+    },
+    "noise_worker_labor_provider": {
+      "kind": "check",
+      "page": 2,
+      "x": 242.35,
+      "y": 351.0
+    },
+    "noise_worker_sme_owner": {
+      "kind": "check",
+      "page": 2,
+      "x": 301.15,
+      "y": 351.0
+    },
+    "noise_worker_sme_family": {
+      "kind": "check",
+      "page": 2,
+      "x": 375.15,
+      "y": 351.0
+    },
+    "noise_worker_student_researcher": {
+      "kind": "check",
+      "page": 2,
+      "x": 489.55,
+      "y": 351.0
+    },
+    "noise_worker_health_damaged_child": {
+      "kind": "check",
+      "page": 2,
+      "x": 200.55,
+      "y": 362.7
+    },
+    "noise_worker_special_type": {
+      "kind": "check",
+      "page": 2,
+      "x": 276.4,
+      "y": 362.7
+    },
+    "noise_worker_field_trainee": {
+      "kind": "check",
+      "page": 2,
+      "x": 451.45,
+      "y": 362.7
+    },
+    "noise_employer_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 394,
+      "size": 9,
+      "maxWidth": 97
+    },
+    "noise_owner_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 289,
+      "y": 394,
+      "size": 9,
+      "maxWidth": 93
+    },
+    "noise_workplace_phone": {
+      "kind": "text",
+      "page": 2,
+      "x": 446,
+      "y": 394,
+      "size": 9,
+      "maxWidth": 83
+    },
+    "noise_workplace_no": {
+      "kind": "boxes",
+      "page": 2,
+      "size": 8,
+      "boxes": [
+        {
+          "x0": 107.7,
+          "y0": 413.2,
+          "x1": 122.1,
+          "y1": 430.2
+        },
+        {
+          "x0": 124.6,
+          "y0": 413.2,
+          "x1": 139.0,
+          "y1": 430.2
+        },
+        {
+          "x0": 141.6,
+          "y0": 413.2,
+          "x1": 156.0,
+          "y1": 430.2
+        },
+        {
+          "x0": 163.8,
+          "y0": 413.2,
+          "x1": 178.2,
+          "y1": 430.2
+        },
+        {
+          "x0": 180.7,
+          "y0": 413.2,
+          "x1": 195.1,
+          "y1": 430.2
+        },
+        {
+          "x0": 202.9,
+          "y0": 413.2,
+          "x1": 217.3,
+          "y1": 430.2
+        },
+        {
+          "x0": 220.0,
+          "y0": 413.2,
+          "x1": 234.4,
+          "y1": 430.2
+        },
+        {
+          "x0": 236.9,
+          "y0": 413.2,
+          "x1": 251.3,
+          "y1": 430.2
+        },
+        {
+          "x0": 253.8,
+          "y0": 413.2,
+          "x1": 268.2,
+          "y1": 430.2
+        },
+        {
+          "x0": 270.8,
+          "y0": 413.2,
+          "x1": 285.2,
+          "y1": 430.2
+        },
+        {
+          "x0": 293.0,
+          "y0": 413.2,
+          "x1": 307.4,
+          "y1": 430.2
+        }
+      ]
+    },
+    "noise_business_start_no": {
+      "kind": "text",
+      "page": 2,
+      "x": 383,
+      "y": 429,
+      "size": 8.5,
+      "maxWidth": 97
+    },
+    "noise_workplace_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 452.5,
+      "size": 9,
+      "maxWidth": 407
+    },
+    "noise_last_employer": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 512.4,
+      "size": 8,
+      "maxWidth": 154
+    },
+    "noise_last_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 163,
+      "y": 523.4,
+      "size": 7,
+      "maxWidth": 73
+    },
+    "noise_last_job": {
+      "kind": "text",
+      "page": 2,
+      "x": 284,
+      "y": 518.9,
+      "size": 8,
+      "maxWidth": 60
+    },
+    "noise_last_from_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 508.9,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_last_from_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 508.9,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_last_from_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 508.9,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_last_to_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 518.9,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_last_to_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 518.9,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_last_to_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 518.9,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_last_years": {
+      "kind": "text",
+      "page": 2,
+      "x": 400,
+      "y": 528.9,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_last_months": {
+      "kind": "text",
+      "page": 2,
+      "x": 440,
+      "y": 528.9,
+      "size": 8,
+      "maxWidth": 16
+    },
+    "noise_last_note": {
+      "kind": "text",
+      "page": 2,
+      "x": 474,
+      "y": 518.9,
+      "size": 8,
+      "maxWidth": 55
+    },
+    "noise_past1_employer": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 544.0,
+      "size": 8,
+      "maxWidth": 154
+    },
+    "noise_past1_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 163,
+      "y": 555.0,
+      "size": 7,
+      "maxWidth": 73
+    },
+    "noise_past1_job": {
+      "kind": "text",
+      "page": 2,
+      "x": 284,
+      "y": 550.5,
+      "size": 8,
+      "maxWidth": 60
+    },
+    "noise_past1_from_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 540.5,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past1_from_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 540.5,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past1_from_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 540.5,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past1_to_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 550.5,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past1_to_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 550.5,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past1_to_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 550.5,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past1_years": {
+      "kind": "text",
+      "page": 2,
+      "x": 400,
+      "y": 560.5,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past1_months": {
+      "kind": "text",
+      "page": 2,
+      "x": 440,
+      "y": 560.5,
+      "size": 8,
+      "maxWidth": 16
+    },
+    "noise_past1_note": {
+      "kind": "text",
+      "page": 2,
+      "x": 474,
+      "y": 550.5,
+      "size": 8,
+      "maxWidth": 55
+    },
+    "noise_past2_employer": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 575.6,
+      "size": 8,
+      "maxWidth": 154
+    },
+    "noise_past2_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 163,
+      "y": 586.6,
+      "size": 7,
+      "maxWidth": 73
+    },
+    "noise_past2_job": {
+      "kind": "text",
+      "page": 2,
+      "x": 284,
+      "y": 582.1,
+      "size": 8,
+      "maxWidth": 60
+    },
+    "noise_past2_from_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 572.1,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past2_from_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 572.1,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past2_from_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 572.1,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past2_to_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 582.1,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past2_to_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 582.1,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past2_to_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 582.1,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past2_years": {
+      "kind": "text",
+      "page": 2,
+      "x": 400,
+      "y": 592.1,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past2_months": {
+      "kind": "text",
+      "page": 2,
+      "x": 440,
+      "y": 592.1,
+      "size": 8,
+      "maxWidth": 16
+    },
+    "noise_past2_note": {
+      "kind": "text",
+      "page": 2,
+      "x": 474,
+      "y": 582.1,
+      "size": 8,
+      "maxWidth": 55
+    },
+    "noise_past3_employer": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 607.3,
+      "size": 8,
+      "maxWidth": 154
+    },
+    "noise_past3_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 163,
+      "y": 618.3,
+      "size": 7,
+      "maxWidth": 73
+    },
+    "noise_past3_job": {
+      "kind": "text",
+      "page": 2,
+      "x": 284,
+      "y": 613.8,
+      "size": 8,
+      "maxWidth": 60
+    },
+    "noise_past3_from_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 603.8,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past3_from_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 603.8,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past3_from_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 603.8,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past3_to_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 613.8,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past3_to_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 613.8,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past3_to_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 613.8,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past3_years": {
+      "kind": "text",
+      "page": 2,
+      "x": 400,
+      "y": 623.8,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past3_months": {
+      "kind": "text",
+      "page": 2,
+      "x": 440,
+      "y": 623.8,
+      "size": 8,
+      "maxWidth": 16
+    },
+    "noise_past3_note": {
+      "kind": "text",
+      "page": 2,
+      "x": 474,
+      "y": 613.8,
+      "size": 8,
+      "maxWidth": 55
+    },
+    "noise_past4_employer": {
+      "kind": "text",
+      "page": 2,
+      "x": 122,
+      "y": 638.9,
+      "size": 8,
+      "maxWidth": 154
+    },
+    "noise_past4_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 163,
+      "y": 649.9,
+      "size": 7,
+      "maxWidth": 73
+    },
+    "noise_past4_job": {
+      "kind": "text",
+      "page": 2,
+      "x": 284,
+      "y": 645.4,
+      "size": 8,
+      "maxWidth": 60
+    },
+    "noise_past4_from_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 635.4,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past4_from_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 635.4,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past4_from_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 635.4,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past4_to_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 363,
+      "y": 645.4,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past4_to_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 404,
+      "y": 645.4,
+      "size": 8,
+      "maxWidth": 12
+    },
+    "noise_past4_to_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 433,
+      "y": 645.4,
+      "size": 8,
+      "maxWidth": 11
+    },
+    "noise_past4_years": {
+      "kind": "text",
+      "page": 2,
+      "x": 400,
+      "y": 655.4,
+      "size": 8,
+      "maxWidth": 20
+    },
+    "noise_past4_months": {
+      "kind": "text",
+      "page": 2,
+      "x": 440,
+      "y": 655.4,
+      "size": 8,
+      "maxWidth": 16
+    },
+    "noise_past4_note": {
+      "kind": "text",
+      "page": 2,
+      "x": 474,
+      "y": 645.4,
+      "size": 8,
+      "maxWidth": 55
+    },
+    "noise_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 212,
+      "y": 703.5,
+      "size": 9.5
+    },
+    "noise_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 281,
+      "y": 703.5,
+      "size": 9.5
+    },
+    "noise_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 332,
+      "y": 703.5,
+      "size": 9.5
+    },
+    "noise_applicant_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 238,
+      "y": 728.5,
+      "size": 9.5,
+      "maxWidth": 63
+    },
+    "noise_applicant_phone": {
+      "kind": "text",
+      "page": 2,
+      "x": 405,
+      "y": 728.5,
+      "size": 9,
+      "maxWidth": 128
+    },
+    "choice_grade1_3": {
+      "kind": "check",
+      "page": 7,
+      "x": 71.4,
+      "y": 449.4
+    },
+    "choice_grade1_3_advance_yes": {
+      "kind": "check",
+      "page": 7,
+      "x": 167.4,
+      "y": 486.9
+    },
+    "choice_grade1_3_advance_no": {
+      "kind": "check",
+      "page": 7,
+      "x": 225.5,
+      "y": 486.9
+    },
+    "choice_grade1_3_advance_years": {
+      "kind": "text",
+      "page": 7,
+      "x": 379.5,
+      "y": 490.5,
+      "size": 9,
+      "maxWidth": 16
+    },
+    "choice_grade4_7": {
+      "kind": "check",
+      "page": 7,
+      "x": 71.4,
+      "y": 511.4
+    },
+    "choice_grade4_7_method": {
+      "kind": "text",
+      "page": 7,
+      "x": 283.5,
+      "y": 552.5,
+      "size": 9,
+      "maxWidth": 44
+    },
+    "choice_grade4_7_advance_yes": {
+      "kind": "check",
+      "page": 7,
+      "x": 265.05,
+      "y": 569.0
+    },
+    "choice_grade4_7_advance_no": {
+      "kind": "check",
+      "page": 7,
+      "x": 323.1,
+      "y": 569.0
+    },
+    "choice_grade4_7_advance_years": {
+      "kind": "text",
+      "page": 7,
+      "x": 477,
+      "y": 572.5,
+      "size": 9,
+      "maxWidth": 16
+    },
+    "choice_regrade": {
+      "kind": "check",
+      "page": 7,
+      "x": 71.4,
+      "y": 596.35
+    },
+    "choice_regrade_method": {
+      "kind": "text",
+      "page": 7,
+      "x": 376,
+      "y": 638.5,
+      "size": 9,
+      "maxWidth": 43
+    },
+    "choice_regrade_deduct_after": {
+      "kind": "check",
+      "page": 7,
+      "x": 505.1,
+      "y": 653.05
+    },
+    "choice_regrade_deduct_half": {
+      "kind": "check",
+      "page": 7,
+      "x": 480.95,
+      "y": 671.25
+    },
+    "choice_year": {
+      "kind": "text",
+      "page": 7,
+      "x": 237,
+      "y": 732.5,
+      "size": 9.5
+    },
+    "choice_month": {
+      "kind": "text",
+      "page": 7,
+      "x": 283,
+      "y": 732.5,
+      "size": 9.5
+    },
+    "choice_day": {
+      "kind": "text",
+      "page": 7,
+      "x": 318,
+      "y": 732.5,
+      "size": 9.5
+    },
+    "choice_name": {
+      "kind": "text",
+      "page": 7,
+      "x": 336,
+      "y": 751.5,
+      "size": 9.5,
+      "maxWidth": 100
+    }
+  }
+}

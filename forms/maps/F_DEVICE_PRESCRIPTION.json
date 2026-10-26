@@ -1,0 +1,106 @@
+{
+  "form_id": "F_DEVICE_PRESCRIPTION",
+  "source_file": "별지1호서식~별지 제8호서식(재활보조기 처방검수료)25.12.31.pdf",
+  "source_sha256": "d267ad91d0c5c0e85436ab5532952af3af48d01f7d2cfcc0feacaaccb05d29f4",
+  "page_size": {
+    "width": 595.0,
+    "height": 841.0
+  },
+  "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 261026 probe_form.py 실측. p7 「재활보조기구 처방전 및 검수확인서(기타)」 1쪽만, 재해자(신청인) 기재란만 — 의사 처방·의료기관·검수확인 칸은 뺐다. 이 서식에는 재해자 서명·성명란이 없다(담당의사 서명뿐). 최초/추가지급 체크(글리프 ⃞ 픽셀 실측)·상병명·납품희망일은 재해자 기재 여부가 서식상 명시돼 있지 않아 넣어 두었다.",
+  "slots": {
+    "claim_first": {
+      "kind": "check",
+      "page": 7,
+      "x": 437.8,
+      "y": 118.15
+    },
+    "claim_additional": {
+      "kind": "check",
+      "page": 7,
+      "x": 478.8,
+      "y": 118.15
+    },
+    "name": {
+      "kind": "text",
+      "page": 7,
+      "x": 108,
+      "y": 138.5,
+      "size": 9,
+      "maxWidth": 82
+    },
+    "birth_date": {
+      "kind": "text",
+      "page": 7,
+      "x": 270,
+      "y": 138.5,
+      "size": 9,
+      "maxWidth": 119
+    },
+    "accident_date": {
+      "kind": "text",
+      "page": 7,
+      "x": 460,
+      "y": 138.5,
+      "size": 9,
+      "maxWidth": 74
+    },
+    "address": {
+      "kind": "multiline",
+      "page": 7,
+      "x0": 103.7,
+      "y0": 141.3,
+      "x1": 266.4,
+      "y1": 171.2,
+      "size": 8,
+      "lineHeight": 11
+    },
+    "phone": {
+      "kind": "text",
+      "page": 7,
+      "x": 398,
+      "y": 153.5,
+      "size": 9,
+      "maxWidth": 136
+    },
+    "mobile": {
+      "kind": "text",
+      "page": 7,
+      "x": 398,
+      "y": 168.5,
+      "size": 9,
+      "maxWidth": 136
+    },
+    "disease_name": {
+      "kind": "text",
+      "page": 7,
+      "x": 108,
+      "y": 183.5,
+      "size": 9,
+      "maxWidth": 426
+    },
+    "delivery_yy": {
+      "kind": "text",
+      "page": 7,
+      "x": 369,
+      "y": 199.3,
+      "size": 9,
+      "maxWidth": 21
+    },
+    "delivery_mm": {
+      "kind": "text",
+      "page": 7,
+      "x": 400,
+      "y": 199.3,
+      "size": 9,
+      "maxWidth": 29
+    },
+    "delivery_dd": {
+      "kind": "text",
+      "page": 7,
+      "x": 440,
+      "y": 199.3,
+      "size": 9,
+      "maxWidth": 29
+    }
+  }
+}

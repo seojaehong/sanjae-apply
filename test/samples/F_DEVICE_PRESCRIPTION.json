@@ -1,0 +1,14 @@
+{
+  "claim_first": true,
+  "claim_additional": false,
+  "name": "홍길동",
+  "birth_date": "1990-01-01",
+  "accident_date": "2026-03-15",
+  "address": "서울특별시 중구 세종대로 110 (태평로1가) 101동 1001호",
+  "phone": "02-000-0000",
+  "mobile": "010-0000-0000",
+  "disease_name": "우측 하지 절단",
+  "delivery_yy": "26",
+  "delivery_mm": "11",
+  "delivery_dd": "15"
+}

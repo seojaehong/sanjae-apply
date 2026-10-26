@@ -69,7 +69,10 @@ def main() -> int:
             r = slot_rect(slot)
             before, after = dark_count(odoc, slot["page"] - 1, r), dark_count(doc, slot["page"] - 1, r)
             # 글자 하나라도 그려지면 150dpi 에서 수십 픽셀은 늘어난다. 체크(√)는 작아서 +5.
-            drawn = after >= before + (5 if slot["kind"] == "check" else 15)
+            # 홑숫자 「1」(7~8pt)은 13~14픽셀뿐이라(A·C 팀 실측 261026) 글자 수·크기에 비례한 문턱을 쓴다: 최소 +8.
+            n_chars = max(1, len(str(v).replace(" ", "")))
+            need = 5 if slot["kind"] == "check" else max(8, min(15, int(4 * n_chars * slot.get("size", 9) / 9)))
+            drawn = after >= before + need
             pix_note = f"  픽셀 {before}→{after}"
             ok = ok and drawn
         print(("PASS" if ok else "FAIL"), key, pix_note)
