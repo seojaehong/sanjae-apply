@@ -1,6 +1,6 @@
 {
   "name": "sanjae-apply",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "산재 신청 도우미 — 급여 종류·재해 분기별 필요 서식·첨부·근거 조문, 근로복지공단 정본 PDF 채우기 (MCP·CLI). 승인 가능성은 계산하지 않고 입력을 저장하지 않는다.",
   "license": "MIT",
   "repository": {

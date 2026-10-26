@@ -2,6 +2,7 @@
   "form_id": "F_THIRD_PARTY_REPORT",
   "source_file": "F_THIRD_PARTY_REPORT.hwpx",
   "source_sha256": "15d10239bbb2ddaffcd08943c9d1db95c055c9b34c11cda11ffb6921ed2fe19d",
+  "expect_pages": 2,
   "_about": "제3자의 행위에 따른 재해발생신고서(T0) + 확인서(T22·T23) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 신고서 22행×29열(r2~r3 신고인(사업주) — 넣지 않음, r4~r6 신고인(산재근로자), r7~r10 제3자(가해자)·근무처, r11~r12 책임보험자, r13~r15 재해사실, r16~r17 기타, r18 서명), T1~T13 주민번호 상자(1×1), T14~T21 발생연월일 상자(년4·월2·일2), T22 = 확인서 표(r0 c0 본문, r1 확인자), T23 = 확인서 준수사항(T22 r0 c0 p3 안쪽). 판단한 칸: ①직종(job·third_job)은 PDF 처럼 글자를 쓰므로 직종부호 상자 「□□□」문단을 cell 로 덮는다. ②주소 칸(r6 c4·r8 c4)은 p0 = 「□□□□□ … ☎」(우편번호 상자 + 유선 ☎), p1 = 「(빈칸) … 휴대전화」라 p0 템플릿은 우편번호 상자 5개를 숫자로 바꾸고 ☎ 를 남기며, p1 템플릿에 주소와 「휴대전화 {mobile}」을 넣는다(PDF 지도의 address y240·mobile y236 = 둘째 줄). ③insurer_contact 는 「 ☎」 뒤에 after. ④서명 블록(r18 c0)은 p5 신고인(수급권자) 줄만(p3 사업주·p7 대리인 제외). ⑤확인서 머리문단(T22 r0 c0 p1)은 run 이 20여 개로 갈려 있어 group 으로 문단 전체를 다시 쓴다(원문 「청구권를」 오타 그대로). 엔진 한계: accident_datetime 은 상자 8칸(년월일)인데 공통 값이 12자리라 digits 가 「글자 12 > 상자 8」로 멈춘다 — PDF 지도는 앞 8자리만 쓰지만 hwpx 엔진엔 자르기가 없어 상자 뒤 「일」 라벨에 after 로 전체를 붙였다(엔진에 digits 자르기 옵션이 생기면 digits count 8 로 바꿀 것). (261027) accident_datetime 은 digits take:8.",
   "slots": {
     "name": {

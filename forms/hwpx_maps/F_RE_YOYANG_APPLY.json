@@ -2,6 +2,7 @@
   "form_id": "F_RE_YOYANG_APPLY",
   "source_file": "F_RE_YOYANG_APPLY.hwpx",
   "source_sha256": "a8b5c973433fd2e97c9a1869c473a6711880fa08e602134696594f5a0408f908",
+  "expect_pages": 2,
   "_about": "재요양 신청서(별지 제33호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 신청서 큰 표(24행×15열), T1~T13 주민번호 상자, T14~T21 재해일자 상자(8개=년월일), T22 = 다른보상 수령내역 표(r14 c1 안쪽: 수령일자·수령금액·지급처), T23 개인정보 이용내역, T24~ = 재요양 소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ★⑥사유(r9 c6 p0·p2)·⑧취업여부(r12 c4 p0·p2·p4)의 체크 상자는 전각 괄호 「〔  〕」라 check op(BOX_RE = [ ]·□·☐)가 못 본다. 그래서 괄호형 체크 템플릿(불리언 true → 「V」, false → 빈 글자, 261027 엔진)으로 문단을 통째 쓴다 — 「〔 {x} 〕」는 false 면 원문 「〔  〕」 그대로, true 면 「〔 V 〕」. provider_job 은 employment_provider 와 같은 문단(r12 c4 p2)이라 한 템플릿에 함께 둔다. 엔진 check 가 〔 〕를 보게 되면 check op(r9 c6 n=1 고정물제거 · 2 의지장착 · 3 치과보철 · 4 재발 · 5 수술 · 6 비수술 · 7 기타 / r12 c4 n=1 근로자 · 2 노무제공자 · 3 미취업)로 바꿀 수 있으나, 그러면 provider_job 템플릿과 「편집 겹침」이 나므로 provider_job 을 after(label 「직종:」)로 바꿔야 한다. ★엔진 한계: accident_datetime 값 12자리 vs 상자 8개 → digits 가 멈추므로 라벨 문단(r6 c12 p0)에 템플릿. 엔진이 자르게 되면 {\"kind\":\"digits\",\"t\":0,\"r\":6,\"c\":12,\"count\":8}. (261027) accident_datetime 은 digits take:8 로 바꿈.",
   "slots": {
     "name": {

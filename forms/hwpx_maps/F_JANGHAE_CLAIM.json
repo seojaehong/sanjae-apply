@@ -2,6 +2,7 @@
   "form_id": "F_JANGHAE_CLAIM",
   "source_file": "F_JANGHAE_CLAIM.hwpx",
   "source_sha256": "dcb6e1dbc7d991bea13b6cc776c6c64a8674d899e0cc919c57646f28964e7081",
+  "expect_pages": 8,
   "_about": "장해급여 청구서 묶음(별지 제11호·제12호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. 【청구서 p1】 T0 = 앞면 큰 표, T1~T8 생년월일 상자, T9~T16 재해발생일 상자, T17 = 배상·보상 내역 표(T0 r10 c1 p4 안), T18 = 개인정보 이용 동의 표(T0 r19 c0 p3 안), T19 = 이용목적 표(T18 r1 c0 p2 안). 【소음 확인서 p2】 T20 = 산재근로자 표, T21~T33 주민번호 상자(13), T34~T41 채용일 상자, T42~T49 퇴직일 상자, T50 = 사업장·소음사업장 직력 표(T20 r14 c0 안), T51~T61 사업장관리번호 상자(11). 직력 행 = r5 최종, r6~r9 과거 1~4. 【선택 확인서 p7】 T114 = 확인서 본체(체크 □ 3개는 p5/p7/p9 → n1~n3), 안쪽 T115·T116(T117 등급표 포함)·T118(1~3급 선급)·T119(4~7급)·T120(재판정). 판단: ①privacy_agree 는 T18 r1 c0 의 p1 「□ 개인정보 이용 내역」 글머리가 n1 로 세어져 예=n2·아니오=n3. ②안쪽 표를 품은 문단(T0 r10c1 p4·r19c0 p3, T18 r1c0 p2, T50 r1c0 p1, T114 p2/4/6/8/10)에는 cell·group 을 쓰지 않는다. ③엔진 한계 — 괄호형 「예(   )」·「수령(   )」 6칸(choice_*_advance_yes/no·choice_regrade_deduct_*)은 체크 상자가 없어 group 으로 두었고 true 가 「true」 글자로 들어간다. noise_relative_other_text 는 after 라 닫는 괄호 뒤에 붙는다. noise_business_start_no 는 p1 「(사업개시번호: )」 run 에 after 를 걸면 after 의 linesegarray 삭제가 p1 이 품은 첫 관리번호 상자 문단을 잡아 digits 와 「편집 겹침」이 나므로 p0 제목 줄 끝에 붙였다(값이 상자 윗줄에 놓인다). ④합병증 부위·의료기관명·산출내역은 라벨 한 문단뿐이라 group 으로 라벨 뒤에 잇는다. 쪽수는 렌더 뒤 넣는다(expect_pages 미기재).",
   "slots": {
     "claim_type_janghae": {

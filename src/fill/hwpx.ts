@@ -101,6 +101,7 @@ interface Cell extends Span {
   r: number;
   c: number;
   width: number; // cellSz width(HWPUNIT, 1pt = 100) − 좌우 여백
+  height: number; // cellSz height(HWPUNIT) − 상하 여백
   inner: Span[]; // 최상위 안쪽 표
   paras: Span[]; // 안쪽 표 밖의 <hp:p> (문서 순서)
 }
@@ -120,9 +121,10 @@ function cellsOf(xml: string, tbl: Span): Cell[] {
     const tail = xml.slice(inner.at(-1)?.end ?? m.index, end);
     const addr = /<hp:cellAddr\s+colAddr="(\d+)"\s+rowAddr="(\d+)"/.exec(tail);
     if (!addr) throw new Error(`cellAddr 없음 @${m.index}`);
-    const sz = /<hp:cellSz\s+width="(\d+)"/.exec(tail);
-    const mg = /<hp:cellMargin\s+left="(\d+)"\s+right="(\d+)"/.exec(tail);
+    const sz = /<hp:cellSz\s+width="(\d+)"\s+height="(\d+)"/.exec(tail);
+    const mg = /<hp:cellMargin\s+left="(\d+)"\s+right="(\d+)"\s+top="(\d+)"\s+bottom="(\d+)"/.exec(tail);
     const width = sz ? Number(sz[1]) - (mg ? Number(mg[1]) + Number(mg[2]) : 0) : 0;
+    const height = sz ? Number(sz[2]) - (mg ? Number(mg[3]) + Number(mg[4]) : 0) : 0;
     const paras: Span[] = [];
     const pre = /<hp:p\b/g;
     pre.lastIndex = m.index;
@@ -133,7 +135,7 @@ function cellsOf(xml: string, tbl: Span): Cell[] {
       paras.push({ start: pm.index, end: pe });
       pre.lastIndex = pe;
     }
-    out.push({ ...span, r: Number(addr[2]), c: Number(addr[1]), width, inner, paras });
+    out.push({ ...span, r: Number(addr[2]), c: Number(addr[1]), width, height, inner, paras });
     re.lastIndex = end;
   }
   return out;
@@ -203,13 +205,19 @@ class CharPrFixer {
    * 값이 칸 폭을 넘으면 글자를 줄인 사본(검정 정체)을 만든다 — PDF 오버레이의 자동 축소와 같은 역할.
    * 하한 6pt. 그래도 넘치면 줄이 바뀐다(표가 커져 뒤가 밀릴 수 있다 — 렌더 쪽수로 본다).
    */
-  fit(id: string, text: string, cellWidth: number): string {
+  fit(id: string, text: string, cellWidth: number, cellHeight = 0): string {
     const base = this.black(id);
     if (!cellWidth) return base;
     const h = this.height(base);
-    const need = textWidthHwp(text, h);
-    if (need <= cellWidth) return base;
-    const target = Math.max(600, Math.floor((h * cellWidth) / need / 10) * 10);
+    const lines = text.split(/\r?\n/);
+    // 줄 수 추정: 줄마다 폭/칸 폭 올림. 한 줄짜리 칸(cellHeight 0)은 1줄, 여러 줄 칸은 줄수×글자높이×1.3 이 칸 높이 안에
+    const fits = (size: number) => {
+      const n = lines.reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, size) / cellWidth)), 0);
+      return cellHeight > 0 ? n * size * 1.3 <= cellHeight || n === lines.length : n <= lines.length;
+    };
+    if (fits(h)) return base;
+    let target = h;
+    while (target > 600 && !fits(target)) target -= 50;
     if (target >= h) return base;
     const key = `${base}@${target}`;
     if (this.cache.has(key)) return this.cache.get(key)!;
@@ -281,9 +289,8 @@ function fitToOriginalWidth(filled: string, original: string): string {
 }
 
 /** 문단의 글자를 value 로 바꾼다. 첫 run 의 charPr(검정 정체로 교정)을 쓰고 나머지 run 글자는 비운다. 줄바꿈은 문단 복제. */
-function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0): string {
+function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0, cellHeight = 0): string {
   const lines = value.split(/\r?\n/);
-  const longest = lines.reduce((a, b) => (textWidth(b) > textWidth(a) ? b : a), "");
   const one = (line: string): string => {
     let out = stripLineseg(pxml);
     // 기존 <hp:t> 전부 제거(안쪽 표는 이 함수에 오지 않는다 — cell op 는 paras 가 안쪽 표 밖 문단만)
@@ -292,7 +299,7 @@ function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth
       const keep = (body ?? "").replace(/<hp:t(?:\s[^>]*)?>.*?<\/hp:t>/gs, "");
       if (first) {
         first = false;
-        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, longest, cellWidth)}"`);
+        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, value, cellWidth, cellHeight)}"`);
         return `<hp:run${fixed}>${keep}<hp:t>${esc(line)}</hp:t></hp:run>`;
       }
       return keep.trim() ? `<hp:run${attrs}>${keep}</hp:run>` : "";
@@ -357,9 +364,28 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       const o = op as HwpxTemplate & { p?: number };
       const cell = cellOf(s, o.t, o.r, o.c);
       const para = pickPara(xml, cell, o.p);
-      // 경위처럼 여러 줄이 자연스러운 넓은 칸(폭 25,000 HU ≈ 88mm 이상)은 줄바꿈에 맡기고 줄이지 않는다
-      const width = cell.width >= 25000 ? 0 : cell.width;
-      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, width) });
+      if (isTemplate) {
+        // 템플릿은 한 줄 문단 — 칸 폭을 넘으면 글자를 줄인다
+        edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, cell.width) });
+        return;
+      }
+      // 값 칸: 여러 줄로 감기는 글은 칸 높이 안에 들어가게 줄이고, 감긴 줄 수만큼 뒤따르는 빈 문단을 지워 표가 커지지 않게 한다
+      // (상황도·경위 칸은 빈 문단 10여 개로 높이를 잡아 둔 서식이 많다 — 261027 출퇴근 발생신고서가 한 쪽 밀린 원인)
+      const text = String(value);
+      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), text, fixer, cell.width, cell.height) });
+      if (cell.width > 0) {
+        const h = fixer.height(fixer.black(/charPrIDRef="(\d+)"/.exec(xml.slice(para.start, para.end))?.[1] ?? "0"));
+        const wrapped = text.split(/\r?\n/).reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, h) / cell.width)), 0);
+        let extra = wrapped - 1;
+        const pi = cell.paras.indexOf(para);
+        for (let i = pi + 1; i < cell.paras.length && extra > 0; i++) {
+          const sp = cell.paras[i]!;
+          const pxml = xml.slice(sp.start, sp.end);
+          if (paraText(pxml).trim() !== "" || /<hp:tbl\b/.test(pxml)) break;
+          edit.push({ start: sp.start, end: sp.end, text: "" });
+          extra--;
+        }
+      }
       return;
     }
     const o = op as HwpxOp;
@@ -447,10 +473,13 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
           edit.push({ start: openAt, end: closeAt + 1, text: "[V]" });
         } else {
           edit.push({ start: openAt, end: openAt + 1, text: "[V" });
-          // 사이 공백은 첫 run 에서만 지운다
+          // 사이 공백은 앞 run 의 꼬리와 뒤 run 의 머리에서 지운다
           const firstRun = runs.find((r) => openAt >= r.start + r.open && openAt < r.start + r.open + r.text.length)!;
           const firstEnd = firstRun.start + firstRun.open + firstRun.text.length;
           if (firstEnd > openAt + 1) edit.push({ start: openAt + 1, end: firstEnd, text: "" });
+          const lastRun = runs.find((r) => closeAt >= r.start + r.open && closeAt < r.start + r.open + r.text.length)!;
+          const lastBegin = lastRun.start + lastRun.open;
+          if (closeAt > lastBegin) edit.push({ start: lastBegin, end: closeAt, text: "" });
         }
         return;
       }

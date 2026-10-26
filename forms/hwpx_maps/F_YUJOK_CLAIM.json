@@ -2,6 +2,7 @@
   "form_id": "F_YUJOK_CLAIM",
   "source_file": "F_YUJOK_CLAIM.hwpx",
   "source_sha256": "7458f78d37cf9ba83e123a55124f79caacdff5440c6591905183b73b17837847",
+  "expect_pages": 2,
   "_about": "유족급여·진폐유족연금·장례비 청구서(별지 제15호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 앞면 청구서 표, T1~T11 사업장 관리번호 상자(r5 c1 p0 안쪽), T12~T24 주민등록번호 상자(r7 c5 안쪽), T25~T32 재해발생일 상자(r9 c1 안쪽), T33~T37 뒷면 안내·개인정보 동의(신청인 칸 없음; T33 r2 「성명 (서명 또는 인)」은 뒷면 안내사항 확인 서명 줄로 보이나 PDF 지도에 칸이 없어 넣지 않았다). 보상 내역은 T0 직접 칸(r30 c1 수령일자·c3 수령금액·c8 지급한 자). 성명(r7 c1)·주소(r8 c1)·직종(r8 c19)·채용년월일(r9 c19)은 값 칸이 따로 없고 라벨 위에 빈 문단(p0)이 있어 p 없는 cell 은 라벨 위에 쓴다 — 라벨 문단(p1)을 group 으로 다시 쓴다. 청구인 3행 = r17~r19(c2 성명, c6 생년월일 group, c9 p0 주소·p1 휴대전화 group, c20 관계, c22 장애유무). accident_datetime 은 digits take:8(YYYYMMDD 상자 8개, 261027 엔진 take 추가). (옛 메모) ①accident_datetime: 상자 8개(YYYYMMDD)에 값 12자라 digits 가 멈춰(글자 12 > 상자 8) 라벨 「재해발생일」 뒤 after 로 통째로 붙였다 — 상자는 빈 채. 엔진에 자르기가 생기면 {kind:digits,t:0,r:9,c:1,count:8}. ②괄호형 체크: unpaid_claim_yes/no(r26 c1 「(  ) 예  (  )아니오」)·compensation_yes/no(r28 c1 p0 「(  )예  (  )아니오」)는 BOX_RE 가 「(  )」를 못 잡아 check 가 멈추므로 그 문단을 group 으로 다시 쓰고 괄호 안에 칸을 끼웠다 — true 는 글자 「true」로 찍힌다. BOX_RE 에 \\(\\s*\\) 가 들어가면 check 로 바꾼다: unpaid_claim_yes n1·no n2(r26 c1), compensation_yes n1·no n2(r28 c1).",
   "slots": {
     "claim_yujok": {

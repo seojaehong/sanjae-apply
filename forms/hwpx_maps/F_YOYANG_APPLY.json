@@ -5,46 +5,246 @@
   "expect_pages": 4,
   "_about": "요양급여신청서(별지 제2호, 2026.7.7 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 앞면 큰 표, T1~T13 주민번호 상자, T14~T25 재해일시 상자, T26~T36 관리번호 상자, T37 = 경위·경찰/소방/보험 질문 표(r19 c1 안쪽). 칸 이름은 forms/maps 와 같다.",
   "slots": {
-    "name": { "kind": "cell", "t": 0, "r": 4, "c": 1, "p": 1 },
-    "rrn": { "kind": "digits", "t": 0, "r": 4, "c": 12, "count": 13 },
-    "address": { "kind": "cell", "t": 0, "r": 5, "c": 1, "p": 1 },
-    "mobile": { "kind": "after", "t": 0, "r": 5, "c": 13, "label": "휴대전화:" },
-    "phone": { "kind": "after", "t": 0, "r": 5, "c": 13, "label": "전화번호:" },
-    "accident_datetime": { "kind": "digits", "t": 0, "r": 6, "c": 4, "count": 12 },
-    "hire_year": { "kind": "group", "template": "hire_date" },
-    "hire_month": { "kind": "group", "template": "hire_date" },
-    "hire_day": { "kind": "group", "template": "hire_date" },
-    "work_start": { "kind": "after", "t": 0, "r": 7, "c": 1, "label": "출근시간:" },
-    "work_end": { "kind": "after", "t": 0, "r": 7, "c": 7, "label": "퇴근시간:" },
-    "job": { "kind": "after", "t": 0, "r": 7, "c": 14, "label": "직 종:" },
-    "claim_kind_accident": { "kind": "check", "t": 0, "r": 15, "c": 1, "n": 1 },
-    "claim_kind_disease": { "kind": "check", "t": 0, "r": 15, "c": 1, "n": 2 },
-    "claim_kind_commute": { "kind": "check", "t": 0, "r": 15, "c": 1, "n": 3 },
-    "worker_type_employee": { "kind": "check", "t": 0, "r": 12, "c": 5, "n": 1 },
-    "employer_name": { "kind": "cell", "t": 0, "r": 16, "c": 3 },
-    "owner_name": { "kind": "cell", "t": 0, "r": 16, "c": 10 },
-    "workplace_phone": { "kind": "cell", "t": 0, "r": 16, "c": 17 },
-    "workplace_no": { "kind": "digits", "t": 0, "r": 17, "c": 6, "count": 11 },
-    "workplace_address": { "kind": "cell", "t": 0, "r": 18, "c": 3 },
-    "narrative": { "kind": "cell", "t": 37, "r": 0, "c": 0, "p": 0 },
-    "police_yes": { "kind": "check", "t": 37, "r": 1, "c": 1, "n": 1 },
-    "police_no": { "kind": "check", "t": 37, "r": 1, "c": 1, "n": 2 },
-    "fire_yes": { "kind": "check", "t": 37, "r": 2, "c": 1, "n": 1 },
-    "fire_no": { "kind": "check", "t": 37, "r": 2, "c": 1, "n": 2 },
-    "insurer_yes": { "kind": "check", "t": 37, "r": 3, "c": 1, "n": 1 },
-    "insurer_no": { "kind": "check", "t": 37, "r": 3, "c": 1, "n": 2 },
-    "witness_name": { "kind": "group", "template": "witness" },
-    "witness_phone": { "kind": "group", "template": "witness" },
-    "witness_relation": { "kind": "group", "template": "witness" },
-    "apply_year": { "kind": "group", "template": "apply_date" },
-    "apply_month": { "kind": "group", "template": "apply_date" },
-    "apply_day": { "kind": "group", "template": "apply_date" },
-    "applicant_name": { "kind": "group", "template": "applicant" }
+    "name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 4,
+      "c": 1,
+      "p": 1
+    },
+    "rrn": {
+      "kind": "digits",
+      "t": 0,
+      "r": 4,
+      "c": 12,
+      "count": 13
+    },
+    "address": {
+      "kind": "cell",
+      "t": 0,
+      "r": 5,
+      "c": 1,
+      "p": 1
+    },
+    "mobile": {
+      "kind": "after",
+      "t": 0,
+      "r": 5,
+      "c": 13,
+      "label": "휴대전화:"
+    },
+    "phone": {
+      "kind": "after",
+      "t": 0,
+      "r": 5,
+      "c": 13,
+      "label": "전화번호:"
+    },
+    "accident_datetime": {
+      "kind": "digits",
+      "t": 0,
+      "r": 6,
+      "c": 4,
+      "count": 12
+    },
+    "hire_year": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "hire_month": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "hire_day": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "work_start": {
+      "kind": "after",
+      "t": 0,
+      "r": 7,
+      "c": 1,
+      "label": "출근시간:"
+    },
+    "work_end": {
+      "kind": "after",
+      "t": 0,
+      "r": 7,
+      "c": 7,
+      "label": "퇴근시간:"
+    },
+    "job": {
+      "kind": "after",
+      "t": 0,
+      "r": 7,
+      "c": 14,
+      "label": "직 종:"
+    },
+    "claim_kind_accident": {
+      "kind": "check",
+      "t": 0,
+      "r": 15,
+      "c": 1,
+      "n": 1
+    },
+    "claim_kind_disease": {
+      "kind": "check",
+      "t": 0,
+      "r": 15,
+      "c": 1,
+      "n": 2
+    },
+    "claim_kind_commute": {
+      "kind": "check",
+      "t": 0,
+      "r": 15,
+      "c": 1,
+      "n": 3
+    },
+    "worker_type_employee": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 1
+    },
+    "employer_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 16,
+      "c": 3
+    },
+    "owner_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 16,
+      "c": 10
+    },
+    "workplace_phone": {
+      "kind": "cell",
+      "t": 0,
+      "r": 16,
+      "c": 17
+    },
+    "workplace_no": {
+      "kind": "digits",
+      "t": 0,
+      "r": 17,
+      "c": 6,
+      "count": 11
+    },
+    "workplace_address": {
+      "kind": "cell",
+      "t": 0,
+      "r": 18,
+      "c": 3
+    },
+    "narrative": {
+      "kind": "cell",
+      "t": 37,
+      "r": 0,
+      "c": 0,
+      "p": 0
+    },
+    "police_yes": {
+      "kind": "check",
+      "t": 37,
+      "r": 1,
+      "c": 1,
+      "n": 1
+    },
+    "police_no": {
+      "kind": "check",
+      "t": 37,
+      "r": 1,
+      "c": 1,
+      "n": 2
+    },
+    "fire_yes": {
+      "kind": "check",
+      "t": 37,
+      "r": 2,
+      "c": 1,
+      "n": 1
+    },
+    "fire_no": {
+      "kind": "check",
+      "t": 37,
+      "r": 2,
+      "c": 1,
+      "n": 2
+    },
+    "insurer_yes": {
+      "kind": "check",
+      "t": 37,
+      "r": 3,
+      "c": 1,
+      "n": 1
+    },
+    "insurer_no": {
+      "kind": "check",
+      "t": 37,
+      "r": 3,
+      "c": 1,
+      "n": 2
+    },
+    "witness_name": {
+      "kind": "group",
+      "template": "witness"
+    },
+    "witness_phone": {
+      "kind": "group",
+      "template": "witness"
+    },
+    "witness_relation": {
+      "kind": "group",
+      "template": "witness"
+    },
+    "apply_year": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_month": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_day": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "applicant_name": {
+      "kind": "group",
+      "template": "applicant"
+    }
   },
   "templates": {
-    "hire_date": { "t": 0, "r": 6, "c": 13, "p": 0, "text": "채용일자:  {hire_year}년  {hire_month}월  {hire_day}일" },
-    "witness": { "t": 0, "r": 20, "c": 1, "p": 0, "text": "목격자가 있는 경우: 성명( {witness_name} ), 연락처( {witness_phone} ), 재해자와의 관계( {witness_relation} )" },
-    "apply_date": { "t": 0, "r": 26, "c": 0, "p": 1, "text": "        {apply_year}년       {apply_month}월       {apply_day}일" },
-    "applicant": { "t": 0, "r": 26, "c": 0, "p": 2, "text": "                                                     신청인   {applicant_name}              (서명 또는 인)" }
+    "hire_date": {
+      "t": 0,
+      "r": 6,
+      "c": 13,
+      "p": 0,
+      "text": "채용일자:  {hire_year}년  {hire_month}월  {hire_day}일"
+    },
+    "witness": {
+      "t": 0,
+      "r": 20,
+      "c": 1,
+      "p": 0,
+      "text": "목격자가 있는 경우: 성명( {witness_name} ), 연락처( {witness_phone} ), 재해자와의 관계( {witness_relation} )"
+    },
+    "apply_date": {
+      "t": 0,
+      "r": 26,
+      "c": 0,
+      "p": 1,
+      "text": "        {apply_year}년       {apply_month}월       {apply_day}일"
+    },
+    "applicant": {
+      "t": 0,
+      "r": 26,
+      "c": 0,
+      "p": 2,
+      "text": "                                                     신청인   {applicant_name}              (서명 또는 인)"
+    }
   }
 }

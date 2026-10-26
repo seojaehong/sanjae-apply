@@ -2,6 +2,7 @@
   "form_id": "F_ADDITIONAL_DISEASE_APPLY",
   "source_file": "F_ADDITIONAL_DISEASE_APPLY.hwpx",
   "source_sha256": "f51f6aec1d89dfc60d160e849b7fffab3e4904ad0932c66dacf069bcebef0cd6",
+  "expect_pages": 2,
   "_about": "추가상병 신청서(별지 제30호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 신청서 큰 표(27행×16열), T1~T13 주민번호 상자, T14~T21 재해일자 상자(8개=년월일), T22 개인정보 이용내역 표, T23~ = 추가상병 소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ★엔진 한계: accident_datetime 은 값 12자리(년월일시분)인데 상자가 8개(년월일)라 digits 가 「글자 12 > 상자 8」로 멈춘다(PDF overlay 는 앞 8자리로 자른다). 지금은 같은 칸의 라벨 문단(r5 c12 p0)에 템플릿으로 통째 넣는다. 엔진 digits 가 PDF 처럼 자르게 되면 {\"kind\":\"digits\",\"t\":0,\"r\":5,\"c\":12,\"count\":8} 로 바꿀 것. address(r6 c0)·요양중 사고일시(r12 c14)·신청일·신청인 줄은 라벨과 같은 문단이라 템플릿. (261027) accident_datetime 은 digits take:8 로 바꿈.",
   "slots": {
     "name": {
