@@ -54,6 +54,8 @@ export interface FormMap {
 
 export interface FillOptions {
   fontBytes: Uint8Array;
+  /** 글꼴 서브셋 임베딩. 기본 true. 글꼴에 따라 서브셋이 글리프를 잃는 경우가 있어(261026 나눔고딕 운영 실측) 끌 수 있다 */
+  subset?: boolean;
   /** 값. 키는 map.slots 의 키. check 는 true 일 때만 찍는다 */
   values: Record<string, string | boolean | undefined>;
 }
@@ -95,7 +97,9 @@ function wrap(font: PDFFont, text: string, size: number, width: number): string[
 export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOptions): Promise<{ bytes: Uint8Array; report: FillReport }> {
   const doc = await PDFDocument.load(pdfBytes);
   doc.registerFontkit(fontkit);
-  const font = await doc.embedFont(opt.fontBytes, { subset: true });
+  // 기본 서브셋 끔. 나눔고딕을 subset:true 로 넣으면 텍스트 추출은 되는데 글리프가 그려지지 않는다(261026 운영 실측, 픽셀 0→0).
+  // 전체 임베딩이면 PDF 가 약 1.2MB 가 된다 — 받아들인다.
+  const font = await doc.embedFont(opt.fontBytes, { subset: opt.subset ?? false });
   const pages = doc.getPages();
   const report: FillReport = { written: [], skipped: [], shrunk: [] };
   const black = rgb(0, 0, 0);
