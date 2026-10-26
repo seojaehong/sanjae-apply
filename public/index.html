@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>산재 신청 도우미 MCP</title>
+<style>
+  :root { --fg:#1a1a1a; --bg:#fff; --muted:#666; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fg:#eee; --bg:#111; --muted:#aaa; } }
+  :root[data-theme="dark"] { --fg:#eee; --bg:#111; --muted:#aaa; }
+  body { margin:0; padding:32px 16px; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui, "Malgun Gothic", sans-serif; max-width:720px; margin-inline:auto; }
+  code { background:rgba(127,127,127,.15); padding:2px 6px; border-radius:4px; }
+  .muted { color:var(--muted); }
+</style>
+</head>
+<body>
+<h1>산재 신청 도우미 MCP</h1>
+<p>노무사 사무소용 MCP 서버입니다. 급여 종류·재해 분기에 따라 필요한 서식·첨부·근거 조문을 돌려주고, 요양급여신청서(별지 제2호, 2026.7.7 개정) PDF 를 채워 줍니다.</p>
+<p>끝점: <code>/api/mcp/mcp</code> (Streamable HTTP, <code>Authorization: Bearer …</code> 필요)</p>
+<p class="muted">입력값은 저장하지 않습니다. 결과의 READY_TO_SUBMIT 은 「제출 가능」이지 승인을 뜻하지 않습니다. 공인노무사 직무(대행·대리)는 노무사가 수행합니다.</p>
+</body>
+</html>
