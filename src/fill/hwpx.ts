@@ -168,14 +168,17 @@ class CharPrFixer {
       this.cache.set(id, id);
       return id;
     }
+    // charPr id 는 0..itemCnt-1 로 빈틈없이 이어져야 한다(건너뛰면 한글이 글자를 못 그린다 — 261027 실측, 점선으로 나옴).
+    // 새 id = 지금 itemCnt, 그리고 itemCnt 를 1 올린다. 사본은 charProperties 끝(</hh:charProperties> 직전)에 붙인다.
     const cnt = /<hh:charProperties itemCnt="(\d+)"/.exec(this.header);
     if (!cnt) throw new Error("header.xml 에 charProperties 가 없다");
-    const newId = String(Number(cnt[1]) + this.added);
+    const newId = cnt[1]!;
     const newAttrs = attrs.replace(/textColor="[^"]+"/, 'textColor="#000000"');
     const newBody = body.replace(/<hh:italic\b[^>]*\/>/g, "");
     const clone = `<hh:charPr id="${newId}"${newAttrs}>${newBody}</hh:charPr>`;
-    this.header = this.header.replace(m[0], m[0] + clone).replace(/<hh:charProperties itemCnt="(\d+)"/, (_s, n: string) => `<hh:charProperties itemCnt="${Number(n) + 1}"`);
-    // itemCnt 는 원래 수 + 지금까지 더한 수로 다시 맞춘다(위 replace 가 1씩 올린다)
+    this.header = this.header
+      .replace("</hh:charProperties>", clone + "</hh:charProperties>")
+      .replace(/<hh:charProperties itemCnt="(\d+)"/, (_s, n: string) => `<hh:charProperties itemCnt="${Number(n) + 1}"`);
     this.added++;
     this.cache.set(id, newId);
     return newId;

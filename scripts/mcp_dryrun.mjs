@@ -81,7 +81,14 @@ const ffr = ff.isError ? null : parse(ff);
 ok(ffr && ffr.report.written.length === 30 && ff.content[1]?.resource?.blob?.startsWith("JVBERi"), `fill_form F_HUYEOP_CLAIM 30칸 PDF`);
 const cat2 = parse(await client.callTool({ name: "get_form_catalog", arguments: {} }));
 ok(Array.isArray(cat2.fillable) && cat2.fillable.length === 12, `get_form_catalog fillable 12종 (${cat2.fillable?.length})`);
+ok(Array.isArray(cat2.fillable_hwpx) && cat2.fillable_hwpx.includes("F_YOYANG_APPLY"), `get_form_catalog fillable_hwpx 에 요양급여 (${cat2.fillable_hwpx?.length})`);
+// 5) fill_form format=hwpx — 한글 출력(zip 머리 "PK", mimetype 첫 항목)
+const yv = values;
+const fh = await client.callTool({ name: "fill_form", arguments: { form_id: "F_YOYANG_APPLY", values: yv, format: "hwpx" } });
+const fhr = parse(fh);
+const fhBlob = fh.content[1]?.resource?.blob ?? "";
+ok(fhr && fhr.format === "hwpx" && fhr.report.filled.length === 30 && fhBlob.startsWith("UEsDB") && Buffer.from(fhBlob, "base64").subarray(30, 38).toString() === "mimetype", `fill_form F_YOYANG_APPLY format=hwpx 30칸 (mimetype 첫 항목)`);
 
 await client.close();
-console.log(`\n실패 ${fails} / 검사 ${cases.length + 9}`);
+console.log(`\n실패 ${fails} / 검사 ${cases.length + 11}`);
 process.exit(fails ? 1 : 0);
