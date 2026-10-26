@@ -74,6 +74,14 @@ if (pdf) writeFileSync(OUT, pdf);
 const empty = parse(await client.callTool({ name: "fill_yoyang_apply", arguments: { values: {} } }));
 ok(empty.report.written.length === 0 && empty.report.skipped.length === 35, `fill_yoyang_apply 빈 값 → 전부 건너뜀`);
 
+// 4) fill_form — 범용 채우기(요양급여 외 서식)
+const hy = JSON.parse(readFileSync(new URL("../test/samples/F_HUYEOP_CLAIM.json", import.meta.url), "utf8"));
+const ff = await client.callTool({ name: "fill_form", arguments: { form_id: "F_HUYEOP_CLAIM", values: hy } });
+const ffr = ff.isError ? null : parse(ff);
+ok(ffr && ffr.report.written.length === 30 && ff.content[1]?.resource?.blob?.startsWith("JVBERi"), `fill_form F_HUYEOP_CLAIM 30칸 PDF`);
+const cat2 = parse(await client.callTool({ name: "get_form_catalog", arguments: {} }));
+ok(Array.isArray(cat2.fillable) && cat2.fillable.length === 12, `get_form_catalog fillable 12종 (${cat2.fillable?.length})`);
+
 await client.close();
-console.log(`\n실패 ${fails} / 검사 ${cases.length + 7}`);
+console.log(`\n실패 ${fails} / 검사 ${cases.length + 9}`);
 process.exit(fails ? 1 : 0);

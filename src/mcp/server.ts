@@ -14,7 +14,7 @@ import { ACCIDENT_KINDS, CLAIM_TYPES, TAGS, type ClaimInput } from "../core/type
 import { fillForm } from "../fill/overlay.js";
 import { catalogPath, fillableForms, loadAssets, loadMap } from "../fill/registry.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.2.0" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.3.0" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 
