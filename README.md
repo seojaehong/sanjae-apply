@@ -33,8 +33,8 @@ node dist/src/cli.js JANGHAE --tags NOISE_HEARING_LOSS --json
 
 # 서식 채우기(로컬)
 node scripts/fill_local.mjs forms/maps/F_YOYANG_APPLY.json forms/bundled/F_YOYANG_APPLY.pdf \
-  fonts/NanumGothic-Regular.ttf test/sample_values.json out.pdf
-python scripts/verify_fill.py out.pdf forms/maps/F_YOYANG_APPLY.json test/sample_values.json out.jpg forms/bundled/F_YOYANG_APPLY.pdf
+  fonts/NanumGothic-Regular.ttf test/samples/F_YOYANG_APPLY.json out.pdf
+python scripts/verify_fill.py out.pdf forms/maps/F_YOYANG_APPLY.json test/samples/F_YOYANG_APPLY.json out.jpg forms/bundled/F_YOYANG_APPLY.pdf
 ```
 
 자체 호스팅(Vercel): 이 레포를 올리고 env `SANJAE_MCP_TOKENS`(쉼표 구분 토큰)을 넣으면 `/api/mcp/mcp` 가 열립니다. 법령 실시간 조회를 쓰려면 `LAW_GO_KR_OC`(법제처 인증키).

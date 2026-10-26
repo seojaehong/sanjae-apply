@@ -62,7 +62,7 @@ const none = parse(await client.callTool({ name: "get_form_catalog", arguments: 
 ok(none.entries.length === 0 && none.form === null, `get_form_catalog 없는 id → 빈 목록`);
 
 // 3) fill_yoyang_apply — 합성 값 전체
-const values = JSON.parse(readFileSync(new URL("../test/sample_values.json", import.meta.url), "utf8"));
+const values = JSON.parse(readFileSync(new URL("../test/samples/F_YOYANG_APPLY.json", import.meta.url), "utf8"));
 const f = await client.callTool({ name: "fill_yoyang_apply", arguments: { values } });
 const rep = parse(f);
 const blob = f.content[1]?.resource?.blob;
