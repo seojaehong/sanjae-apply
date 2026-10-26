@@ -1,19 +1,31 @@
 {
   "name": "sanjae-apply",
-  "version": "0.0.1",
-  "private": true,
-  "description": "산재 신청 도우미 엔진 — 급여 종류·재해 분기에 따라 필요한 서식·첨부를 정하고 제출 패키지를 조립한다. 순수 코어(무저장) + CLI. 승인 가능성은 계산하지 않는다.",
+  "version": "0.2.0",
+  "description": "산재 신청 도우미 — 급여 종류·재해 분기별 필요 서식·첨부·근거 조문, 근로복지공단 정본 PDF 채우기 (MCP·CLI). 승인 가능성은 계산하지 않고 입력을 저장하지 않는다.",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/seojaehong/sanjae-apply" },
+  "keywords": ["산재", "근로복지공단", "요양급여", "mcp", "model-context-protocol", "노무"],
   "type": "module",
   "bin": {
     "sanjae-apply": "dist/src/cli.js"
   },
+  "files": [
+    "dist/src",
+    "forms/bundled",
+    "forms/maps",
+    "forms/catalog.json",
+    "fonts",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
-    "node": ">=24"
+    "node": ">=20"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "lint": "tsc -p tsconfig.json --noEmit"
+    "test": "npm run build && vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@types/node": "24.0.4",
@@ -23,7 +35,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@pdf-lib/fontkit": "^1.1.1",
-    "mcp-handler": "^1.1.0",
+    "mcp-handler": "1.1.0",
     "pdf-lib": "^1.17.1",
     "zod": "^4.6.7"
   }

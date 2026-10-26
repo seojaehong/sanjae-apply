@@ -4,7 +4,7 @@ import { createHandler } from "../src/mcp/server.js";
 
 const TOKEN = "test-token-for-vitest";
 process.env.SANJAE_MCP_TOKENS = `other,${TOKEN}`;
-process.env.SANJAE_FONT = process.env.SANJAE_FONT ?? "C:/Windows/Fonts/malgun.ttf";
+process.env.SANJAE_ROOT = process.cwd();
 const URL = "http://localhost/api/mcp/mcp";
 const handler = createHandler("/api/mcp");
 
@@ -29,13 +29,21 @@ describe("MCP 출구", () => {
     expect((await rpc(INIT, "wrong")).status).toBe(401);
   });
 
-  it("initialize → tools/list 에 도구 3개", async () => {
+  it("initialize → tools/list 에 도구 4개", async () => {
     const init = await rpc(INIT);
     expect(init.status).toBe(200);
     expect(init.json.result.serverInfo.name).toBe("sanjae-apply");
     const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, TOKEN, init.sessionId);
     const names = list.json.result.tools.map((t: { name: string }) => t.name).sort();
-    expect(names).toEqual(["fill_yoyang_apply", "get_form_catalog", "list_required_forms"]);
+    expect(names).toEqual(["fill_form", "fill_yoyang_apply", "get_form_catalog", "list_required_forms"]);
+  });
+
+  it("fill_form: form_id 로 범용 채우기, 없는 id 는 isError", async () => {
+    const init = await rpc(INIT);
+    const ok = await rpc({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "fill_form", arguments: { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" } } } }, TOKEN, init.sessionId);
+    expect(JSON.parse(ok.json.result.content[0].text).report.written).toEqual(["name"]);
+    const bad = await rpc({ jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "fill_form", arguments: { form_id: "F_NOPE", values: {} } } }, TOKEN, init.sessionId);
+    expect(bad.json.result.isError).toBe(true);
   });
 
   it("list_required_forms: 출퇴근·제3자 → S-01~S-03, 서식 4종 REQUIRED, 금지어 없음", async () => {

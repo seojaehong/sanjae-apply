@@ -9,7 +9,7 @@ import { fillForm, type FormMap } from "../src/fill/overlay.js";
 
 const PDF = "forms/raw/2232720/요양급여신청서 및 소견서(2026.7.7. 개정).pdf";
 const MAP = "forms/maps/F_YOYANG_APPLY.json";
-const FONT = process.env.SANJAE_FONT ?? "C:/Windows/Fonts/malgun.ttf";
+const FONT = "fonts/NanumGothic-Regular.ttf";
 const ready = existsSync(PDF) && existsSync(FONT);
 
 // 합성 값. 실명·실제 주민번호·실제 사업장 금지.
