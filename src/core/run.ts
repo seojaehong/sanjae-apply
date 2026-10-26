@@ -1,14 +1,34 @@
 // 패키지 조립. 순수 함수 — 입력을 저장하지 않고, 승인 가능성을 계산하지 않는다.
 
 import { evalYoyang } from "../rules/s01_yoyang.js";
+import {
+  evalAdditionalDisease,
+  evalCareTransportDevice,
+  evalHuyeop,
+  evalJanghae,
+  evalReYoyang,
+  evalSelfPay,
+  evalUnpaid,
+  evalYujok,
+} from "../rules/s04_s13.js";
+import type { RuleResult } from "../rules/common.js";
 import { assertNoOutcomeLanguage } from "./filter.js";
-import type { ClaimInput, Package, PackageStatus } from "./types.js";
+import type { ClaimInput, ClaimType, Package, PackageStatus } from "./types.js";
+
+const EVALUATORS: Record<ClaimType, (input: ClaimInput) => RuleResult> = {
+  YOYANG: evalYoyang,
+  HUYEOP: evalHuyeop,
+  CARE_TRANSPORT_DEVICE: evalCareTransportDevice,
+  JANGHAE: evalJanghae,
+  YUJOK: evalYujok,
+  UNPAID: evalUnpaid,
+  ADDITIONAL_DISEASE: evalAdditionalDisease,
+  RE_YOYANG: evalReYoyang,
+  SELF_PAY: evalSelfPay,
+};
 
 export function buildPackage(input: ClaimInput): Package {
-  if (input.claim !== "YOYANG") {
-    throw new Error(`아직 규칙이 없는 급여 종류: ${input.claim} (M1 에서 S-04~S-13 추가)`);
-  }
-  const r = evalYoyang(input);
+  const r = EVALUATORS[input.claim](input);
   const unresolved = r.attachments.some((a) => a.status !== "PROVIDED") || r.open_confirmations.length > 0;
   const status: PackageStatus = unresolved ? "INCOMPLETE" : "READY_TO_SUBMIT";
   const pkg: Package = {
@@ -17,6 +37,7 @@ export function buildPackage(input: ClaimInput): Package {
     forms: r.forms,
     attachments: r.attachments,
     open_confirmations: r.open_confirmations,
+    notes: r.notes,
     rules_applied: r.rules,
   };
   assertNoOutcomeLanguage(pkg);

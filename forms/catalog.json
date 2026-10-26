@@ -1,0 +1,23 @@
+{
+  "_about": "공단 서식 정본 대장. 파일은 forms/raw/(미커밋)에 두고 여기에는 파일명·개정일·sha256 만 적는다. 법제처 별표서식 API(licbyl)에는 산재 시행규칙 별지 서식이 안 잡혀(실측 261026) 정본 출처는 근로복지공단 서식자료실이다.",
+  "source": {
+    "name": "근로복지공단 홈페이지 > 정보공개 > 자료실 > 서식자료",
+    "url": null,
+    "note": "261026 추정 URL /comwel/info/data/form.jsp 는 오류 페이지. 실제 URL 확인 또는 수동 다운로드 필요(M1 잔여)."
+  },
+  "forms": [
+    { "id": "F_YOYANG_APPLY|F_YOYANG_OPINION", "file": "[별지_제2,3호서식]요양급여신청서_및_소견서(2024.7.15.개정).hwp", "revised": "2024-07-15", "sha256": null },
+    { "id": "F_COMMUTE_REPORT", "file": "출퇴근재해발생신고서.hwp", "revised": null, "sha256": null },
+    { "id": "F_THIRD_PARTY_REPORT", "file": "(출퇴근재해)제3자의 행위에 따른 재해발생 신고서 및 확인서.hwp", "revised": null, "sha256": null },
+    { "id": "F_YUJOK_CLAIM", "file": "[별지_제15호_서식]_유족급여_진폐유족연금_장례비_청구서(20230705_개정).hwp", "revised": "2023-07-05", "sha256": null },
+    { "id": "F_SELF_PAY_CLAIM", "file": "본인부담치료비_청구서(요양비,_본인부담금확인).hwp", "revised": null, "sha256": null },
+    { "id": "F_HUYEOP_CLAIM", "file": "[별지_제7호_서식]_휴업급여_및_상병보상연금_청구서(20230705_개정).hwp", "revised": "2023-07-05", "sha256": null },
+    { "id": "F_CARE_TRANSPORT_DEVICE_CLAIM", "file": "간병료이송비보조기_청구서.hwp", "revised": null, "sha256": null },
+    { "id": "F_DEVICE_PRESCRIPTION", "file": "산재보험_재활보조기구_처방전_및_검수확인서.hwp", "revised": null, "sha256": null },
+    { "id": "F_UNPAID_CLAIM", "file": "[별지_제29호_서식]_미지급_보험급여_청구서(20230705_개정).hwp", "revised": "2023-07-05", "sha256": null },
+    { "id": "F_JANGHAE_CLAIM|F_LIMB_OPINION|F_NOISE_WORK_CERT", "file": "[별지_제11호_제12호_서식]_장해급여(합병증등_예방관리)_청구(신청)서_소음작업종사사실_확인서_장해진단서_소견서_일시금연금_선택확인서(20230705_).hwp", "revised": "2023-07-05", "sha256": null },
+    { "id": "(병원 제출) 진료계획서", "file": "[1005]진료계획서.hwp", "revised": null, "sha256": null },
+    { "id": "F_ADDITIONAL_DISEASE_APPLY", "file": "[별지_제30,31호서식]_추가상병_신청서_및_소견서.hwp", "revised": null, "sha256": null },
+    { "id": "F_RE_YOYANG_APPLY", "file": "[별지_제33호,제33의2서식]_재요양_신청서_및_소견서.hwp", "revised": null, "sha256": null }
+  ]
+}

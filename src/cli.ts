@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// sanjae-apply <급여> [--accident WORK_ACCIDENT|COMMUTE|DISEASE] [--third-party yes|no] [--ended yes|no] [--have A_MEDICAL_RECORDS,...] [--json]
+// sanjae-apply <급여> [--accident WORK_ACCIDENT|COMMUTE|DISEASE] [--third-party yes|no] [--ended yes|no] [--tags NOISE_HEARING_LOSS,SPINE_OR_NERVE,JOINT,DEVICE] [--have A_MEDICAL_RECORDS,...] [--json]
 // 값은 어디에도 저장하지 않는다. 표준출력으로만 낸다.
 
 import { buildPackage } from "./core/run.js";
-import { CLAIM_TYPES, type ClaimInput, type ClaimType, type Tri } from "./core/types.js";
+import { CLAIM_TYPES, TAGS, type ClaimInput, type ClaimType, type Tag, type Tri } from "./core/types.js";
 
 function tri(v: string | undefined): Tri {
   if (v === undefined) return "UNDECLARED";
@@ -32,6 +32,10 @@ export function parseArgs(argv: string[]): { input: ClaimInput; json: boolean } 
     treatmentEnded: tri(opt["ended"]),
   };
   if (opt["have"]) input.have = opt["have"].split(",").map((s) => s.trim()).filter(Boolean);
+  if (opt["tags"]) {
+    const tags = opt["tags"].split(",").map((s) => s.trim()).filter((t): t is Tag => (TAGS as readonly string[]).includes(t));
+    if (tags.length) input.tags = tags;
+  }
   return { input, json };
 }
 
@@ -50,8 +54,12 @@ export function render(pkg: ReturnType<typeof buildPackage>): string {
     lines.push(`  ${a.status.padEnd(14)} ${a.title}${sub}`);
   }
   if (pkg.open_confirmations.length) {
-    lines.push("", "확인이 필요한 것");
+    lines.push("", "답이 필요한 질문");
     for (const c of pkg.open_confirmations) lines.push(`  - ${c.question} (영향: ${c.affects.join(", ")})`);
+  }
+  if (pkg.notes.length) {
+    lines.push("", "절차 안내");
+    for (const n of pkg.notes) lines.push(`  - ${n}`);
   }
   lines.push("", `적용 규칙: ${pkg.rules_applied.join(", ")}`);
   return lines.join("\n");

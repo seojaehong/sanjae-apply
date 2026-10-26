@@ -17,6 +17,15 @@ export type ClaimType = (typeof CLAIM_TYPES)[number];
 export const ACCIDENT_KINDS = ["WORK_ACCIDENT", "COMMUTE", "DISEASE"] as const;
 export type AccidentKind = (typeof ACCIDENT_KINDS)[number];
 
+/** 서식 분기를 가르는 상병·청구 성격 태그. 사용자가 말한 것만 넣는다. */
+export const TAGS = [
+  "NOISE_HEARING_LOSS", // 소음성 난청(장해급여로 청구)
+  "SPINE_OR_NERVE", // 척추·신경계통 장해
+  "JOINT", // 관절 기능장해
+  "DEVICE", // 보조기(재활보조기구) 청구
+] as const;
+export type Tag = (typeof TAGS)[number];
+
 /** 입력에서 아직 말하지 않은 값. NOT_APPLICABLE 로 읽지 않고 open_confirmations 로 보낸다. */
 export type Undeclared = "UNDECLARED";
 export type Tri = boolean | Undeclared;
@@ -28,6 +37,7 @@ export interface ClaimInput {
   thirdParty: Tri;
   /** 해당 상병의 치료가 이미 끝났는가 */
   treatmentEnded: Tri;
+  tags?: Tag[];
   /** 사용자가 이미 준비했다고 말한 첨부·서식 id 목록 */
   have?: string[];
 }
@@ -41,6 +51,8 @@ export type PackageStatus = "INCOMPLETE" | "READY_TO_SUBMIT";
 export interface LawRef {
   /** 예: "산업재해보상보험법 제41조제1항" */
   cite: string;
+  /** 법제처 조문제목 그대로. test/refs.test.ts 가 fixture 와 대조한다 */
+  title: string;
   /** 법제처 lawService 식별 — MST(법령일련번호)와 JO(조문 코드 6자리) */
   mst: string;
   jo: string;
@@ -79,6 +91,8 @@ export interface Package {
   forms: FormItem[];
   attachments: AttachmentItem[];
   open_confirmations: OpenConfirmation[];
+  /** 절차 안내(실무 메모). 상태가 아니고 판단도 아니다 */
+  notes: string[];
   /** 규칙 id 목록. 예: ["S-01","S-02"] */
   rules_applied: string[];
 }
