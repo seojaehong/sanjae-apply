@@ -6,7 +6,7 @@
   "functions": {
     "api/mcp/[transport].ts": {
       "maxDuration": 60,
-      "includeFiles": "{dist/**,forms/bundled/**,forms/maps/**,forms/catalog.json,fonts/**}"
+      "includeFiles": "{dist/**,forms/bundled/**,forms/maps/**,forms/hwpx/**,forms/hwpx_maps/**,forms/catalog.json,fonts/**}"
     }
   }
 }

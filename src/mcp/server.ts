@@ -11,8 +11,9 @@ import { FORMS } from "../core/catalog.js";
 import { findOutcomeLanguage } from "../core/filter.js";
 import { buildPackage } from "../core/run.js";
 import { ACCIDENT_KINDS, CLAIM_TYPES, TAGS, type ClaimInput } from "../core/types.js";
+import { fillHwpx } from "../fill/hwpx.js";
 import { fillForm } from "../fill/overlay.js";
-import { catalogPath, fillableForms, loadAssets, loadMap } from "../fill/registry.js";
+import { catalogPath, fillableForms, fillableHwpxForms, loadAssets, loadHwpxAssets, loadMap } from "../fill/registry.js";
 
 export const SERVER_INFO = { name: "sanjae-apply", version: "0.3.0" };
 
@@ -25,12 +26,22 @@ function text(obj: unknown) {
   return { content: [{ type: "text" as const, text: s }] };
 }
 
-async function fillAndPack(formId: string, values: Record<string, string | boolean>) {
+async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf") {
+  if (format === "hwpx") {
+    const { map, hwpx } = loadHwpxAssets(formId);
+    const { bytes, report } = await fillHwpx(hwpx, map, { values });
+    return {
+      content: [
+        { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "hwpx", source_sha256: map.source_sha256, report }, null, 2) },
+        { type: "resource" as const, resource: { uri: `sanjae-apply://${map.form_id}/filled.hwpx`, mimeType: "application/vnd.hancom.hwpx", blob: Buffer.from(bytes).toString("base64") } },
+      ],
+    };
+  }
   const { map, pdf, font } = loadAssets(formId);
   const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values });
   return {
     content: [
-      { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, source_sha256: map.source_sha256, report }, null, 2) },
+      { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "pdf", source_sha256: map.source_sha256, report }, null, 2) },
       { type: "resource" as const, resource: { uri: `sanjae-apply://${map.form_id}/filled.pdf`, mimeType: "application/pdf", blob: Buffer.from(bytes).toString("base64") } },
     ],
   };
@@ -68,8 +79,9 @@ export function registerTools(server: McpServer): void {
       const forms = form_id ? cat.forms.filter((f) => f.ids.includes(form_id)) : cat.forms;
       const known = form_id ? (FORMS as Record<string, unknown>)[form_id] ?? null : undefined;
       const fillable = fillableForms();
+      const fillable_hwpx = fillableHwpxForms();
       const slots = form_id && fillable.includes(form_id) ? Object.keys(loadMap(form_id).slots) : undefined;
-      return text({ form: known, fillable, slots, entries: forms });
+      return text({ form: known, fillable, fillable_hwpx, slots, entries: forms });
     },
   );
 
@@ -78,13 +90,14 @@ export function registerTools(server: McpServer): void {
     {
       title: "서식 채우기(공단 정본 PDF 오버레이)",
       description:
-        "form_id 의 공단 정본 PDF 위에 값을 얹어 base64 PDF 로 돌려준다. 채울 수 있는 서식과 칸 이름은 get_form_catalog(form_id) 의 fillable·slots 로 본다. 서버에 저장하지 않는다. 체크 칸은 true 일 때만 찍는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다).",
+        "form_id 의 공단 정본 서식에 값을 넣어 base64 로 돌려준다. format='pdf'(기본)는 정본 PDF 오버레이, format='hwpx'는 한글 문서(한글 2014+ 로 열어 고칠 수 있다). 채울 수 있는 서식과 칸 이름은 get_form_catalog(form_id) 의 fillable·fillable_hwpx·slots 로 본다(칸 이름은 두 형식이 같다). 서버에 저장하지 않는다. 체크 칸은 true 일 때만 찍는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다).",
       inputSchema: {
         form_id: z.string().describe("예: F_YOYANG_APPLY, F_HUYEOP_CLAIM …"),
         values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("칸 이름 → 값"),
+        format: z.enum(["pdf", "hwpx"]).optional().describe("pdf(기본) 또는 hwpx(한글)"),
       },
     },
-    async ({ form_id, values }) => fillAndPack(form_id, values),
+    async ({ form_id, values, format }) => fillAndPack(form_id, values, format ?? "pdf"),
   );
 
   // 하위 호환(v0.1 클라이언트)
