@@ -1,0 +1,174 @@
+{
+  "form_id": "F_ADDITIONAL_DISEASE_APPLY",
+  "source_file": "F_ADDITIONAL_DISEASE_APPLY.hwpx",
+  "source_sha256": "f51f6aec1d89dfc60d160e849b7fffab3e4904ad0932c66dacf069bcebef0cd6",
+  "_about": "추가상병 신청서(별지 제30호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 신청서 큰 표(27행×16열), T1~T13 주민번호 상자, T14~T21 재해일자 상자(8개=년월일), T22 개인정보 이용내역 표, T23~ = 추가상병 소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ★엔진 한계: accident_datetime 은 값 12자리(년월일시분)인데 상자가 8개(년월일)라 digits 가 「글자 12 > 상자 8」로 멈춘다(PDF overlay 는 앞 8자리로 자른다). 지금은 같은 칸의 라벨 문단(r5 c12 p0)에 템플릿으로 통째 넣는다. 엔진 digits 가 PDF 처럼 자르게 되면 {\"kind\":\"digits\",\"t\":0,\"r\":5,\"c\":12,\"count\":8} 로 바꿀 것. address(r6 c0)·요양중 사고일시(r12 c14)·신청일·신청인 줄은 라벨과 같은 문단이라 템플릿. (261027) accident_datetime 은 digits take:8 로 바꿈.",
+  "slots": {
+    "name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 5,
+      "c": 0,
+      "p": 1
+    },
+    "rrn": {
+      "kind": "digits",
+      "t": 0,
+      "r": 5,
+      "c": 4,
+      "count": 13
+    },
+    "accident_datetime": {
+      "kind": "digits",
+      "t": 0,
+      "r": 5,
+      "c": 12,
+      "count": 8,
+      "take": 8
+    },
+    "address": {
+      "kind": "group",
+      "template": "address"
+    },
+    "reason_existing_injury": {
+      "kind": "check",
+      "t": 0,
+      "r": 7,
+      "c": 2,
+      "n": 1
+    },
+    "reason_new_disease": {
+      "kind": "check",
+      "t": 0,
+      "r": 8,
+      "c": 2,
+      "n": 1
+    },
+    "care_accident_medical": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 5,
+      "n": 1
+    },
+    "care_accident_in_facility": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 5,
+      "n": 1
+    },
+    "care_accident_commute": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 1
+    },
+    "care_accident_year": {
+      "kind": "group",
+      "template": "care_accident_datetime"
+    },
+    "care_accident_month": {
+      "kind": "group",
+      "template": "care_accident_datetime"
+    },
+    "care_accident_day": {
+      "kind": "group",
+      "template": "care_accident_datetime"
+    },
+    "care_accident_hour": {
+      "kind": "group",
+      "template": "care_accident_datetime"
+    },
+    "care_accident_minute": {
+      "kind": "group",
+      "template": "care_accident_datetime"
+    },
+    "care_accident_narrative": {
+      "kind": "cell",
+      "t": 0,
+      "r": 13,
+      "c": 7,
+      "p": 0
+    },
+    "hospital1_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 15,
+      "c": 2
+    },
+    "hospital1_address": {
+      "kind": "cell",
+      "t": 0,
+      "r": 15,
+      "c": 9
+    },
+    "hospital2_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 16,
+      "c": 2
+    },
+    "hospital2_address": {
+      "kind": "cell",
+      "t": 0,
+      "r": 16,
+      "c": 9
+    },
+    "apply_year": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_month": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_day": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "applicant_name": {
+      "kind": "group",
+      "template": "applicant"
+    },
+    "phone": {
+      "kind": "group",
+      "template": "applicant"
+    },
+    "mobile": {
+      "kind": "group",
+      "template": "applicant"
+    }
+  },
+  "templates": {
+    "address": {
+      "t": 0,
+      "r": 6,
+      "c": 0,
+      "p": 0,
+      "text": "④ 주소  {address}"
+    },
+    "care_accident_datetime": {
+      "t": 0,
+      "r": 12,
+      "c": 14,
+      "p": 0,
+      "text": "  {care_accident_year}년  {care_accident_month}월  {care_accident_day}일  ( {care_accident_hour} : {care_accident_minute} )"
+    },
+    "apply_date": {
+      "t": 0,
+      "r": 20,
+      "c": 0,
+      "p": 1,
+      "text": "                                              {apply_year}년       {apply_month}월      {apply_day}일"
+    },
+    "applicant": {
+      "t": 0,
+      "r": 20,
+      "c": 0,
+      "p": 2,
+      "text": "         신 청 인:   {applicant_name}   (서명 또는 인)    전화번호: {phone}    휴대전화: {mobile}"
+    }
+  }
+}

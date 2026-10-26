@@ -1,0 +1,1118 @@
+{
+  "form_id": "F_JANGHAE_CLAIM",
+  "source_file": "F_JANGHAE_CLAIM.hwpx",
+  "source_sha256": "dcb6e1dbc7d991bea13b6cc776c6c64a8674d899e0cc919c57646f28964e7081",
+  "_about": "장해급여 청구서 묶음(별지 제11호·제12호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. 【청구서 p1】 T0 = 앞면 큰 표, T1~T8 생년월일 상자, T9~T16 재해발생일 상자, T17 = 배상·보상 내역 표(T0 r10 c1 p4 안), T18 = 개인정보 이용 동의 표(T0 r19 c0 p3 안), T19 = 이용목적 표(T18 r1 c0 p2 안). 【소음 확인서 p2】 T20 = 산재근로자 표, T21~T33 주민번호 상자(13), T34~T41 채용일 상자, T42~T49 퇴직일 상자, T50 = 사업장·소음사업장 직력 표(T20 r14 c0 안), T51~T61 사업장관리번호 상자(11). 직력 행 = r5 최종, r6~r9 과거 1~4. 【선택 확인서 p7】 T114 = 확인서 본체(체크 □ 3개는 p5/p7/p9 → n1~n3), 안쪽 T115·T116(T117 등급표 포함)·T118(1~3급 선급)·T119(4~7급)·T120(재판정). 판단: ①privacy_agree 는 T18 r1 c0 의 p1 「□ 개인정보 이용 내역」 글머리가 n1 로 세어져 예=n2·아니오=n3. ②안쪽 표를 품은 문단(T0 r10c1 p4·r19c0 p3, T18 r1c0 p2, T50 r1c0 p1, T114 p2/4/6/8/10)에는 cell·group 을 쓰지 않는다. ③엔진 한계 — 괄호형 「예(   )」·「수령(   )」 6칸(choice_*_advance_yes/no·choice_regrade_deduct_*)은 체크 상자가 없어 group 으로 두었고 true 가 「true」 글자로 들어간다. noise_relative_other_text 는 after 라 닫는 괄호 뒤에 붙는다. noise_business_start_no 는 p1 「(사업개시번호: )」 run 에 after 를 걸면 after 의 linesegarray 삭제가 p1 이 품은 첫 관리번호 상자 문단을 잡아 digits 와 「편집 겹침」이 나므로 p0 제목 줄 끝에 붙였다(값이 상자 윗줄에 놓인다). ④합병증 부위·의료기관명·산출내역은 라벨 한 문단뿐이라 group 으로 라벨 뒤에 잇는다. 쪽수는 렌더 뒤 넣는다(expect_pages 미기재).",
+  "slots": {
+    "claim_type_janghae": {
+      "kind": "check",
+      "t": 0,
+      "r": 1,
+      "c": 0,
+      "n": 1
+    },
+    "claim_type_complication": {
+      "kind": "check",
+      "t": 0,
+      "r": 2,
+      "c": 0,
+      "n": 1
+    },
+    "name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 5,
+      "c": 1,
+      "p": 1
+    },
+    "birth_date": {
+      "kind": "digits",
+      "t": 0,
+      "r": 5,
+      "c": 2,
+      "count": 8
+    },
+    "accident_date": {
+      "kind": "digits",
+      "t": 0,
+      "r": 6,
+      "c": 1,
+      "count": 8
+    },
+    "account_change_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 7,
+      "c": 1,
+      "n": 1
+    },
+    "account_change_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 7,
+      "c": 1,
+      "n": 2
+    },
+    "bank_name": {
+      "kind": "group",
+      "template": "bank_name"
+    },
+    "account_no": {
+      "kind": "group",
+      "template": "account"
+    },
+    "account_holder": {
+      "kind": "group",
+      "template": "account"
+    },
+    "account_type_normal": {
+      "kind": "check",
+      "t": 0,
+      "r": 8,
+      "c": 1,
+      "n": 1
+    },
+    "account_type_protected": {
+      "kind": "check",
+      "t": 0,
+      "r": 8,
+      "c": 1,
+      "n": 2
+    },
+    "prior_disability_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 1,
+      "n": 1
+    },
+    "prior_disability_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 1,
+      "n": 2
+    },
+    "other_compensation_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 1,
+      "n": 3
+    },
+    "other_compensation_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 1,
+      "n": 4
+    },
+    "comp_date": {
+      "kind": "cell",
+      "t": 17,
+      "r": 1,
+      "c": 0,
+      "p": 0
+    },
+    "comp_amount": {
+      "kind": "cell",
+      "t": 17,
+      "r": 1,
+      "c": 1,
+      "p": 0
+    },
+    "comp_payer": {
+      "kind": "cell",
+      "t": 17,
+      "r": 1,
+      "c": 2,
+      "p": 0
+    },
+    "transport_cost": {
+      "kind": "group",
+      "template": "transport_cost"
+    },
+    "transport_detail": {
+      "kind": "group",
+      "template": "transport_detail"
+    },
+    "complication_part": {
+      "kind": "group",
+      "template": "complication_part"
+    },
+    "complication_hospital": {
+      "kind": "group",
+      "template": "complication_hospital"
+    },
+    "apply_year": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_month": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_day": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "applicant_name": {
+      "kind": "group",
+      "template": "applicant"
+    },
+    "mobile": {
+      "kind": "group",
+      "template": "applicant"
+    },
+    "proxy_consent_janghae": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 0,
+      "n": 1
+    },
+    "proxy_consent_complication": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 0,
+      "n": 2
+    },
+    "proxy_consent_name": {
+      "kind": "group",
+      "template": "proxy_name"
+    },
+    "privacy_agree_yes": {
+      "kind": "check",
+      "t": 18,
+      "r": 1,
+      "c": 0,
+      "n": 2
+    },
+    "privacy_agree_no": {
+      "kind": "check",
+      "t": 18,
+      "r": 1,
+      "c": 0,
+      "n": 3
+    },
+    "privacy_year": {
+      "kind": "group",
+      "template": "privacy"
+    },
+    "privacy_month": {
+      "kind": "group",
+      "template": "privacy"
+    },
+    "privacy_day": {
+      "kind": "group",
+      "template": "privacy"
+    },
+    "privacy_name": {
+      "kind": "group",
+      "template": "privacy"
+    },
+    "noise_name": {
+      "kind": "cell",
+      "t": 20,
+      "r": 1,
+      "c": 5,
+      "p": 0
+    },
+    "noise_rrn": {
+      "kind": "digits",
+      "t": 20,
+      "r": 2,
+      "c": 5,
+      "count": 13
+    },
+    "noise_address": {
+      "kind": "cell",
+      "t": 20,
+      "r": 3,
+      "c": 2,
+      "p": 0
+    },
+    "noise_employed_yes": {
+      "kind": "check",
+      "t": 20,
+      "r": 4,
+      "c": 6,
+      "n": 1
+    },
+    "noise_employed_no": {
+      "kind": "check",
+      "t": 20,
+      "r": 4,
+      "c": 6,
+      "n": 2
+    },
+    "noise_hire_date": {
+      "kind": "digits",
+      "t": 20,
+      "r": 5,
+      "c": 2,
+      "count": 8
+    },
+    "noise_retire_date": {
+      "kind": "digits",
+      "t": 20,
+      "r": 5,
+      "c": 7,
+      "count": 8
+    },
+    "noise_work_start": {
+      "kind": "cell",
+      "t": 20,
+      "r": 6,
+      "c": 2,
+      "p": 0
+    },
+    "noise_work_end": {
+      "kind": "cell",
+      "t": 20,
+      "r": 6,
+      "c": 6,
+      "p": 0
+    },
+    "noise_job": {
+      "kind": "cell",
+      "t": 20,
+      "r": 6,
+      "c": 9,
+      "p": 0
+    },
+    "noise_employer_none": {
+      "kind": "check",
+      "t": 20,
+      "r": 7,
+      "c": 3,
+      "n": 1
+    },
+    "noise_employer_actual": {
+      "kind": "check",
+      "t": 20,
+      "r": 8,
+      "c": 3,
+      "n": 1
+    },
+    "noise_employer_sub": {
+      "kind": "check",
+      "t": 20,
+      "r": 8,
+      "c": 3,
+      "n": 2
+    },
+    "noise_relative_none": {
+      "kind": "check",
+      "t": 20,
+      "r": 9,
+      "c": 3,
+      "n": 1
+    },
+    "noise_relative_spouse": {
+      "kind": "check",
+      "t": 20,
+      "r": 10,
+      "c": 3,
+      "n": 1
+    },
+    "noise_relative_parent": {
+      "kind": "check",
+      "t": 20,
+      "r": 10,
+      "c": 3,
+      "n": 2
+    },
+    "noise_relative_child": {
+      "kind": "check",
+      "t": 20,
+      "r": 10,
+      "c": 3,
+      "n": 3
+    },
+    "noise_relative_sibling": {
+      "kind": "check",
+      "t": 20,
+      "r": 10,
+      "c": 3,
+      "n": 4
+    },
+    "noise_relative_other": {
+      "kind": "check",
+      "t": 20,
+      "r": 10,
+      "c": 3,
+      "n": 5
+    },
+    "noise_relative_other_text": {
+      "kind": "after",
+      "t": 20,
+      "r": 10,
+      "c": 3,
+      "label": "기타 친인척("
+    },
+    "noise_worker_employee": {
+      "kind": "check",
+      "t": 20,
+      "r": 11,
+      "c": 3,
+      "n": 1
+    },
+    "noise_worker_labor_provider": {
+      "kind": "check",
+      "t": 20,
+      "r": 11,
+      "c": 3,
+      "n": 2
+    },
+    "noise_worker_sme_owner": {
+      "kind": "check",
+      "t": 20,
+      "r": 11,
+      "c": 3,
+      "n": 3
+    },
+    "noise_worker_sme_family": {
+      "kind": "check",
+      "t": 20,
+      "r": 11,
+      "c": 3,
+      "n": 4
+    },
+    "noise_worker_student_researcher": {
+      "kind": "check",
+      "t": 20,
+      "r": 11,
+      "c": 3,
+      "n": 5
+    },
+    "noise_worker_health_damaged_child": {
+      "kind": "check",
+      "t": 20,
+      "r": 12,
+      "c": 3,
+      "n": 1
+    },
+    "noise_worker_special_type": {
+      "kind": "check",
+      "t": 20,
+      "r": 12,
+      "c": 3,
+      "n": 2
+    },
+    "noise_worker_field_trainee": {
+      "kind": "check",
+      "t": 20,
+      "r": 12,
+      "c": 3,
+      "n": 3
+    },
+    "noise_employer_name": {
+      "kind": "cell",
+      "t": 50,
+      "r": 0,
+      "c": 1,
+      "p": 0
+    },
+    "noise_owner_name": {
+      "kind": "cell",
+      "t": 50,
+      "r": 0,
+      "c": 4,
+      "p": 0
+    },
+    "noise_workplace_phone": {
+      "kind": "cell",
+      "t": 50,
+      "r": 0,
+      "c": 7,
+      "p": 0
+    },
+    "noise_workplace_no": {
+      "kind": "digits",
+      "t": 50,
+      "r": 1,
+      "c": 0,
+      "count": 11
+    },
+    "noise_business_start_no": {
+      "kind": "after",
+      "t": 50,
+      "r": 1,
+      "c": 0,
+      "label": "(사업개시번호:"
+    },
+    "noise_workplace_address": {
+      "kind": "cell",
+      "t": 50,
+      "r": 2,
+      "c": 1,
+      "p": 0
+    },
+    "noise_last_employer": {
+      "kind": "cell",
+      "t": 50,
+      "r": 5,
+      "c": 1,
+      "p": 0
+    },
+    "noise_last_address": {
+      "kind": "group",
+      "template": "noise_last_addr"
+    },
+    "noise_last_job": {
+      "kind": "cell",
+      "t": 50,
+      "r": 5,
+      "c": 3,
+      "p": 0
+    },
+    "noise_last_from_year": {
+      "kind": "group",
+      "template": "noise_last_from"
+    },
+    "noise_last_from_month": {
+      "kind": "group",
+      "template": "noise_last_from"
+    },
+    "noise_last_from_day": {
+      "kind": "group",
+      "template": "noise_last_from"
+    },
+    "noise_last_to_year": {
+      "kind": "group",
+      "template": "noise_last_to"
+    },
+    "noise_last_to_month": {
+      "kind": "group",
+      "template": "noise_last_to"
+    },
+    "noise_last_to_day": {
+      "kind": "group",
+      "template": "noise_last_to"
+    },
+    "noise_last_years": {
+      "kind": "group",
+      "template": "noise_last_dur"
+    },
+    "noise_last_months": {
+      "kind": "group",
+      "template": "noise_last_dur"
+    },
+    "noise_last_note": {
+      "kind": "cell",
+      "t": 50,
+      "r": 5,
+      "c": 8,
+      "p": 0
+    },
+    "noise_past1_employer": {
+      "kind": "cell",
+      "t": 50,
+      "r": 6,
+      "c": 1,
+      "p": 0
+    },
+    "noise_past1_address": {
+      "kind": "group",
+      "template": "noise_past1_addr"
+    },
+    "noise_past1_job": {
+      "kind": "cell",
+      "t": 50,
+      "r": 6,
+      "c": 3,
+      "p": 0
+    },
+    "noise_past1_from_year": {
+      "kind": "group",
+      "template": "noise_past1_from"
+    },
+    "noise_past1_from_month": {
+      "kind": "group",
+      "template": "noise_past1_from"
+    },
+    "noise_past1_from_day": {
+      "kind": "group",
+      "template": "noise_past1_from"
+    },
+    "noise_past1_to_year": {
+      "kind": "group",
+      "template": "noise_past1_to"
+    },
+    "noise_past1_to_month": {
+      "kind": "group",
+      "template": "noise_past1_to"
+    },
+    "noise_past1_to_day": {
+      "kind": "group",
+      "template": "noise_past1_to"
+    },
+    "noise_past1_years": {
+      "kind": "group",
+      "template": "noise_past1_dur"
+    },
+    "noise_past1_months": {
+      "kind": "group",
+      "template": "noise_past1_dur"
+    },
+    "noise_past1_note": {
+      "kind": "cell",
+      "t": 50,
+      "r": 6,
+      "c": 8,
+      "p": 0
+    },
+    "noise_past2_employer": {
+      "kind": "cell",
+      "t": 50,
+      "r": 7,
+      "c": 1,
+      "p": 0
+    },
+    "noise_past2_address": {
+      "kind": "group",
+      "template": "noise_past2_addr"
+    },
+    "noise_past2_job": {
+      "kind": "cell",
+      "t": 50,
+      "r": 7,
+      "c": 3,
+      "p": 0
+    },
+    "noise_past2_from_year": {
+      "kind": "group",
+      "template": "noise_past2_from"
+    },
+    "noise_past2_from_month": {
+      "kind": "group",
+      "template": "noise_past2_from"
+    },
+    "noise_past2_from_day": {
+      "kind": "group",
+      "template": "noise_past2_from"
+    },
+    "noise_past2_to_year": {
+      "kind": "group",
+      "template": "noise_past2_to"
+    },
+    "noise_past2_to_month": {
+      "kind": "group",
+      "template": "noise_past2_to"
+    },
+    "noise_past2_to_day": {
+      "kind": "group",
+      "template": "noise_past2_to"
+    },
+    "noise_past2_years": {
+      "kind": "group",
+      "template": "noise_past2_dur"
+    },
+    "noise_past2_months": {
+      "kind": "group",
+      "template": "noise_past2_dur"
+    },
+    "noise_past2_note": {
+      "kind": "cell",
+      "t": 50,
+      "r": 7,
+      "c": 8,
+      "p": 0
+    },
+    "noise_past3_employer": {
+      "kind": "cell",
+      "t": 50,
+      "r": 8,
+      "c": 1,
+      "p": 0
+    },
+    "noise_past3_address": {
+      "kind": "group",
+      "template": "noise_past3_addr"
+    },
+    "noise_past3_job": {
+      "kind": "cell",
+      "t": 50,
+      "r": 8,
+      "c": 3,
+      "p": 0
+    },
+    "noise_past3_from_year": {
+      "kind": "group",
+      "template": "noise_past3_from"
+    },
+    "noise_past3_from_month": {
+      "kind": "group",
+      "template": "noise_past3_from"
+    },
+    "noise_past3_from_day": {
+      "kind": "group",
+      "template": "noise_past3_from"
+    },
+    "noise_past3_to_year": {
+      "kind": "group",
+      "template": "noise_past3_to"
+    },
+    "noise_past3_to_month": {
+      "kind": "group",
+      "template": "noise_past3_to"
+    },
+    "noise_past3_to_day": {
+      "kind": "group",
+      "template": "noise_past3_to"
+    },
+    "noise_past3_years": {
+      "kind": "group",
+      "template": "noise_past3_dur"
+    },
+    "noise_past3_months": {
+      "kind": "group",
+      "template": "noise_past3_dur"
+    },
+    "noise_past3_note": {
+      "kind": "cell",
+      "t": 50,
+      "r": 8,
+      "c": 8,
+      "p": 0
+    },
+    "noise_past4_employer": {
+      "kind": "cell",
+      "t": 50,
+      "r": 9,
+      "c": 1,
+      "p": 0
+    },
+    "noise_past4_address": {
+      "kind": "group",
+      "template": "noise_past4_addr"
+    },
+    "noise_past4_job": {
+      "kind": "cell",
+      "t": 50,
+      "r": 9,
+      "c": 3,
+      "p": 0
+    },
+    "noise_past4_from_year": {
+      "kind": "group",
+      "template": "noise_past4_from"
+    },
+    "noise_past4_from_month": {
+      "kind": "group",
+      "template": "noise_past4_from"
+    },
+    "noise_past4_from_day": {
+      "kind": "group",
+      "template": "noise_past4_from"
+    },
+    "noise_past4_to_year": {
+      "kind": "group",
+      "template": "noise_past4_to"
+    },
+    "noise_past4_to_month": {
+      "kind": "group",
+      "template": "noise_past4_to"
+    },
+    "noise_past4_to_day": {
+      "kind": "group",
+      "template": "noise_past4_to"
+    },
+    "noise_past4_years": {
+      "kind": "group",
+      "template": "noise_past4_dur"
+    },
+    "noise_past4_months": {
+      "kind": "group",
+      "template": "noise_past4_dur"
+    },
+    "noise_past4_note": {
+      "kind": "cell",
+      "t": 50,
+      "r": 9,
+      "c": 8,
+      "p": 0
+    },
+    "noise_year": {
+      "kind": "group",
+      "template": "noise_date"
+    },
+    "noise_month": {
+      "kind": "group",
+      "template": "noise_date"
+    },
+    "noise_day": {
+      "kind": "group",
+      "template": "noise_date"
+    },
+    "noise_applicant_name": {
+      "kind": "group",
+      "template": "noise_applicant"
+    },
+    "noise_applicant_phone": {
+      "kind": "group",
+      "template": "noise_applicant"
+    },
+    "choice_grade1_3": {
+      "kind": "check",
+      "t": 114,
+      "r": 0,
+      "c": 0,
+      "n": 1
+    },
+    "choice_grade1_3_advance_yes": {
+      "kind": "group",
+      "template": "choice_g13_advance"
+    },
+    "choice_grade1_3_advance_no": {
+      "kind": "group",
+      "template": "choice_g13_advance"
+    },
+    "choice_grade1_3_advance_years": {
+      "kind": "group",
+      "template": "choice_g13_advance"
+    },
+    "choice_grade4_7": {
+      "kind": "check",
+      "t": 114,
+      "r": 0,
+      "c": 0,
+      "n": 2
+    },
+    "choice_grade4_7_method": {
+      "kind": "group",
+      "template": "choice_g47_method"
+    },
+    "choice_grade4_7_advance_yes": {
+      "kind": "group",
+      "template": "choice_g47_advance"
+    },
+    "choice_grade4_7_advance_no": {
+      "kind": "group",
+      "template": "choice_g47_advance"
+    },
+    "choice_grade4_7_advance_years": {
+      "kind": "group",
+      "template": "choice_g47_advance"
+    },
+    "choice_regrade": {
+      "kind": "check",
+      "t": 114,
+      "r": 0,
+      "c": 0,
+      "n": 3
+    },
+    "choice_regrade_method": {
+      "kind": "group",
+      "template": "choice_regrade_method"
+    },
+    "choice_regrade_deduct_after": {
+      "kind": "group",
+      "template": "choice_regrade_after"
+    },
+    "choice_regrade_deduct_half": {
+      "kind": "group",
+      "template": "choice_regrade_half"
+    },
+    "choice_year": {
+      "kind": "group",
+      "template": "choice_date"
+    },
+    "choice_month": {
+      "kind": "group",
+      "template": "choice_date"
+    },
+    "choice_day": {
+      "kind": "group",
+      "template": "choice_date"
+    },
+    "choice_name": {
+      "kind": "group",
+      "template": "choice_name"
+    }
+  },
+  "templates": {
+    "bank_name": {
+      "t": 0,
+      "r": 8,
+      "c": 1,
+      "p": 0,
+      "text": "  은행(증권사)명: {bank_name}"
+    },
+    "account": {
+      "t": 0,
+      "r": 8,
+      "c": 1,
+      "p": 1,
+      "text": "  계좌번호: {account_no}                       (예금주 : {account_holder} )"
+    },
+    "transport_cost": {
+      "t": 0,
+      "r": 12,
+      "c": 1,
+      "p": 0,
+      "text": " 이송비용 : {transport_cost} 원"
+    },
+    "transport_detail": {
+      "t": 0,
+      "r": 12,
+      "c": 3,
+      "p": 0,
+      "text": " 산출내역  {transport_detail}"
+    },
+    "complication_part": {
+      "t": 0,
+      "r": 15,
+      "c": 1,
+      "p": 0,
+      "text": "합병증 등 예방관리를 받고자 하는 구체적 부위(또는 상병명)  {complication_part}"
+    },
+    "complication_hospital": {
+      "t": 0,
+      "r": 15,
+      "c": 8,
+      "p": 0,
+      "text": "합병증 등 예방관리 의료기관명  {complication_hospital}"
+    },
+    "apply_date": {
+      "t": 0,
+      "r": 17,
+      "c": 0,
+      "p": 1,
+      "text": "                                                                         {apply_year}년     {apply_month}월     {apply_day}일"
+    },
+    "applicant": {
+      "t": 0,
+      "r": 17,
+      "c": 0,
+      "p": 2,
+      "text": "                                         청 구 인   {applicant_name}            (서명 또는 인)     ☎ {mobile}"
+    },
+    "proxy_name": {
+      "t": 0,
+      "r": 19,
+      "c": 0,
+      "p": 2,
+      "text": "청구인   {proxy_consent_name}                 (서명 또는 인)            의료기관                        (서명 또는 인)"
+    },
+    "privacy": {
+      "t": 18,
+      "r": 1,
+      "c": 0,
+      "p": 5,
+      "text": "                                         {privacy_year}년       {privacy_month}월       {privacy_day}일        성명  {privacy_name}                  (서명 또는 인)"
+    },
+    "noise_last_addr": {
+      "t": 50,
+      "r": 5,
+      "c": 1,
+      "p": 1,
+      "text": "( {noise_last_address} )"
+    },
+    "noise_last_from": {
+      "t": 50,
+      "r": 5,
+      "c": 5,
+      "p": 0,
+      "text": "{noise_last_from_year}년      {noise_last_from_month}월     {noise_last_from_day}일부터"
+    },
+    "noise_last_to": {
+      "t": 50,
+      "r": 5,
+      "c": 5,
+      "p": 1,
+      "text": "{noise_last_to_year}년      {noise_last_to_month}월     {noise_last_to_day}일까지"
+    },
+    "noise_last_dur": {
+      "t": 50,
+      "r": 5,
+      "c": 5,
+      "p": 2,
+      "text": "(        {noise_last_years}년       {noise_last_months}월)"
+    },
+    "noise_past1_addr": {
+      "t": 50,
+      "r": 6,
+      "c": 1,
+      "p": 1,
+      "text": "( {noise_past1_address} )"
+    },
+    "noise_past1_from": {
+      "t": 50,
+      "r": 6,
+      "c": 5,
+      "p": 0,
+      "text": "{noise_past1_from_year}년      {noise_past1_from_month}월     {noise_past1_from_day}일부터"
+    },
+    "noise_past1_to": {
+      "t": 50,
+      "r": 6,
+      "c": 5,
+      "p": 1,
+      "text": "{noise_past1_to_year}년      {noise_past1_to_month}월     {noise_past1_to_day}일까지"
+    },
+    "noise_past1_dur": {
+      "t": 50,
+      "r": 6,
+      "c": 5,
+      "p": 2,
+      "text": "(        {noise_past1_years}년       {noise_past1_months}월)"
+    },
+    "noise_past2_addr": {
+      "t": 50,
+      "r": 7,
+      "c": 1,
+      "p": 1,
+      "text": "( {noise_past2_address} )"
+    },
+    "noise_past2_from": {
+      "t": 50,
+      "r": 7,
+      "c": 5,
+      "p": 0,
+      "text": "{noise_past2_from_year}년      {noise_past2_from_month}월     {noise_past2_from_day}일부터"
+    },
+    "noise_past2_to": {
+      "t": 50,
+      "r": 7,
+      "c": 5,
+      "p": 1,
+      "text": "{noise_past2_to_year}년      {noise_past2_to_month}월     {noise_past2_to_day}일까지"
+    },
+    "noise_past2_dur": {
+      "t": 50,
+      "r": 7,
+      "c": 5,
+      "p": 2,
+      "text": "(        {noise_past2_years}년       {noise_past2_months}월)"
+    },
+    "noise_past3_addr": {
+      "t": 50,
+      "r": 8,
+      "c": 1,
+      "p": 1,
+      "text": "( {noise_past3_address} )"
+    },
+    "noise_past3_from": {
+      "t": 50,
+      "r": 8,
+      "c": 5,
+      "p": 0,
+      "text": "{noise_past3_from_year}년      {noise_past3_from_month}월     {noise_past3_from_day}일부터"
+    },
+    "noise_past3_to": {
+      "t": 50,
+      "r": 8,
+      "c": 5,
+      "p": 1,
+      "text": "{noise_past3_to_year}년      {noise_past3_to_month}월     {noise_past3_to_day}일까지"
+    },
+    "noise_past3_dur": {
+      "t": 50,
+      "r": 8,
+      "c": 5,
+      "p": 2,
+      "text": "(        {noise_past3_years}년       {noise_past3_months}월)"
+    },
+    "noise_past4_addr": {
+      "t": 50,
+      "r": 9,
+      "c": 1,
+      "p": 1,
+      "text": "( {noise_past4_address} )"
+    },
+    "noise_past4_from": {
+      "t": 50,
+      "r": 9,
+      "c": 5,
+      "p": 0,
+      "text": "{noise_past4_from_year}년      {noise_past4_from_month}월     {noise_past4_from_day}일부터"
+    },
+    "noise_past4_to": {
+      "t": 50,
+      "r": 9,
+      "c": 5,
+      "p": 1,
+      "text": "{noise_past4_to_year}년      {noise_past4_to_month}월     {noise_past4_to_day}일까지"
+    },
+    "noise_past4_dur": {
+      "t": 50,
+      "r": 9,
+      "c": 5,
+      "p": 2,
+      "text": "(        {noise_past4_years}년       {noise_past4_months}월)"
+    },
+    "noise_date": {
+      "t": 50,
+      "r": 10,
+      "c": 0,
+      "p": 2,
+      "text": "{noise_year}년         {noise_month}월        {noise_day}일"
+    },
+    "noise_applicant": {
+      "t": 50,
+      "r": 10,
+      "c": 0,
+      "p": 4,
+      "text": "청 구 인   {noise_applicant_name}             (서명 또는 인)     ☎ {noise_applicant_phone}"
+    },
+    "choice_g13_advance": {
+      "t": 118,
+      "r": 0,
+      "c": 0,
+      "p": 1,
+      "text": " ⇒ 선급여부 : 예( {choice_grade1_3_advance_yes} ), 아니오( {choice_grade1_3_advance_no} )  /  선급하는 경우 그 기간 : ( {choice_grade1_3_advance_years} )년"
+    },
+    "choice_g47_method": {
+      "t": 119,
+      "r": 0,
+      "c": 0,
+      "p": 1,
+      "text": "⇒ 장해급여 수령방법 : 일시금/연금 중 택일( {choice_grade4_7_method} )"
+    },
+    "choice_g47_advance": {
+      "t": 119,
+      "r": 0,
+      "c": 0,
+      "p": 2,
+      "text": "⇒ 연금을 선택하는 경우 선급여부 : 예( {choice_grade4_7_advance_yes} ), 아니오( {choice_grade4_7_advance_no} )  /  선급하는 경우 그 기간 : ( {choice_grade4_7_advance_years} )년"
+    },
+    "choice_regrade_method": {
+      "t": 120,
+      "r": 0,
+      "c": 0,
+      "p": 1,
+      "text": "⇒ 장해급여 수령방법(제4급부터 제7급까지) : 일시금/연금 중 택일( {choice_regrade_method} )"
+    },
+    "choice_regrade_after": {
+      "t": 120,
+      "r": 0,
+      "c": 0,
+      "p": 2,
+      "text": "⇒ 연금을 선택하는 경우 : 이미 지급한 장해일시금 지급일수에 해당하는 기간이 지난 후 수령( {choice_regrade_deduct_after} ),"
+    },
+    "choice_regrade_half": {
+      "t": 120,
+      "r": 0,
+      "c": 0,
+      "p": 3,
+      "text": "   이미 지급한 장해일시금 지급일수의 2배에 해당하는 기간 동안 장해연금의 1/2을 수령( {choice_regrade_deduct_half} )"
+    },
+    "choice_date": {
+      "t": 114,
+      "r": 0,
+      "c": 0,
+      "p": 12,
+      "text": "                                         {choice_year}년     {choice_month}월     {choice_day}일"
+    },
+    "choice_name": {
+      "t": 114,
+      "r": 0,
+      "c": 0,
+      "p": 13,
+      "text": "                                         확인자  성명 : {choice_name}                 (서명 또는 인)"
+    }
+  }
+}

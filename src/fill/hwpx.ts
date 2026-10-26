@@ -11,9 +11,12 @@ export type HwpxOp =
   | { kind: "cell"; t: number; r: number; c: number; p?: number; s?: number }
   | { kind: "after"; t: number; r: number; c: number; label: string; s?: number }
   | { kind: "check"; t: number; r: number; c: number; n?: number; s?: number }
-  | { kind: "digits"; t: number; r: number; c: number; count: number; start?: number; s?: number }
+  /** take: 값이 상자보다 길면 앞 take 자만(재해발생일시 12자 → YYYYMMDD 8상자). digitsOnly: 숫자 아닌 글자(-, 공백)는 버린다 */
+  | { kind: "digits"; t: number; r: number; c: number; count: number; start?: number; take?: number; digitsOnly?: boolean; s?: number }
   /** 같은 행의 이웃 칸(c, c+1, …)에 한 글자씩 — 숫자 상자가 안쪽 표가 아니라 칸으로 나뉜 서식 */
-  | { kind: "cells"; t: number; r: number; c: number; count: number; s?: number }
+  | { kind: "cells"; t: number; r: number; c: number; count: number; take?: number; digitsOnly?: boolean; s?: number }
+  /** 상자 주소를 하나씩 적는다 [[t,r,c], …] — 숫자칸·간격칸이 번갈아 있는 안쪽 표(본인부담 입원·통원 기간) */
+  | { kind: "boxes"; cells: [number, number, number][]; take?: number; digitsOnly?: boolean; s?: number }
   | { kind: "group"; template: string };
 
 export interface HwpxTemplate {
@@ -97,6 +100,7 @@ function topTables(xml: string, span: Span): Span[] {
 interface Cell extends Span {
   r: number;
   c: number;
+  width: number; // cellSz width(HWPUNIT, 1pt = 100) − 좌우 여백
   inner: Span[]; // 최상위 안쪽 표
   paras: Span[]; // 안쪽 표 밖의 <hp:p> (문서 순서)
 }
@@ -116,6 +120,9 @@ function cellsOf(xml: string, tbl: Span): Cell[] {
     const tail = xml.slice(inner.at(-1)?.end ?? m.index, end);
     const addr = /<hp:cellAddr\s+colAddr="(\d+)"\s+rowAddr="(\d+)"/.exec(tail);
     if (!addr) throw new Error(`cellAddr 없음 @${m.index}`);
+    const sz = /<hp:cellSz\s+width="(\d+)"/.exec(tail);
+    const mg = /<hp:cellMargin\s+left="(\d+)"\s+right="(\d+)"/.exec(tail);
+    const width = sz ? Number(sz[1]) - (mg ? Number(mg[1]) + Number(mg[2]) : 0) : 0;
     const paras: Span[] = [];
     const pre = /<hp:p\b/g;
     pre.lastIndex = m.index;
@@ -126,7 +133,7 @@ function cellsOf(xml: string, tbl: Span): Cell[] {
       paras.push({ start: pm.index, end: pe });
       pre.lastIndex = pe;
     }
-    out.push({ ...span, r: Number(addr[2]), c: Number(addr[1]), inner, paras });
+    out.push({ ...span, r: Number(addr[2]), c: Number(addr[1]), width, inner, paras });
     re.lastIndex = end;
   }
   return out;
@@ -164,7 +171,9 @@ class CharPrFixer {
     const body = m[2]!;
     const color = /textColor="([^"]+)"/.exec(attrs)?.[1] ?? "#000000";
     const italic = /<hh:italic\b/.test(body);
-    if (color.toUpperCase() === "#000000" && !italic) {
+    const h = Number(/\sheight="(\d+)"/.exec(attrs)?.[1] ?? "1000");
+    const tiny = h < 500; // 숫자 상자의 빈 run 이 1pt 로 돼 있는 서식(간병료) — 그대로 넣으면 1pt 로 그려진다
+    if (color.toUpperCase() === "#000000" && !italic && !tiny) {
       this.cache.set(id, id);
       return id;
     }
@@ -173,7 +182,8 @@ class CharPrFixer {
     const cnt = /<hh:charProperties itemCnt="(\d+)"/.exec(this.header);
     if (!cnt) throw new Error("header.xml 에 charProperties 가 없다");
     const newId = cnt[1]!;
-    const newAttrs = attrs.replace(/textColor="[^"]+"/, 'textColor="#000000"');
+    let newAttrs = attrs.replace(/textColor="[^"]+"/, 'textColor="#000000"');
+    if (tiny) newAttrs = newAttrs.replace(/\sheight="\d+"/, ' height="900"');
     const newBody = body.replace(/<hh:italic\b[^>]*\/>/g, "");
     const clone = `<hh:charPr id="${newId}"${newAttrs}>${newBody}</hh:charPr>`;
     this.header = this.header
@@ -183,6 +193,40 @@ class CharPrFixer {
     this.cache.set(id, newId);
     return newId;
   }
+  /** 글자 크기(height, 1pt = 100) */
+  height(id: string): number {
+    const m = new RegExp(`<hh:charPr id="${id}"[^>]*\\sheight="(\\d+)"`).exec(this.header);
+    return m ? Number(m[1]) : 1000;
+  }
+
+  /**
+   * 값이 칸 폭을 넘으면 글자를 줄인 사본(검정 정체)을 만든다 — PDF 오버레이의 자동 축소와 같은 역할.
+   * 하한 6pt. 그래도 넘치면 줄이 바뀐다(표가 커져 뒤가 밀릴 수 있다 — 렌더 쪽수로 본다).
+   */
+  fit(id: string, text: string, cellWidth: number): string {
+    const base = this.black(id);
+    if (!cellWidth) return base;
+    const h = this.height(base);
+    const need = textWidthHwp(text, h);
+    if (need <= cellWidth) return base;
+    const target = Math.max(600, Math.floor((h * cellWidth) / need / 10) * 10);
+    if (target >= h) return base;
+    const key = `${base}@${target}`;
+    if (this.cache.has(key)) return this.cache.get(key)!;
+    const re = new RegExp(`<hh:charPr id="${base}"([^>]*)>(.*?)</hh:charPr>`, "s");
+    const m = re.exec(this.header);
+    if (!m) return base;
+    const cnt = /<hh:charProperties itemCnt="(\d+)"/.exec(this.header)!;
+    const newId = cnt[1]!;
+    const newAttrs = m[1]!.replace(/\sheight="\d+"/, ` height="${target}"`);
+    this.header = this.header
+      .replace("</hh:charProperties>", `<hh:charPr id="${newId}"${newAttrs}>${m[2]}</hh:charPr></hh:charProperties>`)
+      .replace(/<hh:charProperties itemCnt="(\d+)"/, (_s, n: string) => `<hh:charProperties itemCnt="${Number(n) + 1}"`);
+    this.added++;
+    this.cache.set(key, newId);
+    return newId;
+  }
+
   get changed(): boolean {
     return this.added > 0;
   }
@@ -191,9 +235,55 @@ class CharPrFixer {
   }
 }
 
+/** 글자 폭(HWPUNIT) 근사치 — 한글·전각은 글자 크기만큼, 그 밖은 절반 */
+function textWidthHwp(s: string, height: number): number {
+  let w = 0;
+  for (const ch of s) w += /[ᄀ-ᇿ　-〿㄰-㆏가-힯一-鿿＀-￯]/.test(ch) ? height : height / 2;
+  return w;
+}
+
+/** 글자 폭 근사치 — 한글·한자·전각 2, 그 밖 1 */
+function textWidth(s: string): number {
+  let w = 0;
+  for (const ch of s) w += /[ᄀ-ᇿ　-〿㄰-㆏가-힯一-鿿＀-￯]/.test(ch) ? 2 : 1;
+  return w;
+}
+
+/**
+ * 템플릿에 값을 끼우면 원문보다 길어져 칸 안에서 줄이 바뀌고 표가 커져 뒤 내용이 다음 쪽으로 밀린다(261027 장해급여 실측 — 7쪽이 10쪽).
+ * 원문의 빈 자리(연속 공백)를 값 폭만큼 줄여 전체 폭을 원문(빈칸 상태) 이하로 맞춘다. 공백 묶음은 최소 1칸 남긴다.
+ */
+function fitToOriginalWidth(filled: string, original: string): string {
+  let over = textWidth(filled) - textWidth(original);
+  if (over <= 0) return filled;
+  // 긴 공백 묶음부터 줄인다
+  const runs = [...filled.matchAll(/ {2,}/g)].map((m) => ({ start: m.index!, len: m[0].length })).sort((a, b) => b.len - a.len);
+  const cut = new Map<number, number>();
+  while (over > 0) {
+    let progressed = false;
+    for (const r of runs) {
+      const removed = cut.get(r.start) ?? 0;
+      if (r.len - removed <= 1) continue;
+      cut.set(r.start, removed + 1);
+      over--;
+      progressed = true;
+      if (over <= 0) break;
+    }
+    if (!progressed) break;
+  }
+  let out = "";
+  let pos = 0;
+  for (const r of [...runs].sort((a, b) => a.start - b.start)) {
+    out += filled.slice(pos, r.start) + " ".repeat(r.len - (cut.get(r.start) ?? 0));
+    pos = r.start + r.len;
+  }
+  return out + filled.slice(pos);
+}
+
 /** 문단의 글자를 value 로 바꾼다. 첫 run 의 charPr(검정 정체로 교정)을 쓰고 나머지 run 글자는 비운다. 줄바꿈은 문단 복제. */
-function setParagraph(pxml: string, value: string, fixer: CharPrFixer): string {
+function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0): string {
   const lines = value.split(/\r?\n/);
+  const longest = lines.reduce((a, b) => (textWidth(b) > textWidth(a) ? b : a), "");
   const one = (line: string): string => {
     let out = stripLineseg(pxml);
     // 기존 <hp:t> 전부 제거(안쪽 표는 이 함수에 오지 않는다 — cell op 는 paras 가 안쪽 표 밖 문단만)
@@ -202,7 +292,7 @@ function setParagraph(pxml: string, value: string, fixer: CharPrFixer): string {
       const keep = (body ?? "").replace(/<hp:t(?:\s[^>]*)?>.*?<\/hp:t>/gs, "");
       if (first) {
         first = false;
-        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.black(id)}"`);
+        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, longest, cellWidth)}"`);
         return `<hp:run${fixed}>${keep}<hp:t>${esc(line)}</hp:t></hp:run>`;
       }
       return keep.trim() ? `<hp:run${attrs}>${keep}</hp:run>` : "";
@@ -267,7 +357,9 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       const o = op as HwpxTemplate & { p?: number };
       const cell = cellOf(s, o.t, o.r, o.c);
       const para = pickPara(xml, cell, o.p);
-      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer) });
+      // 경위처럼 여러 줄이 자연스러운 넓은 칸(폭 25,000 HU ≈ 88mm 이상)은 줄바꿈에 맡기고 줄이지 않는다
+      const width = cell.width >= 25000 ? 0 : cell.width;
+      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), String(value), fixer, width) });
       return;
     }
     const o = op as HwpxOp;
@@ -278,15 +370,33 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       let m: RegExpExecArray | null;
       while ((m = tre.exec(xml)) && m.index < cell.end) {
         if (cell.inner.some((t) => m!.index >= t.start && m!.index < t.end)) continue;
-        if (m[1]!.includes(o.label)) {
-          const at = m.index + m[0].length - "</hp:t>".length;
+        const idx = m[1]!.indexOf(o.label);
+        if (idx >= 0) {
+          // 라벨 바로 뒤에 끼운다(run 끝이 아니라) — 「기타 친인척(   )」 의 괄호 안, 「(사업개시번호:   )」 의 콜론 뒤
+          const open = m[0].length - m[1]!.length - "</hp:t>".length;
+          const at = m.index + open + idx + o.label.length;
           edit.push({ start: at, end: at, text: esc(String(value)) });
+          // 라벨 뒤 빈 자리(연속 공백)를 값 폭만큼 줄여 줄이 안 바뀌게 한다(템플릿의 fitToOriginalWidth 와 같은 뜻)
+          const rest = m[1]!.slice(idx + o.label.length);
+          const sp = /( {2,})/.exec(rest);
+          if (sp) {
+            const cutN = Math.min(sp[1]!.length - 1, textWidth(String(value)));
+            if (cutN > 0) {
+              const spStart = at + sp.index;
+              edit.push({ start: spStart, end: spStart + cutN, text: "" });
+            }
+          }
           const para = cell.paras.find((sp) => m!.index >= sp.start && m!.index < sp.end);
           if (para) {
+            // 그 문단 자신의 linesegarray 만 지운다 — 문단이 안쪽 표를 품고 있으면 안쪽 표 문단의 것을 건너뛴다
             const ls = /<hp:linesegarray>.*?<\/hp:linesegarray>/gs;
             ls.lastIndex = para.start;
-            const lm = ls.exec(xml);
-            if (lm && lm.index < para.end) edit.push({ start: lm.index, end: lm.index + lm[0].length, text: "" });
+            let lm: RegExpExecArray | null;
+            while ((lm = ls.exec(xml)) && lm.index < para.end) {
+              if (cell.inner.some((t) => lm!.index >= t.start && lm!.index < t.end)) continue;
+              edit.push({ start: lm.index, end: lm.index + lm[0].length, text: "" });
+              break;
+            }
           }
           return;
         }
@@ -313,11 +423,42 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
           }
         }
       }
+      // run 경계에 걸친 상자(「 [」 + 「 ]」 두 run) — 이어 붙인 글자에서 다시 센다
+      const runs: { start: number; text: string; open: number }[] = [];
+      tre.lastIndex = cell.start;
+      while ((m = tre.exec(xml)) && m.index < cell.end) {
+        if (cell.inner.some((t) => m!.index >= t.start && m!.index < t.end)) continue;
+        runs.push({ start: m.index, text: m[1]!, open: m[0].length - m[1]!.length - "</hp:t>".length });
+      }
+      const joined = runs.map((r) => r.text).join("");
+      const offsets: number[] = [];
+      runs.forEach((r) => {
+        for (let i = 0; i < r.text.length; i++) offsets.push(r.start + r.open + i);
+      });
+      let k = 0;
+      for (const bm of joined.matchAll(/\[\s*\]/g)) {
+        k++;
+        if (k !== want) continue;
+        const a = bm.index!;
+        const b = a + bm[0].length - 1; // 「]」 위치
+        const openAt = offsets[a]!;
+        const closeAt = offsets[b]!;
+        if (closeAt - openAt === bm[0].length - 1) {
+          edit.push({ start: openAt, end: closeAt + 1, text: "[V]" });
+        } else {
+          edit.push({ start: openAt, end: openAt + 1, text: "[V" });
+          // 사이 공백은 첫 run 에서만 지운다
+          const firstRun = runs.find((r) => openAt >= r.start + r.open && openAt < r.start + r.open + r.text.length)!;
+          const firstEnd = firstRun.start + firstRun.open + firstRun.text.length;
+          if (firstEnd > openAt + 1) edit.push({ start: openAt + 1, end: firstEnd, text: "" });
+        }
+        return;
+      }
       throw new Error(`체크 상자 ${want}번째 없음 T${o.t} r${o.r} c${o.c} (상자 ${seen}개)`);
     }
     if (o.kind === "digits") {
       const cell = cellOf(s, o.t, o.r, o.c);
-      const chars = [...String(value)];
+      const chars = [...(o.digitsOnly ? String(value).replace(/\D/g, "") : String(value))].slice(0, o.take ?? Infinity);
       const start = o.start ?? 0;
       if (chars.length > o.count) throw new Error(`${name}: 글자 ${chars.length} > 상자 ${o.count}`);
       chars.forEach((ch, i) => {
@@ -330,8 +471,19 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       });
       return;
     }
+    if (o.kind === "boxes") {
+      const chars = [...(o.digitsOnly ? String(value).replace(/\D/g, "") : String(value))].slice(0, o.take ?? Infinity);
+      if (chars.length > o.cells.length) throw new Error(`${name}: 글자 ${chars.length} > 상자 ${o.cells.length}`);
+      chars.forEach((ch, i) => {
+        const [t, r, c] = o.cells[i]!;
+        const cell = cellOf(s, t, r, c);
+        const para = pickPara(xml, cell);
+        edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), ch, fixer) });
+      });
+      return;
+    }
     if (o.kind === "cells") {
-      const chars = [...String(value)];
+      const chars = [...(o.digitsOnly ? String(value).replace(/\D/g, "") : String(value))].slice(0, o.take ?? Infinity);
       if (chars.length > o.count) throw new Error(`${name}: 글자 ${chars.length} > 칸 ${o.count}`);
       const row = (cellCache.get(`${s}/${o.t}`) ?? (cellOf(s, o.t, o.r, o.c), cellCache.get(`${s}/${o.t}`)!)).filter((x) => x.r === o.r && x.c >= o.c).sort((a, b) => a.c - b.c);
       chars.forEach((ch, i) => {
@@ -360,10 +512,13 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
           continue;
         }
         usedTemplates.add(op.template);
-        const text = tpl.text.replace(/\{(\w+)\}/g, (_m, k: string) => {
+        // 템플릿 안 불리언 칸(「예(   )」 괄호형 체크)은 true → V, false/없음 → 빈 글자
+        const raw = tpl.text.replace(/\{(\w+)\}/g, (_m, k: string) => {
           const v = opts.values[k];
-          return v === undefined || v === false ? "" : String(v);
+          if (v === undefined || v === false) return "";
+          return v === true ? "V" : String(v);
         });
+        const text = fitToOriginalWidth(raw, tpl.text.replace(/\{\w+\}/g, ""));
         apply(op.template, tpl, text, true);
         for (const k of refs) if (opts.values[k] !== undefined && opts.values[k] !== "") report.filled.push(k);
         continue;

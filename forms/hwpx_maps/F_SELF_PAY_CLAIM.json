@@ -1,0 +1,473 @@
+{
+  "form_id": "F_SELF_PAY_CLAIM",
+  "source_file": "F_SELF_PAY_CLAIM.hwpx",
+  "source_sha256": "f4be35f3d172f3380cebea271a72767d75634e9fe99842d6e782ff1a64ac0c53",
+  "_about": "본인부담 치료비 청구서(별지 제10호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 청구서 큰 표(19행×27열), T1~T13 주민번호 상자, T14~T23 재해발생일시 상자(10개=년월일시), T24~T30 입원 기간 상자(r6 c6 안쪽, 1×7·1×3·1×3·1×7·1×3·1×3·1×3), T31~T37 통원 기간 상자(r7 c6), T38 = 다른보상 수령내역 표(r11 c3 안쪽), T39 개인정보 이용내역, T40~ = 재해발생 경위·소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ⑤직종(r3 c26)·우편번호(r4 c7 p0)는 「□□□」 글자라 cell 로 글자를 덮는다. ★엔진 한계: 입원·통원 상자(T24~T37)는 안쪽표 한 개가 「숫자칸(폭 1303, 사각 테두리)·간격칸(폭 283, 상하 테두리 없음)」 교대 구조(년 = 4+3, 월·일·일간 = 2+1)라 digits(안쪽표마다 첫 칸만)·cells(간격칸을 못 건너뜀) 둘 다 맞지 않는다. 상자 칸(r6 c6·r7 c6)의 유일한 문단은 안쪽표를 품고 있어 템플릿·cell 도 못 쓰고, after 는 같은 문단에 두 번 걸면 그 문단의 linesegarray 삭제 편집이 같은 구간으로 두 번 쌓여 edits 겹침 검사(fillHwpx 「편집 겹침」)에 걸린다 — 문단당 after 한 번만 된다. 그래서 지금은 바로 옆 라벨 칸(r6 c1 「입원」·r7 c1 「통원」)에 세 값을 한 템플릿으로 넣는다. 간격칸을 건너뛰는 op 가 생기면 입원 = T24 r0 c0/c2/c4/c6(년)·T25 c0/c2(월)·T26 c0/c2(일)·T27~T29(끝)·T30 c0/c2(일간), 통원 = T31~T37 같은 꼴로 바꿀 것. (261027) 입원·통원 기간은 boxes op(상자 주소 나열)로 T24~T37 숫자칸에 직접 넣는다.",
+  "slots": {
+    "claim_type_yoyangbi": {
+      "kind": "check",
+      "t": 0,
+      "r": 0,
+      "c": 0,
+      "n": 1
+    },
+    "claim_type_self_pay": {
+      "kind": "check",
+      "t": 0,
+      "r": 0,
+      "c": 0,
+      "n": 2
+    },
+    "workplace_no": {
+      "kind": "cell",
+      "t": 0,
+      "r": 2,
+      "c": 9
+    },
+    "business_start_no": {
+      "kind": "cell",
+      "t": 0,
+      "r": 2,
+      "c": 22
+    },
+    "name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 3,
+      "c": 4
+    },
+    "rrn": {
+      "kind": "digits",
+      "t": 0,
+      "r": 3,
+      "c": 12,
+      "count": 13
+    },
+    "job_code": {
+      "kind": "cell",
+      "t": 0,
+      "r": 3,
+      "c": 26,
+      "p": 0
+    },
+    "postal_code": {
+      "kind": "cell",
+      "t": 0,
+      "r": 4,
+      "c": 7,
+      "p": 0
+    },
+    "address": {
+      "kind": "cell",
+      "t": 0,
+      "r": 4,
+      "c": 7,
+      "p": 1
+    },
+    "mobile": {
+      "kind": "group",
+      "template": "mobile"
+    },
+    "phone": {
+      "kind": "group",
+      "template": "phone"
+    },
+    "hire_year": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "hire_month": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "hire_day": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "accident_datetime": {
+      "kind": "digits",
+      "t": 0,
+      "r": 5,
+      "c": 17,
+      "count": 10
+    },
+    "inpatient_from": {
+      "kind": "boxes",
+      "cells": [
+        [
+          24,
+          0,
+          0
+        ],
+        [
+          24,
+          0,
+          2
+        ],
+        [
+          24,
+          0,
+          4
+        ],
+        [
+          24,
+          0,
+          6
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          2
+        ],
+        [
+          26,
+          0,
+          0
+        ],
+        [
+          26,
+          0,
+          2
+        ]
+      ]
+    },
+    "inpatient_to": {
+      "kind": "boxes",
+      "cells": [
+        [
+          27,
+          0,
+          0
+        ],
+        [
+          27,
+          0,
+          2
+        ],
+        [
+          27,
+          0,
+          4
+        ],
+        [
+          27,
+          0,
+          6
+        ],
+        [
+          28,
+          0,
+          0
+        ],
+        [
+          28,
+          0,
+          2
+        ],
+        [
+          29,
+          0,
+          0
+        ],
+        [
+          29,
+          0,
+          2
+        ]
+      ]
+    },
+    "inpatient_days": {
+      "kind": "boxes",
+      "cells": [
+        [
+          30,
+          0,
+          0
+        ],
+        [
+          30,
+          0,
+          2
+        ]
+      ]
+    },
+    "outpatient_from": {
+      "kind": "boxes",
+      "cells": [
+        [
+          31,
+          0,
+          0
+        ],
+        [
+          31,
+          0,
+          2
+        ],
+        [
+          31,
+          0,
+          4
+        ],
+        [
+          31,
+          0,
+          6
+        ],
+        [
+          32,
+          0,
+          0
+        ],
+        [
+          32,
+          0,
+          2
+        ],
+        [
+          33,
+          0,
+          0
+        ],
+        [
+          33,
+          0,
+          2
+        ]
+      ]
+    },
+    "outpatient_to": {
+      "kind": "boxes",
+      "cells": [
+        [
+          34,
+          0,
+          0
+        ],
+        [
+          34,
+          0,
+          2
+        ],
+        [
+          34,
+          0,
+          4
+        ],
+        [
+          34,
+          0,
+          6
+        ],
+        [
+          35,
+          0,
+          0
+        ],
+        [
+          35,
+          0,
+          2
+        ],
+        [
+          36,
+          0,
+          0
+        ],
+        [
+          36,
+          0,
+          2
+        ]
+      ]
+    },
+    "outpatient_days": {
+      "kind": "boxes",
+      "cells": [
+        [
+          37,
+          0,
+          0
+        ],
+        [
+          37,
+          0,
+          2
+        ]
+      ]
+    },
+    "claim_amount": {
+      "kind": "group",
+      "template": "claim_amount"
+    },
+    "hospital_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 8,
+      "c": 22
+    },
+    "bank_name": {
+      "kind": "group",
+      "template": "account"
+    },
+    "account_no": {
+      "kind": "group",
+      "template": "account"
+    },
+    "account_holder": {
+      "kind": "group",
+      "template": "account"
+    },
+    "account_type_normal": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 1,
+      "n": 1
+    },
+    "account_type_hope": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 1,
+      "n": 2
+    },
+    "employer_paid_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 3,
+      "n": 1
+    },
+    "employer_paid_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 3,
+      "n": 2
+    },
+    "other_comp_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 3,
+      "n": 3
+    },
+    "other_comp_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 3,
+      "n": 4
+    },
+    "comp_date": {
+      "kind": "cell",
+      "t": 38,
+      "r": 1,
+      "c": 0
+    },
+    "comp_amount": {
+      "kind": "cell",
+      "t": 38,
+      "r": 1,
+      "c": 1
+    },
+    "comp_payer": {
+      "kind": "cell",
+      "t": 38,
+      "r": 1,
+      "c": 2
+    },
+    "apply_year": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_month": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_day": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "applicant_name": {
+      "kind": "group",
+      "template": "applicant"
+    },
+    "applicant_mobile": {
+      "kind": "group",
+      "template": "contact"
+    },
+    "applicant_phone": {
+      "kind": "group",
+      "template": "contact"
+    },
+    "email": {
+      "kind": "group",
+      "template": "contact"
+    }
+  },
+  "templates": {
+    "mobile": {
+      "t": 0,
+      "r": 4,
+      "c": 21,
+      "p": 0,
+      "text": "핸드폰 {mobile}"
+    },
+    "phone": {
+      "t": 0,
+      "r": 4,
+      "c": 21,
+      "p": 2,
+      "text": "유선 {phone}"
+    },
+    "hire_date": {
+      "t": 0,
+      "r": 5,
+      "c": 7,
+      "p": 0,
+      "text": "   {hire_year}년  {hire_month}월  {hire_day}일"
+    },
+    "claim_amount": {
+      "t": 0,
+      "r": 8,
+      "c": 6,
+      "p": 0,
+      "text": "          {claim_amount} 원"
+    },
+    "account": {
+      "t": 0,
+      "r": 9,
+      "c": 6,
+      "p": 0,
+      "text": " ( {bank_name} )은행 계좌번호: {account_no}   (예금주: {account_holder} )"
+    },
+    "apply_date": {
+      "t": 0,
+      "r": 14,
+      "c": 0,
+      "p": 1,
+      "text": "                                                                {apply_year}년     {apply_month}월     {apply_day}일"
+    },
+    "applicant": {
+      "t": 0,
+      "r": 14,
+      "c": 0,
+      "p": 2,
+      "text": "   신 청 인 :  {applicant_name}   (서명 또는 인)"
+    },
+    "contact": {
+      "t": 0,
+      "r": 14,
+      "c": 0,
+      "p": 4,
+      "text": "   휴대전화 : {applicant_mobile}   (유선전화 : {applicant_phone} )  E-mail : {email}"
+    }
+  }
+}

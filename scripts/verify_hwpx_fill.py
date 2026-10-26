@@ -40,6 +40,7 @@ def main() -> int:
     # ① zip 글자
     text = hwpx_text(hwpx)
     checks_true = 0
+    paren_v = 0
     for k, v in values.items():
         op = slots.get(k)
         if op is None:
@@ -51,8 +52,11 @@ def main() -> int:
             continue
         if v in ("", False, None):
             continue
+        if v is True:
+            paren_v += 1  # 괄호형 체크(템플릿 안 true → V) — 아래에서 「V」 수로 센다
+            continue
         sv = str(v)
-        if op.get("kind") == "digits":
+        if op.get("kind") in ("digits", "cells", "boxes"):
             continue  # 한 자씩 흩어져 있어 아래 PDF 검사에서 상자 글자로 본다
         for line in sv.split("\n"):
             if line and line not in text:
@@ -62,6 +66,10 @@ def main() -> int:
     n_marks = text.count("[V]") + text.count("■") - base_squares
     if n_marks != checks_true:
         fails.append(f"① 체크 표시 {n_marks}개 ≠ true 체크 {checks_true}개")
+    base_text = hwpx_text(src_path) if os.path.exists(src_path) else ""
+    paren_marks = (text.count("V") - text.count("[V]")) - (base_text.count("V") - base_text.count("[V]"))
+    if paren_marks != paren_v:
+        fails.append(f"① 괄호형 체크 V {paren_marks}개 ≠ true {paren_v}개")
     # zip 구조 + 값 run 글자서식(검정 정체 — 빈 서식의 자리표시자 색을 물려받으면 안 된다)
     with zipfile.ZipFile(hwpx) as z:
         first = z.infolist()[0]
@@ -72,10 +80,10 @@ def main() -> int:
     colored = 0
     for k, v in values.items():
         op = slots.get(k) or {}
-        if not isinstance(v, str) or len(v) < 2 or op.get("kind") == "digits":
+        if not isinstance(v, str) or len(v) < 2 or op.get("kind") in ("digits", "cells", "boxes"):
             continue
         head = re.escape(v.split("\n")[0][:10])
-        m = re.search(r'<hp:run charPrIDRef="(\d+)"><hp:t>[^<]*' + head, sec)
+        m = re.search(r'<hp:run charPrIDRef="(\d+)"><hp:t>[^<&]*' + head, sec)  # & 를 막아 「&lt;개정 2026」 같은 머리글에 안 걸리게
         if not m:
             continue
         cp = re.search(r'<hh:charPr id="' + m.group(1) + r'"([^>]*)>(.*?)</hh:charPr>', hdr, re.S)
@@ -139,7 +147,7 @@ def main() -> int:
         sv = re.sub(r"\s+", "", str(v))
         if len(sv) < 2:
             continue
-        if op.get("kind") == "digits":
+        if op.get("kind") in ("digits", "cells", "boxes"):
             # 상자에 한 자씩 — 전부 PDF 에 있어야 한다(순서까지는 안 본다)
             missing = [ch for ch in sv if ch not in flat]
             if missing:

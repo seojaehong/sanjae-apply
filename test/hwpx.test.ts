@@ -52,7 +52,7 @@ describe("hwpx 지도", () => {
             if (v === true) checks++;
             continue;
           }
-          if (v === "" || v === false || op!.kind === "digits") continue;
+          if (v === "" || typeof v === "boolean" || op!.kind === "digits" || op!.kind === "cells" || op!.kind === "boxes") continue; // 상자 분산·괄호형 체크는 글자 대조 대상 아님
           for (const line of String(v).split("\n")) expect(text, `${k}=${line}`).toContain(line);
         }
         const marks = text.split("[V]").length - 1 + (text.split("■").length - 1) - (hwpxText(hwpx).split("■").length - 1);
@@ -64,10 +64,10 @@ describe("hwpx 지도", () => {
         // 값 run 의 charPr 이 검정 정체
         const header = strFromU8(files["Contents/header.xml"]!);
         const section = strFromU8(files["Contents/section0.xml"]!);
-        const textValues = Object.entries(values).filter(([k, v]) => typeof v === "string" && v.length >= 2 && map.slots[k]?.kind !== "digits");
+        const textValues = Object.entries(values).filter(([k, v]) => typeof v === "string" && v.length >= 2 && !["digits", "cells", "boxes"].includes(map.slots[k]?.kind ?? ""));
         for (const [k, v] of textValues) {
           const first = String(v).split("\n")[0]!.slice(0, 10).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-          const m = new RegExp(`<hp:run charPrIDRef="(\\d+)"><hp:t>[^<]*${first}`).exec(section);
+          const m = new RegExp(`<hp:run charPrIDRef="(\\d+)"><hp:t>[^<&]*${first}`).exec(section);
           if (!m) continue; // after/template 은 라벨 run 에 붙으므로 여기 안 걸릴 수 있다
           const cp = new RegExp(`<hh:charPr id="${m[1]}"([^>]*)>(.*?)</hh:charPr>`, "s").exec(header);
           expect(cp, `${k} charPr ${m[1]}`).not.toBeNull();
