@@ -234,7 +234,7 @@ python scripts/verify_hwpx_fill.py out.hwpx test/samples/F_YOYANG_APPLY.json for
 src/core     규칙 S-01~S-13 · 서식/첨부 카탈로그 · 금지어 필터(순수 TS, IO 없음)
 src/fill     overlay.ts  pdf-lib 오버레이(text / boxes / check / multiline)
              hwpx.ts     한글 hwpx 채우기(cell / after / check / digits / boxes / group, 글자색·크기 교정)
-src/stamp    seal.ts 도장 PNG 생성(글리프 윤곽 래스터) · resolve.ts 자리 선택 — PDF·hwpx 날인은 overlay.ts·hwpx.ts 의 stamps
+src/stamp    seal.ts 도장 PNG 생성(글리프 윤곽 래스터) · resolve.ts 자리 선택. PDF·hwpx 날인은 overlay.ts·hwpx.ts 의 stamps
 src/mcp      도구 5개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
 src/laws     법제처 Open API 클라이언트
 api/mcp      Vercel 함수
