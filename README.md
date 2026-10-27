@@ -85,11 +85,6 @@ claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp
 같은 `command` / `args` 를 각 도구의 MCP 설정에 넣습니다. stdio 전송이면 전부 됩니다.
 </details>
 
-> [!TIP]
-> npm 에 올라가기 전에는 `sanjae-apply` 자리에 릴리스 파일 주소를 씁니다.
-> ```bash
-> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.5.2/sanjae-apply-0.5.2.tgz mcp
-> ```
 
 붙이고 나서 AI 에게 이렇게 말해 보세요.
 
