@@ -434,6 +434,7 @@
   "stamps": {
     "applicant": {
       "anchor": 0,
+      "page": 1,
       "x": 426.8,
       "y": 712.9,
       "size": 42

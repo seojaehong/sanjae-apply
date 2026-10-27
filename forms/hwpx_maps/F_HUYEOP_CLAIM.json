@@ -259,12 +259,14 @@
   "stamps": {
     "applicant": {
       "anchor": 0,
+      "page": 1,
       "x": 359.8,
       "y": 594.9,
       "size": 42
     },
     "delegation": {
       "anchor": 0,
+      "page": 1,
       "x": 250.8,
       "y": 697.2,
       "size": 42

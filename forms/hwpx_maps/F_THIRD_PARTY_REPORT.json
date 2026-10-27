@@ -335,12 +335,14 @@
   "stamps": {
     "applicant": {
       "anchor": 0,
+      "page": 1,
       "x": 460.4,
       "y": 639.4,
       "size": 42
     },
     "confirm": {
       "anchor": 3,
+      "page": 2,
       "x": 475.6,
       "y": 734.7,
       "size": 42

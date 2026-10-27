@@ -88,7 +88,7 @@ claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp
 > [!TIP]
 > npm 에 올라가기 전에는 `sanjae-apply` 자리에 릴리스 파일 주소를 씁니다.
 > ```bash
-> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.5.1/sanjae-apply-0.5.1.tgz mcp
+> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.5.2/sanjae-apply-0.5.2.tgz mcp
 > ```
 
 붙이고 나서 AI 에게 이렇게 말해 보세요.
@@ -127,7 +127,7 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 
 ### 🔏 도장(날인)은 어떻게 되나
 
-- `--stamp 이름` 이면 성명인(원형 기본, `--stamp-shape square|ellipse`)을 만들어 찍고 `--stamp-png` 면 가진 도장 PNG(투명 배경)를 그대로 찍습니다. 인주색 적색, 지름 42pt(약 1.5cm).
+- `--stamp 이름` 이면 성명인(원형 기본, `--stamp-shape square|ellipse`)을 만들어 찍고 `--stamp-png` 면 가진 도장 PNG(투명 배경, 4096px 이하)를 검사한 뒤 그대로 찍습니다. 인주색 적색, 지름 42pt(약 1.5cm). 동봉 글꼴(나눔고딕)에 없는 글자(한자 등)는 빈 도장이 되지 않도록 오류로 멈춥니다. 그런 이름은 `--stamp-png` 로 가진 도장을 넣어 주세요.
 - 자리는 서식마다 지도에 정해져 있고 `catalog <FORM_ID>` 의 `stamps` 에 이름이 나옵니다. 비우면 **신청인 본인 자리 전부**(`applicant` 본문 · `delegation` 위임장 · `consent` 개인정보 동의)에 찍고 `--stamp-spot a,b` 로 고릅니다. 타인 서명란(`confirm` 확인자 · `commute_reporter` 신고인 · `choice_confirmer` 등)은 이름을 적어 줄 때만 찍습니다. 지도에 없는 자리는 건너뛰고 결과의 `stamps_skipped` 에 적습니다.
 - PDF 와 한글(hwpx) 출력 **둘 다** 찍힙니다. 한글에서는 서명란 문단에 「글 앞으로」 떠 있는 그림으로 들어가 글자를 밀지 않습니다(쪽 밀림 0, 11종 실측). 한글에서 열어 옮기거나 지울 수 있습니다.
 - 도장은 명의자의 인격 표지입니다. **본인 또는 명의자 동의가 있는 이름만** 넣어 주세요. 등록 인감을 흉내 내는 용도가 아닙니다(사용인감 성격).
@@ -240,7 +240,7 @@ src/laws     법제처 Open API 클라이언트
 api/mcp      Vercel 함수
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
-test/        vitest 197 (formal_rules.test.ts 전수 10,368건 포함)
+test/        vitest 205 (formal_rules.test.ts 전수 10,368건 포함)
 docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드
 ```
 

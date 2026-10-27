@@ -1,6 +1,6 @@
-// 도장(인영) PNG 생성 — 원형·타원·사각, 개인 성명인 + 법인형(원주 주문자·중심 문자·하단 부문자).
-// 기하 모델은 우리 /도장생성 스킬(make_seal.py, localhost02/SealUtil 이식)을 그대로 옮겼다. PIL 대신 글리프 윤곽을 직접 래스터한다.
+// 도장(인영) PNG 생성 — 원형·타원·사각, 개인 성명인 + 법인형(원주 주문자·중심 문자·하단 부문자). 글리프 윤곽을 직접 래스터한다(네이티브 의존 없음).
 // ★ 도장은 명의자의 인격표지다. 본인 또는 명의자 동의가 있는 이름만 넣는다. 등록 인감을 흉내 내는 용도가 아니다(사용인감 성격).
+// ★ 글꼴에 없는 글자는 조용히 빈 자리가 된다(.notdef 는 윤곽이 없다). 그래서 makeSeal 이 모든 글자의 글리프 존재를 먼저 확인하고 없으면 던진다.
 
 import fontkit from "@pdf-lib/fontkit";
 import { encodePng } from "./png.js";
@@ -119,8 +119,24 @@ function arcPolys(font: Font, text: string, cx: number, cy: number, rx: number, 
   return out;
 }
 
+/** 글꼴에 없는 글자 목록. 줄바꿈·공백은 글자로 세지 않는다 */
+export function missingGlyphs(font: Font, texts: (string | undefined)[]): string[] {
+  const out = new Set<string>();
+  for (const t of texts) {
+    if (!t) continue;
+    for (const ch of t) {
+      if (ch === "\n" || ch === " ") continue;
+      const cp = ch.codePointAt(0)!;
+      if (!(font as unknown as { hasGlyphForCodePoint(cp: number): boolean }).hasGlyphForCodePoint(cp)) out.add(ch);
+    }
+  }
+  return [...out];
+}
+
 export function makeSeal(o: SealOptions): Uint8Array {
   const font = fontkit.create(Buffer.from(o.fontBytes)) as Font;
+  const missing = missingGlyphs(font, [o.name, o.arcText, o.bottomText, o.centerText]);
+  if (missing.length) throw new Error(`도장: 동봉 글꼴(나눔고딕)에 없는 글자 ${missing.map((c) => `「${c}」`).join(" ")} — 한글·영문·숫자만 쓰거나 --stamp-png 로 가진 도장을 넣는다`);
   const shape = o.shape ?? "circle";
   const size = o.size ?? 480;
   const ratio = o.ratio ?? 0.72;
@@ -177,8 +193,8 @@ export function makeSeal(o: SealOptions): Uint8Array {
       polys.push(...stackPolys(font, o.centerText, fs, cx, cy, inner * (lines.length <= 2 ? 0.4 : 0.58)));
     }
   } else {
-    const txt = o.centerText || o.name;
-    if (!txt) throw new Error("name 또는 centerText 가 필요하다");
+    const txt = (o.centerText || o.name || "").trim();
+    if (!txt) throw new Error("name 또는 centerText 가 필요하다(공백만은 안 된다)");
     const lines = txt.includes("\n") ? txt.split("\n") : [...txt];
     const n = lines.length;
     const usable = inner * 0.8;

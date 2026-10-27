@@ -60,6 +60,25 @@ describe("MCP 출구", () => {
     expect(call.json.result.content[0].text).not.toMatch(/승인\s*가능|확률|적중/);
   });
 
+  it("make_seal 이 PNG 를 돌려주고, fill_form 의 stamp 가 PDF·hwpx 에 찍히며, 없는 자리·깨진 PNG 는 isError 다", async () => {
+    const init = await rpc(INIT);
+    const call = (id: number, name: string, args: unknown) => rpc({ jsonrpc: "2.0", id, method: "tools/call", params: { name, arguments: args } }, TOKEN, init.sessionId);
+    const seal = await call(20, "make_seal", { name: "홍길동" });
+    expect(JSON.parse(seal.json.result.content[0].text)).toMatchObject({ width: 480, height: 480 });
+    expect(seal.json.result.content[1].resource.mimeType).toBe("image/png");
+    const png64 = seal.json.result.content[1].resource.blob as string;
+    const pdf = await call(21, "fill_form", { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" }, stamp: { png_base64: png64 } });
+    expect(JSON.parse(pdf.json.result.content[0].text).report.stamped).toEqual(["applicant", "delegation", "consent"]);
+    const hx = await call(22, "fill_form", { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" }, format: "hwpx", stamp: { name: "홍길동", spot: "applicant" } });
+    expect(JSON.parse(hx.json.result.content[0].text).report.stamped).toEqual(["applicant"]);
+    const bad = await call(23, "fill_form", { form_id: "F_YOYANG_APPLY", values: {}, stamp: { name: "홍길동", spot: "nowhere" } });
+    expect(bad.json.result.isError).toBe(true);
+    const badPng = await call(24, "fill_form", { form_id: "F_YOYANG_APPLY", values: {}, stamp: { png_base64: Buffer.from("not a png").toString("base64") } });
+    expect(badPng.json.result.isError).toBe(true);
+    const hanja = await call(25, "make_seal", { name: "洪吉童" });
+    expect(hanja.json.result.isError).toBe(true);
+  }, 60000);
+
   it("get_form_catalog: F_YOYANG_APPLY 는 2026-07-07 개정본 해시를 가진다", async () => {
     const init = await rpc(INIT);
     const call = await rpc({ jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "get_form_catalog", arguments: { form_id: "F_YOYANG_APPLY" } } }, TOKEN, init.sessionId);

@@ -31,8 +31,27 @@ function chunk(type: string, data: Uint8Array): Uint8Array {
   return out;
 }
 
+export interface PngInfo {
+  width: number;
+  height: number;
+  bitDepth: number;
+  colorType: number;
+}
+
+/** PNG 시그니처와 IHDR 을 읽는다. 아니면 던진다. 도장 PNG 가 시스템 경계(CLI 파일·MCP base64)에서 들어올 때 한 번 거른다 */
+export function pngInfo(png: Uint8Array, maxSide = 4096): PngInfo {
+  const SIG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  if (png.length < 33 || SIG.some((b, i) => png[i] !== b)) throw new Error("도장 PNG 가 아니다(PNG 시그니처 없음)");
+  const dv = new DataView(png.buffer, png.byteOffset, png.byteLength);
+  if (dv.getUint32(8) !== 13 || String.fromCharCode(png[12]!, png[13]!, png[14]!, png[15]!) !== "IHDR") throw new Error("도장 PNG 가 아니다(IHDR 없음)");
+  const info = { width: dv.getUint32(16), height: dv.getUint32(20), bitDepth: png[24]!, colorType: png[25]! };
+  if (info.width < 1 || info.height < 1 || info.width > maxSide || info.height > maxSide) throw new Error(`도장 PNG 크기 ${info.width}×${info.height} 는 1~${maxSide}px 여야 한다`);
+  return info;
+}
+
 /** rgba: width*height*4 바이트(행 우선) */
 export function encodePng(width: number, height: number, rgba: Uint8Array): Uint8Array {
+  if (rgba.length !== width * height * 4) throw new Error(`rgba 길이 ${rgba.length} ≠ ${width}×${height}×4`);
   const ihdr = new Uint8Array(13);
   const dv = new DataView(ihdr.buffer);
   dv.setUint32(0, width);

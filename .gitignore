@@ -10,3 +10,9 @@ forms/raw/
 
 # 검증 스킬 증거(.claude/skills/verify-sanjae-apply)
 .verify/
+
+# 채운 서식·드라이런 산출물은 커밋하지 않는다(합성 값이라도)
+/*.pdf
+/*.hwpx
+/*.png
+dryrun_filled.*

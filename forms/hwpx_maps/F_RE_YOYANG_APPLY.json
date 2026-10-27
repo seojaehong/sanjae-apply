@@ -284,18 +284,21 @@
   "stamps": {
     "applicant": {
       "anchor": 0,
+      "page": 1,
       "x": 245.2,
       "y": 525.7,
       "size": 42
     },
     "delegation": {
       "anchor": 0,
+      "page": 1,
       "x": 242.7,
       "y": 761.9,
       "size": 42
     },
     "consent": {
       "anchor": 0,
+      "page": 1,
       "x": 451.1,
       "y": 676.3,
       "size": 42

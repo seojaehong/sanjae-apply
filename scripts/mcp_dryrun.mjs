@@ -1,13 +1,16 @@
 // 운영 MCP 서버를 공식 SDK 클라이언트(StreamableHTTP)로 붙어 도구 3개를 전부 드라이런한다.
 // 사용: node scripts/mcp_dryrun.mjs [URL] [토큰파일] [출력PDF]
 // 토큰은 파일에서만 읽고 출력하지 않는다. 값은 전부 합성이다.
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 const URL_ = process.argv[2] ?? "https://sanjae-apply.vercel.app/api/mcp/mcp";
 const TOKEN = readFileSync(process.argv[3] ?? `${process.env.USERPROFILE}/.config/sanjae-apply/mcp_token.txt`, "utf8").trim();
-const OUT = process.argv[4] ?? "dryrun_filled.pdf";
+const OUT = process.argv[4] ?? join(tmpdir(), "sanjae-apply", "dryrun_filled.pdf"); // 레포 안에 쓰지 않는다(합성 값이라도 채운 서식은 커밋 대상이 아니다)
+mkdirSync(join(tmpdir(), "sanjae-apply"), { recursive: true });
 
 const client = new Client({ name: "sanjae-dryrun", version: "0.0.1" });
 const transport = new StreamableHTTPClientTransport(new URL(URL_), { requestInit: { headers: { Authorization: `Bearer ${TOKEN}` } } });

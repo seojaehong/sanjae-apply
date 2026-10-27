@@ -4,6 +4,7 @@
 
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { pngInfo } from "../stamp/png.js";
 
 export interface TextSlot {
   kind: "text";
@@ -159,6 +160,7 @@ export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOpti
   if (opt.stamps) {
     report.stamped = [];
     report.stamps_skipped = [];
+    const embedded = new Map<Uint8Array, Awaited<ReturnType<typeof doc.embedPng>>>(); // 같은 그림은 XObject 하나로
     for (const [key, png] of Object.entries(opt.stamps)) {
       const spot = map.stamps?.[key];
       if (!spot) {
@@ -167,7 +169,12 @@ export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOpti
       }
       const page = pages[spot.page - 1];
       if (!page) throw new Error(`도장 자리 ${key}: 쪽 ${spot.page} 없음`);
-      const img = await doc.embedPng(png);
+      pngInfo(png);
+      let img = embedded.get(png);
+      if (!img) {
+        img = await doc.embedPng(png);
+        embedded.set(png, img);
+      }
       const w = spot.size;
       const h = (spot.size * img.height) / img.width;
       page.drawImage(img, { x: spot.x - w / 2, y: flipY(page, spot.y) - h / 2, width: w, height: h });

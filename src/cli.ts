@@ -12,7 +12,8 @@ import { CLAIM_TYPES, TAGS, type ClaimInput, type ClaimType, type Tag, type Tri 
 import { fillHwpx } from "./fill/hwpx.js";
 import { fillForm } from "./fill/overlay.js";
 import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "./fill/registry.js";
-import { resolveStamp, stampSpots } from "./stamp/resolve.js";
+import { pngInfo } from "./stamp/png.js";
+import { buildStamps, resolveStamp, type StampSpec } from "./stamp/resolve.js";
 import type { SealShape } from "./stamp/seal.js";
 
 function tri(v: string | undefined): Tri {
@@ -100,18 +101,14 @@ async function main(argv: string[]): Promise<void> {
   }
   if (cmd === "fill") {
     const [formId, valuesPath] = rest;
-    const { opt } = opts(rest);
+    const { opt, flags } = opts(rest);
     if (!formId || !valuesPath || !opt["out"]) throw new Error("사용: sanjae-apply fill <FORM_ID> <values.json> --out <파일.pdf | 파일.hwpx>");
     const values = JSON.parse(readFileSync(valuesPath, "utf8")) as Record<string, string | boolean>;
     // 도장: --stamp 이름(성명인 생성) 또는 --stamp-png 파일. 자리는 지도의 신청인 자리 전부(applicant·delegation·consent), --stamp-spot a,b 로 바꿈. PDF·한글 공통
-    const stampsFor = (available: string[]): Record<string, Uint8Array> | undefined => {
-      if (!opt["stamp"] && !opt["stamp-png"]) return undefined;
-      const png = resolveStamp(
-        { name: opt["stamp"], shape: opt["stamp-shape"] as SealShape | undefined, png: opt["stamp-png"] ? new Uint8Array(readFileSync(opt["stamp-png"])) : undefined },
-        new Uint8Array(readFileSync(fontPath())),
-      );
-      return Object.fromEntries(stampSpots(available, opt["stamp-spot"]).map((k) => [k, png]));
-    };
+    for (const k of ["stamp", "stamp-png", "stamp-spot", "stamp-shape"]) if (flags.has(k)) throw new Error(`--${k} 에 값이 없다`);
+    if (opt["stamp"] && opt["stamp-png"]) throw new Error("--stamp 과 --stamp-png 는 하나만 준다");
+    const spec: StampSpec | undefined = opt["stamp"] || opt["stamp-png"] ? { name: opt["stamp"], shape: opt["stamp-shape"] as SealShape | undefined, png: opt["stamp-png"] ? new Uint8Array(readFileSync(opt["stamp-png"])) : undefined } : undefined;
+    const stampsFor = (available: string[], font?: Uint8Array) => buildStamps(spec, opt["stamp-spot"], available, () => font ?? new Uint8Array(readFileSync(fontPath())));
     if (opt["out"].toLowerCase().endsWith(".hwpx")) {
       // 한글 출력 — 공단 HWP 를 변환한 hwpx 에 값을 넣는다(한글 없이 돈다. 한글 2014+ 로 연다)
       const { map, hwpx } = loadHwpxAssets(formId);
@@ -121,7 +118,7 @@ async function main(argv: string[]): Promise<void> {
       return;
     }
     const { map, pdf, font } = loadAssets(formId);
-    const stamps = stampsFor(Object.keys(map.stamps ?? {}));
+    const stamps = stampsFor(Object.keys(map.stamps ?? {}), font);
     const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps });
     writeFileSync(opt["out"], bytes);
     process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "pdf", written: report.written.length, skipped: report.skipped, shrunk: report.shrunk, stamped: report.stamped, stamps_skipped: report.stamps_skipped }, null, 2) + "\n");
@@ -136,7 +133,8 @@ async function main(argv: string[]): Promise<void> {
       new Uint8Array(readFileSync(fontPath())),
     );
     writeFileSync(opt["out"], png);
-    process.stdout.write(JSON.stringify({ out: opt["out"], bytes: png.length, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }, null, 2) + "\n");
+    const { width, height } = pngInfo(png);
+    process.stdout.write(JSON.stringify({ out: opt["out"], bytes: png.length, width, height, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }, null, 2) + "\n");
     return;
   }
   const checkArgs = cmd === "check" ? rest : argv; // 구버전: 첫 인자가 급여 종류
@@ -146,8 +144,8 @@ async function main(argv: string[]): Promise<void> {
         "sanjae-apply — 산재 신청 도우미",
         "  check <급여> [--accident WORK_ACCIDENT|COMMUTE|DISEASE] [--third-party yes|no] [--ended yes|no] [--tags A,B] [--have X,Y] [--json]",
         "  fill <FORM_ID> <values.json> --out <파일.pdf | 파일.hwpx>   (확장자로 PDF/한글 결정)",
-        "       [--stamp <이름> | --stamp-png <도장.png>] [--stamp-spot applicant,consent]   (PDF 날인. 기본 = 신청인 자리 전부)",
-        "  seal --out <도장.png> --name <이름> [--shape circle|square|ellipse] [--arc <법인명> --center <중심문자> --bottom <부문자>]",
+        "       [--stamp <이름> | --stamp-png <도장.png>] [--stamp-shape circle|square|ellipse] [--stamp-spot applicant,consent]   (PDF·한글 날인. 기본 = 신청인 자리 전부, 자리 이름은 catalog <FORM_ID> 의 stamps)",
+        "  seal --out <도장.png> --name <이름> [--shape circle|square|ellipse] [--arc <법인명> --center <중심문자> --bottom <부문자> --inner <두께>]",
         "  catalog [FORM_ID]",
         "  mcp   (stdio MCP 서버)",
         `급여: ${CLAIM_TYPES.join(" ")}`,
@@ -165,7 +163,7 @@ async function main(argv: string[]): Promise<void> {
 const isMain = process.argv[1] && /(cli\.(js|ts)|sanjae-apply)$/.test(process.argv[1]);
 if (isMain) {
   main(process.argv.slice(2)).catch((e) => {
-    process.stderr.write(`${(e as Error).message}\n`);
+    process.stderr.write(`${e instanceof Error ? e.message : String(e)}\n`);
     process.exit(2);
   });
 }

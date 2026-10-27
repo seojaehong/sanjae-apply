@@ -52,7 +52,7 @@ def main() -> int:
                 print(f"✗ {fid}.{key}: {s['page']}쪽에 라벨이 없다")
                 bad += 1
                 continue
-            out[key] = {"anchor": first_on_page[s["page"]], "x": s["x"], "y": s["y"], "size": s["size"]}
+            out[key] = {"anchor": first_on_page[s["page"]], "page": s["page"], "x": s["x"], "y": s["y"], "size": s["size"]}
         print(f"✓ {fid}: 라벨 {n_xml} 쪽별 {per_page} → " + ", ".join(f"{k}(p{stamps[k]['page']}→#{v['anchor']})" for k, v in out.items()))
         if write:
             hx_map = json.load(open(hx_map_path, encoding="utf-8"))

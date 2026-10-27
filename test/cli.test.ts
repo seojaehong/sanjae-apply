@@ -33,6 +33,23 @@ describe.skipIf(!existsSync(CLI))("CLI", () => {
     expect(readFileSync(outPdf).subarray(0, 5).toString()).toBe("%PDF-");
   });
 
+  it("seal: 도장 PNG 를 만들고, fill --stamp 는 신청인 자리 전부에 찍으며, 없는 자리·한자 이름·값 없는 --stamp 는 오류다", () => {
+    const sealPng = join(tmpdir(), "sanjae-apply", "cli_seal.png");
+    const s = JSON.parse(run("seal", "--out", sealPng, "--name", "홍길동"));
+    expect([s.width, s.height]).toEqual([480, 480]);
+    expect(readFileSync(sealPng).subarray(1, 4).toString()).toBe("PNG");
+    const outPdf = join(tmpdir(), "sanjae-apply", "cli_fill_stamp.pdf");
+    const a = JSON.parse(run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", outPdf, "--stamp-png", sealPng));
+    expect(a.stamped).toEqual(["applicant", "delegation", "consent"]);
+    const outHwpx = join(tmpdir(), "sanjae-apply", "cli_fill_stamp.hwpx");
+    const b = JSON.parse(run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", outHwpx, "--stamp", "홍길동", "--stamp-spot", "consent"));
+    expect(b.stamped).toEqual(["consent"]);
+    expect(() => run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", outPdf, "--stamp", "홍길동", "--stamp-spot", "aplicant")).toThrow(/aplicant/);
+    expect(() => run("fill", "F_DEVICE_PRESCRIPTION", "test/samples/F_DEVICE_PRESCRIPTION.json", "--out", outPdf, "--stamp", "홍길동")).toThrow(/자리가 없다/);
+    expect(() => run("seal", "--out", sealPng, "--name", "洪吉童")).toThrow(/없는 글자/);
+    expect(() => run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", outPdf, "--stamp", "--stamp-spot", "consent")).toThrow(/값이 없다/);
+  });
+
   it("fill: 지도 없는 서식은 오류로 끝난다", () => {
     expect(() => run("fill", "F_NOPE", "test/samples/F_YOYANG_APPLY.json", "--out", "x.pdf")).toThrow();
   });

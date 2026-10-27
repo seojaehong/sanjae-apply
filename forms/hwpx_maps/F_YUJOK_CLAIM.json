@@ -547,12 +547,14 @@
   "stamps": {
     "applicant": {
       "anchor": 0,
+      "page": 1,
       "x": 367.9,
       "y": 727.1,
       "size": 42
     },
     "consent": {
       "anchor": 2,
+      "page": 2,
       "x": 464.6,
       "y": 690.3,
       "size": 42

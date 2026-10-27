@@ -7,6 +7,7 @@
 
 import { createHash } from "node:crypto";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
+import { pngInfo, type PngInfo } from "../stamp/png.js";
 
 export type HwpxOp =
   | { kind: "cell"; t: number; r: number; c: number; p?: number; s?: number }
@@ -30,9 +31,11 @@ export interface HwpxTemplate {
   text: string;
 }
 
-/** 도장 자리 — 그림을 「(서명 또는 인」 라벨 anchor 번째(0부터, 섹션 XML 등장 순) 문단에 떠 있는 개체로 붙이고, 위치는 그 문단이 놓인 쪽의 종이 기준 절대좌표(pt, 왼쪽 위 원점 = PDF 지도와 같은 값) */
+/** 도장 자리 — 그림을 「(서명 또는 인」 라벨 anchor 번째(0부터, 섹션 XML 등장 순) 문단에 떠 있는 개체로 붙이고, 위치는 그 문단이 놓인 쪽의 종이 기준 절대좌표(pt, 왼쪽 위 원점 = PDF 지도와 같은 값).
+ * anchor 는 「그 자리의 라벨」이 아니라 「그 자리가 놓인 쪽의 첫 라벨」이다(한글은 앵커 문단의 쪽만 보므로 같은 쪽 자리들은 같은 anchor 를 쓴다). scripts/hwpx_stamp_anchors.py 가 만든다. page 는 검증용(PDF 지도와 같은 쪽 번호) */
 export interface HwpxStampSpot {
   anchor: number;
+  page?: number;
   x: number;
   y: number;
   size: number;
@@ -60,7 +63,12 @@ export interface HwpxFillReport {
 export const STAMP_LABEL = "(서명 또는 인";
 const HU = 100; // 1pt = 100 HWPUNIT
 
-/** 섹션 XML 에서 anchor 번째 라벨이 든 문단의 시작 위치. 가장 가까운 앞쪽 <hp:p 가 그 라벨을 품은 가장 안쪽 문단이다 */
+/** 섹션 XML 의 anchor 라벨 수 */
+export function countStampLabels(xml: string): number {
+  return xml.split(STAMP_LABEL).length - 1;
+}
+
+/** 섹션 XML 에서 anchor 번째 라벨이 든 문단의 시작 위치. 라벨과 문단 시작 사이에 다른 문단이 닫히면(안쪽 표) 지도가 틀린 것이므로 멈춘다 */
 function stampAnchorPara(xml: string, anchor: number): number {
   let from = 0;
   for (let i = 0; i <= anchor; i++) {
@@ -69,6 +77,7 @@ function stampAnchorPara(xml: string, anchor: number): number {
     if (i === anchor) {
       const p = xml.lastIndexOf("<hp:p ", at);
       if (p < 0) throw new Error("라벨이 문단 밖에 있다");
+      if (xml.slice(p, at).includes("</hp:p>")) throw new Error(`도장 앵커 ${anchor}: 라벨 앞에 닫힌 안쪽 문단이 있다(지도를 다시 만든다)`);
       return p;
     }
     from = at + STAMP_LABEL.length;
@@ -76,34 +85,37 @@ function stampAnchorPara(xml: string, anchor: number): number {
   throw new Error("unreachable");
 }
 
-function picXml(binId: string, spot: HwpxStampSpot, zOrder: number, seq: number): string {
-  const sz = Math.round(spot.size * HU);
-  const x = Math.round(spot.x * HU) - Math.floor(sz / 2);
-  const y = Math.round(spot.y * HU) - Math.floor(sz / 2);
+/** 1px 당 imgClip·imgDim 단위. 한글이 480px 그림에 36000 을 썼다(실측) */
+const PX = 75;
+
+function picXml(binId: string, spot: HwpxStampSpot, img: PngInfo, zOrder: number, seq: number): string {
+  const w = Math.round(spot.size * HU);
+  const h = Math.round((spot.size * img.height * HU) / img.width);
+  const x = Math.round(spot.x * HU) - Math.floor(w / 2);
+  const y = Math.round(spot.y * HU) - Math.floor(h / 2);
   const id = 1900000000 + seq;
   return (
     `<hp:pic id="${id}" zOrder="${zOrder}" numberingType="PICTURE" textWrap="IN_FRONT_OF_TEXT" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" href="" groupLevel="0" instid="${id + 1}" reverse="0">` +
-    `<hp:offset x="0" y="0"/><hp:orgSz width="${sz}" height="${sz}"/><hp:curSz width="${sz}" height="${sz}"/><hp:flip horizontal="0" vertical="0"/>` +
-    `<hp:rotationInfo angle="0" centerX="${Math.floor(sz / 2)}" centerY="${Math.floor(sz / 2)}" rotateimage="1"/>` +
+    `<hp:offset x="0" y="0"/><hp:orgSz width="${w}" height="${h}"/><hp:curSz width="${w}" height="${h}"/><hp:flip horizontal="0" vertical="0"/>` +
+    `<hp:rotationInfo angle="0" centerX="${Math.floor(w / 2)}" centerY="${Math.floor(h / 2)}" rotateimage="1"/>` +
     `<hp:renderingInfo><hc:transMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:scaMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:rotMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/></hp:renderingInfo>` +
     `<hc:img binaryItemIDRef="${binId}" bright="0" contrast="0" effect="REAL_PIC" alpha="0"/>` +
-    `<hp:imgRect><hc:pt0 x="0" y="0"/><hc:pt1 x="${sz}" y="0"/><hc:pt2 x="${sz}" y="${sz}"/><hc:pt3 x="0" y="${sz}"/></hp:imgRect>` +
-    `<hp:imgClip left="0" right="36000" top="0" bottom="36000"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:imgDim dimwidth="36000" dimheight="36000"/><hp:effects/>` +
-    `<hp:sz width="${sz}" widthRelTo="ABSOLUTE" height="${sz}" heightRelTo="ABSOLUTE" protect="0"/>` +
+    `<hp:imgRect><hc:pt0 x="0" y="0"/><hc:pt1 x="${w}" y="0"/><hc:pt2 x="${w}" y="${h}"/><hc:pt3 x="0" y="${h}"/></hp:imgRect>` +
+    `<hp:imgClip left="0" right="${img.width * PX}" top="0" bottom="${img.height * PX}"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:imgDim dimwidth="${img.width * PX}" dimheight="${img.height * PX}"/><hp:effects/>` +
+    `<hp:sz width="${w}" widthRelTo="ABSOLUTE" height="${h}" heightRelTo="ABSOLUTE" protect="0"/>` +
     `<hp:pos treatAsChar="0" affectLSpacing="0" flowWithText="0" allowOverlap="1" holdAnchorAndSO="0" vertRelTo="PAPER" horzRelTo="PAPER" vertAlign="TOP" horzAlign="LEFT" vertOffset="${y}" horzOffset="${x}"/>` +
     `<hp:outMargin left="0" right="0" top="0" bottom="0"/></hp:pic>`
   );
 }
 
-/** 문단 첫 run 앞에 그림 run 을 넣고 그 문단의 linesegarray 를 지운다(한글이 다시 계산) */
+/** 문단 첫 run 앞에 그림 run 을 넣고 그 문단의 linesegarray 를 지운다(한글이 다시 계산). 문단 끝은 중첩을 세는 findClose 로 */
 function insertPicIntoPara(xml: string, paraStart: number, pic: string): string {
-  const pend = xml.indexOf("</hp:p>", paraStart);
-  if (pend < 0) throw new Error("문단 끝 없음");
+  const pend = findClose(xml, paraStart, "hp:p") - "</hp:p>".length;
   const body = xml.slice(paraStart, pend);
   const firstRun = body.indexOf("<hp:run");
   if (firstRun < 0) throw new Error("문단에 run 이 없다");
   const cp = /<hp:run charPrIDRef="(\d+)"/.exec(body)?.[1] ?? "0";
-  const body2 = (body.slice(0, firstRun) + `<hp:run charPrIDRef="${cp}">${pic}</hp:run>` + body.slice(firstRun)).replace(/<hp:linesegarray>[\s\S]*?<\/hp:linesegarray>/g, "");
+  const body2 = stripLineseg(body.slice(0, firstRun) + `<hp:run charPrIDRef="${cp}">${pic}</hp:run>` + body.slice(firstRun));
   return xml.slice(0, paraStart) + body2 + xml.slice(pend);
 }
 
@@ -658,48 +670,55 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
 
   if (fixer.changed) files[headerName] = strToU8(fixer.xml);
 
-  // 도장 — 그림을 BinData 에 넣고 content.hpf 매니페스트에 등록한 뒤, 앵커 문단에 떠 있는 개체(글 앞)로 붙인다. 글자를 밀지 않으니 쪽이 안 밀린다
-  if (opts.stamps) {
-    report.stamped = [];
-    report.stamps_skipped = [];
-    const hpfName = "Contents/content.hpf";
-    if (!files[hpfName]) throw new Error("hwpx 에 Contents/content.hpf 가 없다");
-    let hpf = strFromU8(files[hpfName]);
-    let sec0 = strFromU8(files[sections[0]!]!);
-    let zOrder = Math.max(0, ...[...sec0.matchAll(/zOrder="(\d+)"/g)].map((m) => Number(m[1])));
-    const binIds = new Map<Uint8Array, string>();
-    let seq = 0;
-    for (const [key, png] of Object.entries(opts.stamps)) {
-      const spot = map.stamps?.[key];
-      if (!spot) {
-        report.stamps_skipped.push(key);
-        continue;
-      }
-      let binId = binIds.get(png);
-      if (!binId) {
-        binId = `seal${binIds.size + 1}`;
-        binIds.set(png, binId);
-        files[`BinData/${binId}.png`] = png;
-        const hashkey = createHash("md5").update(png).digest("base64");
-        const item = `<opf:item id="${binId}" href="BinData/${binId}.png" media-type="image/png" isEmbeded="1" hashkey="${hashkey}"/>`;
-        if (!hpf.includes("</opf:manifest>")) throw new Error("content.hpf 에 manifest 가 없다");
-        hpf = hpf.replace("</opf:manifest>", `${item}</opf:manifest>`);
-      }
-      const para = stampAnchorPara(sec0, spot.anchor);
-      sec0 = insertPicIntoPara(sec0, para, picXml(binId, spot, ++zOrder, seq++ * 2));
-      report.stamped.push(key);
-    }
-    if (binIds.size) {
-      files[hpfName] = strToU8(hpf);
-      files[sections[0]!] = strToU8(sec0);
-    }
-  }
+  if (opts.stamps) applyStamps(files, sections[0]!, xmls[0]!, map, opts.stamps, report);
 
   // mimetype 은 zip 첫 항목·무압축이어야 한글이 연다
   const ordered: Record<string, [Uint8Array, { level: 0 | 6 }]> = {};
   if (files["mimetype"]) ordered["mimetype"] = [files["mimetype"], { level: 0 }];
   for (const [n, d] of Object.entries(files)) if (n !== "mimetype") ordered[n] = [d, { level: 6 }];
   return { bytes: zipSync(ordered), report };
+}
+
+/** 도장 — 그림을 BinData 에 넣고 content.hpf 매니페스트에 등록한 뒤, 앵커 문단에 떠 있는 개체(글 앞)로 붙인다. 글자를 밀지 않으니 쪽이 안 밀린다.
+ * 앵커 번호는 원본 XML 기준이다. 값이나 템플릿이 라벨 문자열을 더하거나 지우면 번호가 밀려 다른 쪽에 찍히므로, 편집 전후 라벨 수가 다르면 멈춘다 */
+function applyStamps(files: Record<string, Uint8Array>, sectionName: string, originalXml: string, map: HwpxMap, stamps: Record<string, Uint8Array>, report: HwpxFillReport): void {
+  report.stamped = [];
+  report.stamps_skipped = [];
+  const hpfName = "Contents/content.hpf";
+  if (!files[hpfName]) throw new Error("hwpx 에 Contents/content.hpf 가 없다");
+  let hpf = strFromU8(files[hpfName]);
+  let sec = strFromU8(files[sectionName]!);
+  const before = countStampLabels(originalXml);
+  const after = countStampLabels(sec);
+  if (before !== after) throw new Error(`도장 앵커 라벨 「${STAMP_LABEL}」 수가 채우기로 바뀌었다(원본 ${before} → ${after}). 값에 그 문구를 넣지 않는다`);
+  let zOrder = Math.max(0, ...[...sec.matchAll(/zOrder="(\d+)"/g)].map((m) => Number(m[1])));
+  const binIds = new Map<string, string>(); // md5 → binId. 같은 그림은 한 번만 넣는다
+  let seq = 0;
+  for (const [key, png] of Object.entries(stamps)) {
+    const spot = map.stamps?.[key];
+    if (!spot) {
+      report.stamps_skipped.push(key);
+      continue;
+    }
+    const info = pngInfo(png);
+    const hashkey = createHash("md5").update(png).digest("base64");
+    let binId = binIds.get(hashkey);
+    if (!binId) {
+      binId = `seal${binIds.size + 1}`;
+      binIds.set(hashkey, binId);
+      files[`BinData/${binId}.png`] = png;
+      const item = `<opf:item id="${binId}" href="BinData/${binId}.png" media-type="image/png" isEmbeded="1" hashkey="${hashkey}"/>`;
+      if (!hpf.includes("</opf:manifest>")) throw new Error("content.hpf 에 manifest 가 없다");
+      hpf = hpf.replace("</opf:manifest>", `${item}</opf:manifest>`);
+    }
+    const para = stampAnchorPara(sec, spot.anchor);
+    sec = insertPicIntoPara(sec, para, picXml(binId, spot, info, ++zOrder, seq++ * 2));
+    report.stamped.push(key);
+  }
+  if (binIds.size) {
+    files[hpfName] = strToU8(hpf);
+    files[sectionName] = strToU8(sec);
+  }
 }
 
 /** 채운 hwpx 의 글자(섹션 전부, 안쪽 표 포함)를 돌려준다 — 시험·검증용 */

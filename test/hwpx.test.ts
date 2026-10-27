@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { strFromU8, unzipSync } from "fflate";
-import { fillHwpx, hwpxText, STAMP_LABEL, type HwpxMap } from "../src/fill/hwpx.js";
+import { countStampLabels, fillHwpx, hwpxText, STAMP_LABEL, type HwpxMap } from "../src/fill/hwpx.js";
 import { fillableHwpxForms, hwpxPath, loadHwpxAssets, loadMap } from "../src/fill/registry.js";
 import { makeSeal } from "../src/stamp/seal.js";
 
@@ -85,17 +85,66 @@ describe("hwpx 도장", () => {
   for (const id of forms) {
     const { map, hwpx } = loadHwpxAssets(id);
     const spots = map.stamps ?? {};
-    it(`${id}: 도장 자리 키가 PDF 지도와 같고 앵커 라벨이 실제로 있다`, () => {
-      const pdfSpots = Object.keys(loadMap(id).stamps ?? {}).sort();
-      expect(Object.keys(spots).sort()).toEqual(pdfSpots);
+    it(`${id}: 도장 자리 키·쪽·좌표가 PDF 지도와 같고, 앵커는 쪽 순서와 단조이며 라벨이 실제로 있다`, () => {
+      const pdfSpots = loadMap(id).stamps ?? {};
+      expect(Object.keys(spots).sort()).toEqual(Object.keys(pdfSpots).sort());
       const sec = strFromU8(unzipSync(hwpx)["Contents/section0.xml"]!);
-      const n = sec.split(STAMP_LABEL).length - 1;
+      const n = countStampLabels(sec);
       for (const [k, s] of Object.entries(spots)) {
+        const p = pdfSpots[k]!;
+        expect([s.page, s.x, s.y, s.size], `${k} = PDF 지도`).toEqual([p.page, p.x, p.y, p.size]);
         expect(s.anchor, `${k}.anchor < 라벨 ${n}`).toBeLessThan(n);
-        expect(s.size, `${k}.size`).toBeGreaterThan(0);
       }
+      // 같은 쪽 → 같은 anchor, 뒤 쪽 → 더 큰 anchor(한글은 앵커 문단의 쪽만 본다)
+      const byPage = new Map<number, number>();
+      for (const s of Object.values(spots)) {
+        if (byPage.has(s.page!)) expect(byPage.get(s.page!)).toBe(s.anchor);
+        byPage.set(s.page!, s.anchor);
+      }
+      const pages = [...byPage.keys()].sort((a, b) => a - b);
+      for (let i = 1; i < pages.length; i++) expect(byPage.get(pages[i]!)!).toBeGreaterThan(byPage.get(pages[i - 1]!)!);
     });
   }
+  it("모든 서식: 합성 값 + 자리 전부에 찍으면 hp:pic 이 자리 수만큼 생기고, 각 그림은 anchor 번째 라벨 문단 안에 있으며 vertOffset 이 지도 y 와 맞다", async () => {
+    const png = makeSeal({ name: "홍길동", fontBytes: FONT });
+    for (const id of forms) {
+      const { map, hwpx } = loadHwpxAssets(id);
+      const spots = map.stamps ?? {};
+      if (!Object.keys(spots).length) continue;
+      const values = JSON.parse(readFileSync(`test/samples/${id}.json`, "utf8")) as Record<string, string | boolean>;
+      const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: Object.fromEntries(Object.keys(spots).map((k) => [k, png])) });
+      expect(report.stamped, id).toEqual(Object.keys(spots));
+      const sec = strFromU8(unzipSync(bytes)["Contents/section0.xml"]!);
+      // 서식 원본에도 그림이 있다(휴업급여 5개). 도장 그림만 센다
+      const pics = [...sec.matchAll(/<hp:pic [^>]*>[\s\S]*?<\/hp:pic>/g)].filter((m) => m[0].includes('binaryItemIDRef="seal'));
+      expect(pics.length, `${id} 도장 hp:pic 수`).toBe(Object.keys(spots).length);
+      for (const [k, s] of Object.entries(spots)) {
+        const want = Math.round(s.y * 100) - Math.floor(Math.round(s.size * 100) / 2);
+        const pic = pics.find((m) => m[0].includes(`vertOffset="${want}"`));
+        expect(pic, `${id}.${k} vertOffset ${want}`).toBeDefined();
+        // 그림 앞까지의 라벨 수 = anchor (그림은 라벨 문단 첫 run 앞에 들어가므로 그 문단의 라벨은 뒤에 있다)
+        expect(countStampLabels(sec.slice(0, pic!.index)), `${id}.${k} 앵커 문단`).toBe(s.anchor);
+        const paraStart = sec.lastIndexOf("<hp:p ", pic!.index);
+        const paraEnd = sec.indexOf("</hp:p>", pic!.index! + pic![0].length);
+        expect(sec.slice(paraStart, paraEnd).includes(STAMP_LABEL), `${id}.${k} 같은 문단에 라벨`).toBe(true);
+      }
+    }
+  });
+  it("값에 앵커 라벨 문자열이 들어오면 멈춘다(다른 쪽에 찍히지 않는다)", async () => {
+    const { map, hwpx } = loadHwpxAssets("F_YOYANG_APPLY");
+    const png = makeSeal({ name: "홍길동", fontBytes: FONT });
+    await expect(fillHwpx(hwpx, map, { values: { name: "홍길동 (서명 또는 인)" }, stamps: { consent: png } })).rejects.toThrow(/라벨.*수가 채우기로 바뀌었다/);
+  });
+  it("타원·비정사각 PNG 는 비율대로 들어간다(정사각 강제 없음)", async () => {
+    const { map, hwpx } = loadHwpxAssets("F_YOYANG_APPLY");
+    const png = makeSeal({ shape: "ellipse", arcText: "가나다 주식회사", centerText: "직인", fontBytes: FONT });
+    const { bytes } = await fillHwpx(hwpx, map, { values: {}, stamps: { applicant: png } });
+    const sec = strFromU8(unzipSync(bytes)["Contents/section0.xml"]!);
+    const pic = [...sec.matchAll(/<hp:pic [^>]*>[\s\S]*?<\/hp:pic>/g)].find((m) => m[0].includes('binaryItemIDRef="seal1"'))![0];
+    const sz = /<hp:sz width="(\d+)" widthRelTo="ABSOLUTE" height="(\d+)"/.exec(pic)!;
+    expect(Number(sz[2]) / Number(sz[1])).toBeCloseTo(Math.round(480 * 0.72) / 480, 2);
+    expect(pic).toContain(`<hp:imgDim dimwidth="${480 * 75}" dimheight="${Math.round(480 * 0.72) * 75}"/>`);
+  });
   it("요양급여: 자리 3곳에 찍으면 BinData 1장·매니페스트 항목 1·hp:pic 3, 없는 자리는 건너뛴다", async () => {
     const { map, hwpx } = loadHwpxAssets("F_YOYANG_APPLY");
     const png = makeSeal({ name: "홍길동", fontBytes: FONT });

@@ -14,9 +14,10 @@ import { ACCIDENT_KINDS, CLAIM_TYPES, TAGS, type ClaimInput } from "../core/type
 import { fillHwpx } from "../fill/hwpx.js";
 import { fillForm } from "../fill/overlay.js";
 import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "../fill/registry.js";
-import { resolveStamp, stampSpots } from "../stamp/resolve.js";
+import { pngInfo } from "../stamp/png.js";
+import { buildStamps, resolveStamp } from "../stamp/resolve.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.1" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.2" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 
@@ -27,28 +28,32 @@ function text(obj: unknown) {
   return { content: [{ type: "text" as const, text: s }] };
 }
 
+/** base64 PNG 상한 — 도장은 수십 KB 면 충분하다. 상한이 없으면 압축 폭탄 PNG 가 서버 메모리를 쓴다 */
+const PNG_B64_MAX = 2_000_000;
 const stampSchema = z
   .object({
-    name: z.string().optional().describe("성명인 이름(2~4자). 본인 또는 명의자 동의가 있는 이름만"),
+    name: z.string().max(20).optional().describe("성명인 이름(2~4자). 본인 또는 명의자 동의가 있는 이름만. 동봉 글꼴(나눔고딕)에 없는 글자(한자 등)는 오류"),
     shape: z.enum(["circle", "square", "ellipse"]).optional(),
-    png_base64: z.string().optional().describe("이미 있는 도장 PNG(투명 배경)"),
-    spot: z.string().optional().describe("찍을 자리(쉼표 구분). 기본 = 지도에 있는 신청인 자리 전부(applicant·delegation·consent). 자리 이름은 get_form_catalog(form_id).stamps"),
+    png_base64: z.string().max(PNG_B64_MAX).optional().describe("이미 있는 도장 PNG(투명 배경, 4096px 이하)"),
+    spot: z.string().max(200).optional().describe("찍을 자리(쉼표 구분). 기본 = 지도에 있는 신청인 자리 전부(applicant·delegation·consent). 자리 이름은 get_form_catalog(form_id).stamps. 없는 이름은 오류"),
   })
   .optional()
   .describe("도장. PDF·한글(hwpx) 출력 모두 신청인 서명란에 찍는다. 본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다(사용인감 성격)");
 
 type StampInput = z.infer<typeof stampSchema>;
 
-function stampsFrom(stamp: StampInput, font: Uint8Array, available: string[]): Record<string, Uint8Array> | undefined {
+const loadFont = () => new Uint8Array(readFileSync(fontPath()));
+
+function stampsFrom(stamp: StampInput, available: string[], font?: Uint8Array): Record<string, Uint8Array> | undefined {
   if (!stamp) return undefined;
-  const png = resolveStamp({ name: stamp.name, shape: stamp.shape, png: stamp.png_base64 ? new Uint8Array(Buffer.from(stamp.png_base64, "base64")) : undefined }, font);
-  return Object.fromEntries(stampSpots(available, stamp.spot).map((k) => [k, png]));
+  const spec = { name: stamp.name, shape: stamp.shape, png: stamp.png_base64 ? new Uint8Array(Buffer.from(stamp.png_base64, "base64")) : undefined };
+  return buildStamps(spec, stamp.spot, available, () => font ?? loadFont());
 }
 
 async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf", stamp?: StampInput) {
   if (format === "hwpx") {
     const { map, hwpx } = loadHwpxAssets(formId);
-    const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFrom(stamp, new Uint8Array(readFileSync(fontPath())), Object.keys(map.stamps ?? {})) });
+    const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFrom(stamp, Object.keys(map.stamps ?? {})) });
     return {
       content: [
         { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "hwpx", source_sha256: map.source_sha256, report }, null, 2) },
@@ -57,7 +62,7 @@ async function fillAndPack(formId: string, values: Record<string, string | boole
     };
   }
   const { map, pdf, font } = loadAssets(formId);
-  const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps: stampsFrom(stamp, font, Object.keys(map.stamps ?? {})) });
+  const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps: stampsFrom(stamp, Object.keys(map.stamps ?? {}), font) });
   return {
     content: [
       { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "pdf", source_sha256: map.source_sha256, report }, null, 2) },
@@ -129,19 +134,20 @@ export function registerTools(server: McpServer): void {
       description:
         "이름으로 성명인(원형·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(투명 배경)를 만들어 base64 로 돌려준다. 본인 또는 명의자 동의가 있는 이름만 쓴다. 등록 인감을 흉내 내는 용도가 아니다(사용인감 성격). fill_form 의 stamp.name 으로 바로 찍을 수도 있다.",
       inputSchema: {
-        name: z.string().optional().describe("성명인 이름(2~4자)"),
+        name: z.string().max(20).optional().describe("성명인 이름(2~4자). 동봉 글꼴(나눔고딕)에 없는 글자(한자 등)는 오류"),
         shape: z.enum(["circle", "square", "ellipse"]).optional().describe("기본 circle"),
-        arc_text: z.string().optional().describe("원주 상단 법인명(있으면 법인형)"),
-        center_text: z.string().optional().describe("중심 문자. 줄바꿈은 \\n"),
-        bottom_text: z.string().optional().describe("원주 하단 부문자(사업자번호 등)"),
-        inner_ring: z.number().optional().describe("이중선 두께 px"),
+        arc_text: z.string().max(40).optional().describe("원주 상단 법인명(있으면 법인형)"),
+        center_text: z.string().max(20).optional().describe("중심 문자. 줄바꿈은 \\n"),
+        bottom_text: z.string().max(40).optional().describe("원주 하단 부문자(사업자번호 등)"),
+        inner_ring: z.number().min(0).max(20).optional().describe("이중선 두께 px"),
       },
     },
     async (a) => {
-      const png = resolveStamp({ name: a.name, shape: a.shape, arcText: a.arc_text, centerText: a.center_text?.replace(/\\n/g, "\n"), bottomText: a.bottom_text, innerRing: a.inner_ring }, new Uint8Array(readFileSync(fontPath())));
+      const png = resolveStamp({ name: a.name, shape: a.shape, arcText: a.arc_text, centerText: a.center_text?.replace(/\\n/g, "\n"), bottomText: a.bottom_text, innerRing: a.inner_ring }, loadFont());
+      const { width, height } = pngInfo(png);
       return {
         content: [
-          { type: "text" as const, text: JSON.stringify({ bytes: png.length, width: 480, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }) },
+          { type: "text" as const, text: JSON.stringify({ bytes: png.length, width, height, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }) },
           { type: "resource" as const, resource: { uri: "sanjae-apply://seal.png", mimeType: "image/png", blob: Buffer.from(png).toString("base64") } },
         ],
       };
