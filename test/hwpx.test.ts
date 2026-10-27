@@ -4,8 +4,9 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { strFromU8, unzipSync } from "fflate";
-import { fillHwpx, hwpxText, type HwpxMap } from "../src/fill/hwpx.js";
+import { fillHwpx, hwpxText, STAMP_LABEL, type HwpxMap } from "../src/fill/hwpx.js";
 import { fillableHwpxForms, hwpxPath, loadHwpxAssets, loadMap } from "../src/fill/registry.js";
+import { makeSeal } from "../src/stamp/seal.js";
 
 process.env.SANJAE_ROOT = process.cwd(); // src/ 에서 import 하면 세 단계 위가 레포 밖이다
 const forms = fillableHwpxForms();
@@ -77,6 +78,45 @@ describe("hwpx 지도", () => {
       });
     });
   }
+});
+
+describe("hwpx 도장", () => {
+  const FONT = new Uint8Array(readFileSync("fonts/NanumGothic-Regular.ttf"));
+  for (const id of forms) {
+    const { map, hwpx } = loadHwpxAssets(id);
+    const spots = map.stamps ?? {};
+    it(`${id}: 도장 자리 키가 PDF 지도와 같고 앵커 라벨이 실제로 있다`, () => {
+      const pdfSpots = Object.keys(loadMap(id).stamps ?? {}).sort();
+      expect(Object.keys(spots).sort()).toEqual(pdfSpots);
+      const sec = strFromU8(unzipSync(hwpx)["Contents/section0.xml"]!);
+      const n = sec.split(STAMP_LABEL).length - 1;
+      for (const [k, s] of Object.entries(spots)) {
+        expect(s.anchor, `${k}.anchor < 라벨 ${n}`).toBeLessThan(n);
+        expect(s.size, `${k}.size`).toBeGreaterThan(0);
+      }
+    });
+  }
+  it("요양급여: 자리 3곳에 찍으면 BinData 1장·매니페스트 항목 1·hp:pic 3, 없는 자리는 건너뛴다", async () => {
+    const { map, hwpx } = loadHwpxAssets("F_YOYANG_APPLY");
+    const png = makeSeal({ name: "홍길동", fontBytes: FONT });
+    const { bytes, report } = await fillHwpx(hwpx, map, { values: { name: "홍길동" }, stamps: { applicant: png, delegation: png, consent: png, nowhere: png } });
+    expect(report.stamped).toEqual(["applicant", "delegation", "consent"]);
+    expect(report.stamps_skipped).toEqual(["nowhere"]);
+    const files = unzipSync(bytes);
+    expect(Object.keys(files)[0]).toBe("mimetype");
+    expect(files["BinData/seal1.png"]).toEqual(png);
+    const hpf = strFromU8(files["Contents/content.hpf"]!);
+    expect(hpf.match(/<opf:item id="seal1"/g)?.length).toBe(1);
+    expect(hpf).toContain('href="BinData/seal1.png" media-type="image/png" isEmbeded="1"');
+    const sec = strFromU8(files["Contents/section0.xml"]!);
+    expect(sec.match(/<hp:pic /g)?.length).toBe(3);
+    expect(sec.match(/binaryItemIDRef="seal1"/g)?.length).toBe(3);
+    // 떠 있는 개체(글 앞) — 글자를 밀지 않는다
+    expect(sec.match(/treatAsChar="0"[^>]*vertRelTo="PAPER" horzRelTo="PAPER"/g)?.length).toBe(3);
+    // 도장 없이 채운 것과 글자가 같다
+    const plain = await fillHwpx(hwpx, map, { values: { name: "홍길동" } });
+    expect(hwpxText(bytes)).toBe(hwpxText(plain.bytes));
+  });
 });
 
 describe("hwpx 엔진", () => {

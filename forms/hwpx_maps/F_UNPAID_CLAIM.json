@@ -430,5 +430,13 @@
       "p": 4,
       "text": "                                            대 리 인 : {agent_name}          (서명 또는 인) ☎ {agent_phone}"
     }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "x": 426.8,
+      "y": 712.9,
+      "size": 42
+    }
   }
 }

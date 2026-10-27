@@ -280,5 +280,25 @@
       "p": 2,
       "text": "         신 청 인:   {applicant_name}   (서명 또는 인)    전화번호: {phone}    휴대전화: {applicant_mobile}"
     }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "x": 245.2,
+      "y": 525.7,
+      "size": 42
+    },
+    "delegation": {
+      "anchor": 0,
+      "x": 242.7,
+      "y": 761.9,
+      "size": 42
+    },
+    "consent": {
+      "anchor": 0,
+      "x": 451.1,
+      "y": 676.3,
+      "size": 42
+    }
   }
 }

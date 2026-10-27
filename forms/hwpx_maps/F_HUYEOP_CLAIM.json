@@ -255,5 +255,19 @@
       "p": 3,
       "text": "대 리 인      {agent_name}         (서명 또는 인) ☎ {agent_phone}"
     }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "x": 359.8,
+      "y": 594.9,
+      "size": 42
+    },
+    "delegation": {
+      "anchor": 0,
+      "x": 250.8,
+      "y": 697.2,
+      "size": 42
+    }
   }
 }

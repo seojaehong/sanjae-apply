@@ -470,5 +470,31 @@
       "p": 4,
       "text": "   휴대전화 : {applicant_mobile}   (유선전화 : {applicant_phone} )  E-mail : {email}"
     }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "x": 291.2,
+      "y": 606.0,
+      "size": 42
+    },
+    "delegation": {
+      "anchor": 0,
+      "x": 255.2,
+      "y": 700.7,
+      "size": 42
+    },
+    "consent": {
+      "anchor": 0,
+      "x": 377.0,
+      "y": 549.0,
+      "size": 42
+    },
+    "substitute_applicant": {
+      "anchor": 5,
+      "x": 263.6,
+      "y": 347.5,
+      "size": 42
+    }
   }
 }

@@ -535,5 +535,31 @@
       "p": 2,
       "text": "                             신고인(근로자) : {commute_applicant_name}                  (서명 또는 인)"
     }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "x": 457.8,
+      "y": 763.5,
+      "size": 42
+    },
+    "delegation": {
+      "anchor": 0,
+      "x": 251.4,
+      "y": 702.7,
+      "size": 42
+    },
+    "consent": {
+      "anchor": 4,
+      "x": 491.2,
+      "y": 760.4,
+      "size": 42
+    },
+    "commute_reporter": {
+      "anchor": 8,
+      "x": 429.7,
+      "y": 774.7,
+      "size": 42
+    }
   }
 }

@@ -5,6 +5,7 @@
 // 주소 체계 = (표 번호 t, rowAddr r, colAddr c, 문단 순번 p) — 표 번호는 섹션 안 <hp:tbl> 등장 순서(안쪽 표 포함, scripts/probe_hwpx.py 와 같다).
 // 지도 JSON 은 forms/hwpx_maps/F_*.json, 칸 이름은 PDF 지도(forms/maps)와 똑같이 쓴다.
 
+import { createHash } from "node:crypto";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 
 export type HwpxOp =
@@ -29,12 +30,21 @@ export interface HwpxTemplate {
   text: string;
 }
 
+/** 도장 자리 — 그림을 「(서명 또는 인」 라벨 anchor 번째(0부터, 섹션 XML 등장 순) 문단에 떠 있는 개체로 붙이고, 위치는 그 문단이 놓인 쪽의 종이 기준 절대좌표(pt, 왼쪽 위 원점 = PDF 지도와 같은 값) */
+export interface HwpxStampSpot {
+  anchor: number;
+  x: number;
+  y: number;
+  size: number;
+}
+
 export interface HwpxMap {
   form_id: string;
   source_file: string;
   source_sha256: string;
   slots: Record<string, HwpxOp>;
   templates?: Record<string, HwpxTemplate>;
+  stamps?: Record<string, HwpxStampSpot>;
   _about?: string;
 }
 
@@ -42,6 +52,59 @@ export interface HwpxFillReport {
   filled: string[];
   skipped: string[];
   errors: string[];
+  stamped?: string[];
+  stamps_skipped?: string[];
+}
+
+/** 도장 앵커 라벨. 닫는 괄호를 빼는 것은 run 이 「(서명 또는 인」+「)」로 갈라진 서식(장해급여)이 있어서다 */
+export const STAMP_LABEL = "(서명 또는 인";
+const HU = 100; // 1pt = 100 HWPUNIT
+
+/** 섹션 XML 에서 anchor 번째 라벨이 든 문단의 시작 위치. 가장 가까운 앞쪽 <hp:p 가 그 라벨을 품은 가장 안쪽 문단이다 */
+function stampAnchorPara(xml: string, anchor: number): number {
+  let from = 0;
+  for (let i = 0; i <= anchor; i++) {
+    const at = xml.indexOf(STAMP_LABEL, from);
+    if (at < 0) throw new Error(`도장 앵커 라벨 ${anchor}번째가 없다(라벨 ${i}개)`);
+    if (i === anchor) {
+      const p = xml.lastIndexOf("<hp:p ", at);
+      if (p < 0) throw new Error("라벨이 문단 밖에 있다");
+      return p;
+    }
+    from = at + STAMP_LABEL.length;
+  }
+  throw new Error("unreachable");
+}
+
+function picXml(binId: string, spot: HwpxStampSpot, zOrder: number, seq: number): string {
+  const sz = Math.round(spot.size * HU);
+  const x = Math.round(spot.x * HU) - Math.floor(sz / 2);
+  const y = Math.round(spot.y * HU) - Math.floor(sz / 2);
+  const id = 1900000000 + seq;
+  return (
+    `<hp:pic id="${id}" zOrder="${zOrder}" numberingType="PICTURE" textWrap="IN_FRONT_OF_TEXT" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" href="" groupLevel="0" instid="${id + 1}" reverse="0">` +
+    `<hp:offset x="0" y="0"/><hp:orgSz width="${sz}" height="${sz}"/><hp:curSz width="${sz}" height="${sz}"/><hp:flip horizontal="0" vertical="0"/>` +
+    `<hp:rotationInfo angle="0" centerX="${Math.floor(sz / 2)}" centerY="${Math.floor(sz / 2)}" rotateimage="1"/>` +
+    `<hp:renderingInfo><hc:transMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:scaMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:rotMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/></hp:renderingInfo>` +
+    `<hc:img binaryItemIDRef="${binId}" bright="0" contrast="0" effect="REAL_PIC" alpha="0"/>` +
+    `<hp:imgRect><hc:pt0 x="0" y="0"/><hc:pt1 x="${sz}" y="0"/><hc:pt2 x="${sz}" y="${sz}"/><hc:pt3 x="0" y="${sz}"/></hp:imgRect>` +
+    `<hp:imgClip left="0" right="36000" top="0" bottom="36000"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:imgDim dimwidth="36000" dimheight="36000"/><hp:effects/>` +
+    `<hp:sz width="${sz}" widthRelTo="ABSOLUTE" height="${sz}" heightRelTo="ABSOLUTE" protect="0"/>` +
+    `<hp:pos treatAsChar="0" affectLSpacing="0" flowWithText="0" allowOverlap="1" holdAnchorAndSO="0" vertRelTo="PAPER" horzRelTo="PAPER" vertAlign="TOP" horzAlign="LEFT" vertOffset="${y}" horzOffset="${x}"/>` +
+    `<hp:outMargin left="0" right="0" top="0" bottom="0"/></hp:pic>`
+  );
+}
+
+/** 문단 첫 run 앞에 그림 run 을 넣고 그 문단의 linesegarray 를 지운다(한글이 다시 계산) */
+function insertPicIntoPara(xml: string, paraStart: number, pic: string): string {
+  const pend = xml.indexOf("</hp:p>", paraStart);
+  if (pend < 0) throw new Error("문단 끝 없음");
+  const body = xml.slice(paraStart, pend);
+  const firstRun = body.indexOf("<hp:run");
+  if (firstRun < 0) throw new Error("문단에 run 이 없다");
+  const cp = /<hp:run charPrIDRef="(\d+)"/.exec(body)?.[1] ?? "0";
+  const body2 = (body.slice(0, firstRun) + `<hp:run charPrIDRef="${cp}">${pic}</hp:run>` + body.slice(firstRun)).replace(/<hp:linesegarray>[\s\S]*?<\/hp:linesegarray>/g, "");
+  return xml.slice(0, paraStart) + body2 + xml.slice(pend);
 }
 
 const BOX_RE = /\[\s*\]|□|☐/g; // 「[  ]」 → 「[V]」, 「□」 → 「■」
@@ -320,6 +383,8 @@ interface Edit extends Span {
 
 export interface FillHwpxOptions {
   values: Record<string, string | boolean>;
+  /** 도장 PNG(투명 배경). 키는 map.stamps 의 키. 지도에 자리가 없으면 건너뛰고 report.stamps_skipped 에 적는다 */
+  stamps?: Record<string, Uint8Array> | undefined;
 }
 
 export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHwpxOptions): Promise<{ bytes: Uint8Array; report: HwpxFillReport }> {
@@ -592,6 +657,43 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
   });
 
   if (fixer.changed) files[headerName] = strToU8(fixer.xml);
+
+  // 도장 — 그림을 BinData 에 넣고 content.hpf 매니페스트에 등록한 뒤, 앵커 문단에 떠 있는 개체(글 앞)로 붙인다. 글자를 밀지 않으니 쪽이 안 밀린다
+  if (opts.stamps) {
+    report.stamped = [];
+    report.stamps_skipped = [];
+    const hpfName = "Contents/content.hpf";
+    if (!files[hpfName]) throw new Error("hwpx 에 Contents/content.hpf 가 없다");
+    let hpf = strFromU8(files[hpfName]);
+    let sec0 = strFromU8(files[sections[0]!]!);
+    let zOrder = Math.max(0, ...[...sec0.matchAll(/zOrder="(\d+)"/g)].map((m) => Number(m[1])));
+    const binIds = new Map<Uint8Array, string>();
+    let seq = 0;
+    for (const [key, png] of Object.entries(opts.stamps)) {
+      const spot = map.stamps?.[key];
+      if (!spot) {
+        report.stamps_skipped.push(key);
+        continue;
+      }
+      let binId = binIds.get(png);
+      if (!binId) {
+        binId = `seal${binIds.size + 1}`;
+        binIds.set(png, binId);
+        files[`BinData/${binId}.png`] = png;
+        const hashkey = createHash("md5").update(png).digest("base64");
+        const item = `<opf:item id="${binId}" href="BinData/${binId}.png" media-type="image/png" isEmbeded="1" hashkey="${hashkey}"/>`;
+        if (!hpf.includes("</opf:manifest>")) throw new Error("content.hpf 에 manifest 가 없다");
+        hpf = hpf.replace("</opf:manifest>", `${item}</opf:manifest>`);
+      }
+      const para = stampAnchorPara(sec0, spot.anchor);
+      sec0 = insertPicIntoPara(sec0, para, picXml(binId, spot, ++zOrder, seq++ * 2));
+      report.stamped.push(key);
+    }
+    if (binIds.size) {
+      files[hpfName] = strToU8(hpf);
+      files[sections[0]!] = strToU8(sec0);
+    }
+  }
 
   // mimetype 은 zip 첫 항목·무압축이어야 한글이 연다
   const ordered: Record<string, [Uint8Array, { level: 0 | 6 }]> = {};

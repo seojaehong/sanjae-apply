@@ -16,7 +16,7 @@ import { fillForm } from "../fill/overlay.js";
 import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "../fill/registry.js";
 import { resolveStamp, stampSpots } from "../stamp/resolve.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.0" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.1" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 
@@ -35,7 +35,7 @@ const stampSchema = z
     spot: z.string().optional().describe("찍을 자리(쉼표 구분). 기본 = 지도에 있는 신청인 자리 전부(applicant·delegation·consent). 자리 이름은 get_form_catalog(form_id).stamps"),
   })
   .optional()
-  .describe("도장. PDF 출력에서 신청인 서명란에 찍는다. 본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다(사용인감 성격)");
+  .describe("도장. PDF·한글(hwpx) 출력 모두 신청인 서명란에 찍는다. 본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다(사용인감 성격)");
 
 type StampInput = z.infer<typeof stampSchema>;
 
@@ -48,7 +48,7 @@ function stampsFrom(stamp: StampInput, font: Uint8Array, available: string[]): R
 async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf", stamp?: StampInput) {
   if (format === "hwpx") {
     const { map, hwpx } = loadHwpxAssets(formId);
-    const { bytes, report } = await fillHwpx(hwpx, map, { values });
+    const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFrom(stamp, new Uint8Array(readFileSync(fontPath())), Object.keys(map.stamps ?? {})) });
     return {
       content: [
         { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "hwpx", source_sha256: map.source_sha256, report }, null, 2) },

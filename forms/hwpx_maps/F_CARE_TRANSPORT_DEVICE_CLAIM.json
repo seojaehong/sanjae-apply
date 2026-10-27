@@ -590,5 +590,25 @@
       "p": 4,
       "text": "   휴대전화 : {contact_mobile}        (유선전화 : {contact_phone}        )  E-mail : {email}"
     }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "x": 291.2,
+      "y": 605.4,
+      "size": 42
+    },
+    "delegation": {
+      "anchor": 0,
+      "x": 252.6,
+      "y": 703.8,
+      "size": 42
+    },
+    "consent": {
+      "anchor": 0,
+      "x": 418.1,
+      "y": 537.1,
+      "size": 42
+    }
   }
 }

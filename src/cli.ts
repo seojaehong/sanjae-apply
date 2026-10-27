@@ -103,24 +103,25 @@ async function main(argv: string[]): Promise<void> {
     const { opt } = opts(rest);
     if (!formId || !valuesPath || !opt["out"]) throw new Error("사용: sanjae-apply fill <FORM_ID> <values.json> --out <파일.pdf | 파일.hwpx>");
     const values = JSON.parse(readFileSync(valuesPath, "utf8")) as Record<string, string | boolean>;
+    // 도장: --stamp 이름(성명인 생성) 또는 --stamp-png 파일. 자리는 지도의 신청인 자리 전부(applicant·delegation·consent), --stamp-spot a,b 로 바꿈. PDF·한글 공통
+    const stampsFor = (available: string[]): Record<string, Uint8Array> | undefined => {
+      if (!opt["stamp"] && !opt["stamp-png"]) return undefined;
+      const png = resolveStamp(
+        { name: opt["stamp"], shape: opt["stamp-shape"] as SealShape | undefined, png: opt["stamp-png"] ? new Uint8Array(readFileSync(opt["stamp-png"])) : undefined },
+        new Uint8Array(readFileSync(fontPath())),
+      );
+      return Object.fromEntries(stampSpots(available, opt["stamp-spot"]).map((k) => [k, png]));
+    };
     if (opt["out"].toLowerCase().endsWith(".hwpx")) {
       // 한글 출력 — 공단 HWP 를 변환한 hwpx 에 값을 넣는다(한글 없이 돈다. 한글 2014+ 로 연다)
       const { map, hwpx } = loadHwpxAssets(formId);
-      const { bytes, report } = await fillHwpx(hwpx, map, { values });
+      const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFor(Object.keys(map.stamps ?? {})) });
       writeFileSync(opt["out"], bytes);
-      process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "hwpx", filled: report.filled.length, skipped: report.skipped }, null, 2) + "\n");
+      process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "hwpx", filled: report.filled.length, skipped: report.skipped, stamped: report.stamped, stamps_skipped: report.stamps_skipped }, null, 2) + "\n");
       return;
     }
     const { map, pdf, font } = loadAssets(formId);
-    // 도장: --stamp 이름(성명인 생성) 또는 --stamp-png 파일. 자리는 지도의 신청인 자리 전부(applicant·delegation·consent), --stamp-spot a,b 로 바꿈
-    let stamps: Record<string, Uint8Array> | undefined;
-    if (opt["stamp"] || opt["stamp-png"]) {
-      const png = resolveStamp(
-        { name: opt["stamp"], shape: opt["stamp-shape"] as SealShape | undefined, png: opt["stamp-png"] ? new Uint8Array(readFileSync(opt["stamp-png"])) : undefined },
-        font,
-      );
-      stamps = Object.fromEntries(stampSpots(Object.keys(map.stamps ?? {}), opt["stamp-spot"]).map((k) => [k, png]));
-    }
+    const stamps = stampsFor(Object.keys(map.stamps ?? {}));
     const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps });
     writeFileSync(opt["out"], bytes);
     process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "pdf", written: report.written.length, skipped: report.skipped, shrunk: report.shrunk, stamped: report.stamped, stamps_skipped: report.stamps_skipped }, null, 2) + "\n");

@@ -88,7 +88,7 @@ claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp
 > [!TIP]
 > npm 에 올라가기 전에는 `sanjae-apply` 자리에 릴리스 파일 주소를 씁니다.
 > ```bash
-> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.5.0/sanjae-apply-0.5.0.tgz mcp
+> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.5.1/sanjae-apply-0.5.1.tgz mcp
 > ```
 
 붙이고 나서 AI 에게 이렇게 말해 보세요.
@@ -129,7 +129,7 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 
 - `--stamp 이름` 이면 성명인(원형 기본, `--stamp-shape square|ellipse`)을 만들어 찍고 `--stamp-png` 면 가진 도장 PNG(투명 배경)를 그대로 찍습니다. 인주색 적색, 지름 42pt(약 1.5cm).
 - 자리는 서식마다 지도에 정해져 있고 `catalog <FORM_ID>` 의 `stamps` 에 이름이 나옵니다. 비우면 **신청인 본인 자리 전부**(`applicant` 본문 · `delegation` 위임장 · `consent` 개인정보 동의)에 찍고 `--stamp-spot a,b` 로 고릅니다. 타인 서명란(`confirm` 확인자 · `commute_reporter` 신고인 · `choice_confirmer` 등)은 이름을 적어 줄 때만 찍습니다. 지도에 없는 자리는 건너뛰고 결과의 `stamps_skipped` 에 적습니다.
-- 지금은 **PDF 출력에만** 찍힙니다. 한글(hwpx) 출력은 한글에서 열어 그림을 넣어 주세요.
+- PDF 와 한글(hwpx) 출력 **둘 다** 찍힙니다. 한글에서는 서명란 문단에 「글 앞으로」 떠 있는 그림으로 들어가 글자를 밀지 않습니다(쪽 밀림 0, 11종 실측). 한글에서 열어 옮기거나 지울 수 있습니다.
 - 도장은 명의자의 인격 표지입니다. **본인 또는 명의자 동의가 있는 이름만** 넣어 주세요. 등록 인감을 흉내 내는 용도가 아닙니다(사용인감 성격).
 
 ### 🖨️ 한글(hwpx) 출력은 어떻게 되나
@@ -156,7 +156,7 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 
 ## 📄 채울 수 있는 서식 12종
 
-| 서식 | 칸 수 | PDF | 한글 | 도장 자리(PDF) |
+| 서식 | 칸 수 | PDF | 한글 | 도장 자리 |
 |---|---:|:-:|:-:|:-:|
 | 요양급여신청서 (별지 제2호, 2026.7.7 개정) | 35 | ✅ | ✅ | 3 |
 | 출퇴근 재해 합본 (신청서 + 발생신고서) | 79 | ✅ | ✅ | 4 |
@@ -234,12 +234,13 @@ python scripts/verify_hwpx_fill.py out.hwpx test/samples/F_YOYANG_APPLY.json for
 src/core     규칙 S-01~S-13 · 서식/첨부 카탈로그 · 금지어 필터(순수 TS, IO 없음)
 src/fill     overlay.ts  pdf-lib 오버레이(text / boxes / check / multiline)
              hwpx.ts     한글 hwpx 채우기(cell / after / check / digits / boxes / group, 글자색·크기 교정)
-src/mcp      도구 4개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
+src/stamp    seal.ts 도장 PNG 생성(글리프 윤곽 래스터) · resolve.ts 자리 선택 — PDF·hwpx 날인은 overlay.ts·hwpx.ts 의 stamps
+src/mcp      도구 5개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
 src/laws     법제처 Open API 클라이언트
 api/mcp      Vercel 함수
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
-scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · mcp_dryrun.mjs
-test/        vitest 159
+scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
+test/        vitest 189
 docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드
 ```
 
