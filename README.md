@@ -85,7 +85,6 @@ claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp
 같은 `command` / `args` 를 각 도구의 MCP 설정에 넣습니다. stdio 전송이면 전부 됩니다.
 </details>
 
-
 붙이고 나서 AI 에게 이렇게 말해 보세요.
 
 > 「출퇴근 중 교통사고인데 상대 운전자가 있어요. 요양급여 신청하려면 뭐가 필요해요?」
