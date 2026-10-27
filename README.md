@@ -240,7 +240,7 @@ src/laws     법제처 Open API 클라이언트
 api/mcp      Vercel 함수
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
-test/        vitest 189
+test/        vitest 197 (formal_rules.test.ts 전수 10,368건 포함)
 docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드
 ```
 

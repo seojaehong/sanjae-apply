@@ -7,3 +7,6 @@ dist/
 forms/raw/
 
 .vercel
+
+# 검증 스킬 증거(.claude/skills/verify-sanjae-apply)
+.verify/
