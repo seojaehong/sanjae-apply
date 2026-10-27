@@ -42,7 +42,8 @@ export interface MultilineSlot {
   size?: number;
   lineHeight?: number;
 }
-export type Slot = TextSlot | BoxesSlot | CheckSlot | MultilineSlot;
+/** label = 서식 원문 글자로 쓴 칸 설명. AI 클라이언트가 칸 이름을 고를 때 본다(get_form_catalog 의 slot_labels) */
+export type Slot = (TextSlot | BoxesSlot | CheckSlot | MultilineSlot) & { label?: string };
 
 /** 도장 자리 — 「(서명 또는 인)」 글자 상자 중심(왼쪽 위 원점 pt)과 지름 */
 export interface StampSpot {

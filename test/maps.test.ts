@@ -26,6 +26,9 @@ describe("forms/maps 공통", () => {
         expect(createHash("sha256").update(readFileSync(pdfPath)).digest("hex")).toBe(map.source_sha256);
       });
 
+      it("모든 칸에 label(서식 원문 글자)이 있다 — AI 클라이언트가 칸을 고르는 유일한 단서(0.5.3 Desktop 이 35칸 중 24칸만 쓴 원인)", () => {
+        for (const [k, s] of Object.entries(map.slots)) expect((s.label ?? "").trim().length, `${k}.label`).toBeGreaterThan(1);
+      });
       it("모든 칸이 쪽 안에 있고 page 가 1 이상이다", () => {
         for (const [k, s] of Object.entries(map.slots)) {
           expect(s.page, k).toBeGreaterThanOrEqual(1);

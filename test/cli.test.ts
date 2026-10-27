@@ -29,7 +29,8 @@ describe.skipIf(!existsSync(CLI))("CLI", () => {
   it("fill: 합성 값으로 PDF 파일을 만든다", () => {
     const outPdf = join(tmpdir(), "sanjae-apply", "cli_fill.pdf");
     const out = JSON.parse(run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", outPdf));
-    expect(out.written).toBe(30);
+    const sample = JSON.parse(readFileSync("test/samples/F_YOYANG_APPLY.json", "utf8")) as Record<string, unknown>;
+    expect(out.written).toBe(Object.values(sample).filter((v) => v !== false && v !== "").length);
     expect(readFileSync(outPdf).subarray(0, 5).toString()).toBe("%PDF-");
   });
 

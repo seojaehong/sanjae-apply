@@ -116,7 +116,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     {
       title: "공단 서식 정본 대장",
       description:
-        "근로복지공단 서식자료실에서 받은 서식 13종의 파일명·개정일·sha256·게시글 URL 과, 지금 채울 수 있는 서식(fillable)과 그 칸 이름(slots)·도장 자리 이름(stamps). form_id 를 주면 그 서식만.",
+        "근로복지공단 서식자료실에서 받은 서식 13종의 파일명·개정일·sha256·게시글 URL 과, 지금 채울 수 있는 서식(fillable)과 그 칸 이름(slots)·칸 설명(slot_labels, 서식 원문 글자)·도장 자리 이름(stamps). form_id 를 주면 그 서식만. fill_form 전에 이것으로 칸을 고른다.",
       inputSchema: { form_id: z.string().optional().describe("예: F_YOYANG_APPLY") },
     },
     async ({ form_id }) => {
@@ -127,8 +127,9 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
       const fillable_hwpx = fillableHwpxForms();
       const m = form_id && fillable.includes(form_id) ? loadMap(form_id) : undefined;
       const slots = m ? Object.keys(m.slots) : undefined;
+      const slot_labels = m ? Object.fromEntries(Object.entries(m.slots).map(([k, s]) => [k, `${s.label ?? ""}${s.kind === "check" ? " (체크: true)" : ""}`])) : undefined;
       const stamps = m ? Object.keys(m.stamps ?? {}) : undefined;
-      return text({ form: known, fillable, fillable_hwpx, slots, stamps, entries: forms });
+      return text({ form: known, fillable, fillable_hwpx, slots, slot_labels, stamps, entries: forms });
     },
   );
 
@@ -137,7 +138,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     {
       title: "서식 채우기(공단 정본 PDF 오버레이)",
       description:
-        "form_id 의 공단 정본 서식에 값을 넣어 base64 로 돌려준다. format='pdf'(기본)는 정본 PDF 오버레이, format='hwpx'는 한글 문서(한글 2014+ 로 열어 고칠 수 있다). 채울 수 있는 서식과 칸 이름은 get_form_catalog(form_id) 의 fillable·fillable_hwpx·slots 로 본다(칸 이름은 두 형식이 같다). 서버에 저장하지 않는다. 체크 칸은 true 일 때만 찍는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다).",
+        "form_id 의 공단 정본 서식에 값을 넣어 base64 로 돌려준다. format='pdf'(기본)는 정본 PDF 오버레이, format='hwpx'는 한글 문서(한글 2014+ 로 열어 고칠 수 있다). 먼저 get_form_catalog(form_id) 의 slot_labels 로 칸을 고른다(칸 이름은 두 형식이 같다). 서식의 선택지(사업주여부·친인척여부·근로자유형·신청 구분·예/아니오·개인정보 동의 등)는 해당 체크 칸에 true 를 넣어야 찍힌다. 아는 값은 빠짐없이 넣는다. 서버에 저장하지 않는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다). 사용자가 도장·날인·인감을 말하면 stamp 를 넣는다(넣지 않으면 서명란이 빈다).",
       inputSchema: {
         form_id: z.string().describe("예: F_YOYANG_APPLY, F_HUYEOP_CLAIM …"),
         values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("칸 이름 → 값"),

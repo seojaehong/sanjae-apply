@@ -95,7 +95,8 @@ async function main(argv: string[]): Promise<void> {
     const cat = JSON.parse(readFileSync(catalogPath(), "utf8")) as { forms: { ids: string[] }[] };
     const entries = id ? cat.forms.filter((f) => f.ids.includes(id)) : cat.forms;
     const m = id && fillableForms().includes(id) ? loadMap(id) : undefined;
-    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: m ? Object.keys(m.slots) : undefined, stamps: m ? Object.keys(m.stamps ?? {}) : undefined, entries };
+    const slot_labels = m ? Object.fromEntries(Object.entries(m.slots).map(([k, s]) => [k, s.label ?? ""])) : undefined;
+    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: m ? Object.keys(m.slots) : undefined, slot_labels, stamps: m ? Object.keys(m.stamps ?? {}) : undefined, entries };
     process.stdout.write(JSON.stringify(out, null, 2) + "\n");
     return;
   }

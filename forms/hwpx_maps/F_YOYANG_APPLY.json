@@ -215,6 +215,251 @@
     "applicant_name": {
       "kind": "group",
       "template": "applicant"
+    },
+    "employer_relation_none": {
+      "kind": "check",
+      "t": 0,
+      "r": 8,
+      "c": 5,
+      "n": 1
+    },
+    "employer_relation_actual": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 5,
+      "n": 1
+    },
+    "employer_relation_subcontract": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 5,
+      "n": 2
+    },
+    "relative_none": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 5,
+      "n": 1
+    },
+    "relative_spouse": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 1
+    },
+    "relative_parent": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 2
+    },
+    "relative_child": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 3
+    },
+    "relative_sibling": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 4
+    },
+    "relative_other": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 5
+    },
+    "relative_other_text": {
+      "kind": "after",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "label": "기타 친인척("
+    },
+    "worker_type_labor_provider": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 2
+    },
+    "worker_type_sme_owner": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 3
+    },
+    "worker_type_sme_family": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 4
+    },
+    "worker_type_student_researcher": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 5
+    },
+    "worker_type_injured_child": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 5,
+      "n": 1
+    },
+    "worker_type_special": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 5,
+      "n": 2
+    },
+    "worker_type_field_trainee": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 5,
+      "n": 3
+    },
+    "prior_clinic1_name": {
+      "kind": "group",
+      "template": "prior_clinic1"
+    },
+    "prior_clinic1_address": {
+      "kind": "group",
+      "template": "prior_clinic1"
+    },
+    "prior_clinic2_name": {
+      "kind": "group",
+      "template": "prior_clinic2"
+    },
+    "prior_clinic2_address": {
+      "kind": "group",
+      "template": "prior_clinic2"
+    },
+    "delegator_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 24,
+      "c": 0,
+      "p": 1
+    },
+    "delegate_clinic_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 24,
+      "c": 11,
+      "p": 1
+    },
+    "other_comp_yes": {
+      "kind": "check",
+      "t": 38,
+      "r": 1,
+      "c": 1,
+      "n": 1
+    },
+    "other_comp_no": {
+      "kind": "check",
+      "t": 38,
+      "r": 1,
+      "c": 1,
+      "n": 2
+    },
+    "other_comp_date": {
+      "kind": "cell",
+      "t": 39,
+      "r": 1,
+      "c": 0
+    },
+    "other_comp_amount": {
+      "kind": "cell",
+      "t": 39,
+      "r": 1,
+      "c": 1
+    },
+    "other_comp_payer": {
+      "kind": "cell",
+      "t": 39,
+      "r": 1,
+      "c": 2
+    },
+    "consent_sensitive_yes": {
+      "kind": "check",
+      "t": 40,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_sensitive_no": {
+      "kind": "check",
+      "t": 40,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_promo_yes": {
+      "kind": "check",
+      "t": 42,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_promo_no": {
+      "kind": "check",
+      "t": 42,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_rehab_yes": {
+      "kind": "check",
+      "t": 44,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_rehab_no": {
+      "kind": "check",
+      "t": 44,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_return_yes": {
+      "kind": "check",
+      "t": 46,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_return_no": {
+      "kind": "check",
+      "t": 46,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_name": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "branch_name": {
+      "kind": "group",
+      "template": "branch"
     }
   },
   "templates": {
@@ -245,6 +490,34 @@
       "c": 0,
       "p": 2,
       "text": "                                                     신청인   {applicant_name}              (서명 또는 인)"
+    },
+    "prior_clinic1": {
+      "t": 0,
+      "r": 21,
+      "c": 1,
+      "p": 1,
+      "text": "  의료기관명: {prior_clinic1_name}                     소재지: {prior_clinic1_address}"
+    },
+    "prior_clinic2": {
+      "t": 0,
+      "r": 21,
+      "c": 1,
+      "p": 2,
+      "text": "  의료기관명: {prior_clinic2_name}                     소재지: {prior_clinic2_address}"
+    },
+    "consent_sign": {
+      "t": 38,
+      "r": 7,
+      "c": 0,
+      "p": 0,
+      "text": "                                                        성명  {consent_name}                   (서명 또는 인)"
+    },
+    "branch": {
+      "t": 38,
+      "r": 8,
+      "c": 0,
+      "p": 0,
+      "text": "근로복지공단  {branch_name}  지역본부(지사)장 귀하"
     }
   },
   "stamps": {

@@ -58,9 +58,10 @@ describe.skipIf(!ready)("F_YOYANG_APPLY PDF 오버레이", () => {
 
   it("합성 값이 전부 써지고 쪽 수는 그대로 4쪽이다", async () => {
     const { bytes, report } = await fillForm(new Uint8Array(pdf), map, { fontBytes: new Uint8Array(readFileSync(FONT)), values: SAMPLE });
-    // 안 찍은 체크(질병·출퇴근·「예」 3개)만 건너뛴다. 값이 있는 칸은 전부 써진다.
-    expect(report.skipped.sort()).toEqual(["claim_kind_commute", "claim_kind_disease", "fire_yes", "insurer_yes", "police_yes"]);
-    expect(report.written.length).toBe(Object.keys(map.slots).length - 5);
+    // 값이 없거나 false 인 칸만 건너뛴다. 값이 있는 칸은 전부 써진다.
+    const given = Object.keys(map.slots).filter((k) => { const v = (SAMPLE as Record<string, unknown>)[k]; return v !== undefined && v !== false && v !== ""; });
+    expect(report.written.sort()).toEqual(given.sort());
+    expect(report.skipped.length).toBe(Object.keys(map.slots).length - given.length);
     expect(report.shrunk).toEqual([]);
     expect(bytes.byteLength).toBeGreaterThan(pdf.byteLength * 0.5);
     const outDir = join(tmpdir(), "sanjae-apply");
