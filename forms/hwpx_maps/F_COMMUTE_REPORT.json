@@ -3,7 +3,7 @@
   "source_file": "F_COMMUTE_REPORT.hwpx",
   "source_sha256": "40cdc231b8831e666c67690c0dfce48c1d9c4aeb92fa80dd7692106553f79d1f",
   "expect_pages": 5,
-  "_about": "출퇴근재해 합본(요양급여신청서 + 출퇴근재해 발생신고서) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. 신청서 부분: T0 = 앞면 큰 표(F_YOYANG_APPLY 와 칸 주소 동일 — probe 로 확인), T1~T13 주민번호 상자, T14~T25 재해일시 상자, T26~T36 관리번호 상자, T37 = 경위·경찰/소방/보험 질문 표(T0 r19 c1 안쪽). T38~T47 뒷면·동의서, T48~T70 소견서(의사 칸 — 넣지 않음). 발생신고서 부분: T71 = 제목, T72 = 본문 19행×9열(r0~r5 일반사항, r6~r11 재해발생상황, r12~r17 보험정보, r18 서명). 체크 □ 는 그 칸 안에서 센다. 엔진 한계(261027): ①after 는 라벨 run 의 끝에 붙는다 — T72 r2 c2(사고 유형)의 「기타:」「기타사고(」와 T72 r10 c2 p1 의 「사유:」는 한 run 안이라 commute_accident_traffic_detail·commute_accident_other_detail·commute_deviation_reason 값이 그 문단 끝에 붙는다(group 은 같은 문단의 check 와 편집이 겹쳐 못 쓴다). ②같은 문단에 after 가 둘이면 linesegarray 삭제 편집이 겹쳐 멈춘다 — traffic_detail 과 other_detail 은 동시에 값이 있으면 안 된다(사고 유형은 하나만 고르므로 실무상 한쪽만 채운다). 자리표시자 색: T37 r0 c0(경위 #7F7F7F), T72 r4 c2·r5 c2·r7/r8/r9 c7(#7A9CF7), T72 r7/r8/r9 c2 p0(#386BF3) — 엔진 CharPrFixer 가 검정 사본으로 바꾼다.",
+  "_about": "출퇴근재해 합본(요양급여신청서 + 출퇴근재해 발생신고서) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. 신청서 부분: T0 = 앞면 큰 표(F_YOYANG_APPLY 와 칸 주소 동일 — probe 로 확인), T1~T13 주민번호 상자, T14~T25 재해일시 상자, T26~T36 관리번호 상자, T37 = 경위·경찰/소방/보험 질문 표(T0 r19 c1 안쪽). T38~T47 뒷면(다른 보상 T38 r1·T39, 개인정보 동의 T40·T42·T44·T46, 동의 서명 T38 r7, 지사 T38 r8 — F_YOYANG_APPLY 와 T0~T47 probe 동일해 그 op·템플릿을 그대로 복사, 261027), T48~T70 소견서(의사 칸 — 넣지 않음). 발생신고서 부분: T71 = 제목, T72 = 본문 19행×9열(r0~r5 일반사항, r6~r11 재해발생상황, r12~r17 보험정보, r18 서명). 체크 □ 는 그 칸 안에서 센다. 엔진 한계(261027 재실측): ①(해소) after 는 라벨 바로 뒤에 끼운다 — T72 r2 c2 「기타:버스 )」·「기타사고(도보 중 넘어짐 )」, T72 r10 c2 p1 「사유:약국 들름 )」처럼 괄호 안에 들어간다. ②같은 문단에 after 가 둘이면 「편집 겹침」으로 멈춘다(재실측에도 그대로) — traffic_detail 과 other_detail 은 동시에 값이 있으면 안 된다(사고 유형은 하나만 고르므로 실무상 한쪽만 채운다). 자리표시자 색: T37 r0 c0(경위 #7F7F7F), T72 r4 c2·r5 c2·r7/r8/r9 c7(#7A9CF7), T72 r7/r8/r9 c2 p0(#386BF3) — 엔진 CharPrFixer 가 검정 사본으로 바꾼다.",
   "slots": {
     "name": {
       "kind": "cell",
@@ -133,6 +133,13 @@
       "c": 6,
       "count": 11
     },
+    "business_start_no": {
+      "kind": "after",
+      "t": 0,
+      "r": 17,
+      "c": 6,
+      "label": "(사업개시번호:"
+    },
     "workplace_address": {
       "kind": "cell",
       "t": 0,
@@ -215,6 +222,251 @@
     "applicant_name": {
       "kind": "group",
       "template": "applicant"
+    },
+    "employer_relation_none": {
+      "kind": "check",
+      "t": 0,
+      "r": 8,
+      "c": 5,
+      "n": 1
+    },
+    "employer_relation_actual": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 5,
+      "n": 1
+    },
+    "employer_relation_subcontract": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 5,
+      "n": 2
+    },
+    "relative_none": {
+      "kind": "check",
+      "t": 0,
+      "r": 10,
+      "c": 5,
+      "n": 1
+    },
+    "relative_spouse": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 1
+    },
+    "relative_parent": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 2
+    },
+    "relative_child": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 3
+    },
+    "relative_sibling": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 4
+    },
+    "relative_other": {
+      "kind": "check",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "n": 5
+    },
+    "relative_other_text": {
+      "kind": "after",
+      "t": 0,
+      "r": 11,
+      "c": 5,
+      "label": "기타 친인척("
+    },
+    "worker_type_labor_provider": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 2
+    },
+    "worker_type_sme_owner": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 3
+    },
+    "worker_type_sme_family": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 4
+    },
+    "worker_type_student_researcher": {
+      "kind": "check",
+      "t": 0,
+      "r": 12,
+      "c": 5,
+      "n": 5
+    },
+    "worker_type_injured_child": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 5,
+      "n": 1
+    },
+    "worker_type_special": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 5,
+      "n": 2
+    },
+    "worker_type_field_trainee": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 5,
+      "n": 3
+    },
+    "prior_clinic1_name": {
+      "kind": "group",
+      "template": "prior_clinic1"
+    },
+    "prior_clinic1_address": {
+      "kind": "group",
+      "template": "prior_clinic1"
+    },
+    "prior_clinic2_name": {
+      "kind": "group",
+      "template": "prior_clinic2"
+    },
+    "prior_clinic2_address": {
+      "kind": "group",
+      "template": "prior_clinic2"
+    },
+    "delegator_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 24,
+      "c": 0,
+      "p": 1
+    },
+    "delegate_clinic_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 24,
+      "c": 11,
+      "p": 1
+    },
+    "other_comp_yes": {
+      "kind": "check",
+      "t": 38,
+      "r": 1,
+      "c": 1,
+      "n": 1
+    },
+    "other_comp_no": {
+      "kind": "check",
+      "t": 38,
+      "r": 1,
+      "c": 1,
+      "n": 2
+    },
+    "other_comp_date": {
+      "kind": "cell",
+      "t": 39,
+      "r": 1,
+      "c": 0
+    },
+    "other_comp_amount": {
+      "kind": "cell",
+      "t": 39,
+      "r": 1,
+      "c": 1
+    },
+    "other_comp_payer": {
+      "kind": "cell",
+      "t": 39,
+      "r": 1,
+      "c": 2
+    },
+    "consent_sensitive_yes": {
+      "kind": "check",
+      "t": 40,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_sensitive_no": {
+      "kind": "check",
+      "t": 40,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_promo_yes": {
+      "kind": "check",
+      "t": 42,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_promo_no": {
+      "kind": "check",
+      "t": 42,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_rehab_yes": {
+      "kind": "check",
+      "t": 44,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_rehab_no": {
+      "kind": "check",
+      "t": 44,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_return_yes": {
+      "kind": "check",
+      "t": 46,
+      "r": 0,
+      "c": 1,
+      "n": 1
+    },
+    "consent_return_no": {
+      "kind": "check",
+      "t": 46,
+      "r": 0,
+      "c": 1,
+      "n": 2
+    },
+    "consent_name": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "branch_name": {
+      "kind": "group",
+      "template": "branch"
     },
     "commute_name": {
       "kind": "cell",
@@ -513,6 +765,34 @@
       "c": 0,
       "p": 2,
       "text": "                                                     신청인   {applicant_name}              (서명 또는 인)"
+    },
+    "prior_clinic1": {
+      "t": 0,
+      "r": 21,
+      "c": 1,
+      "p": 1,
+      "text": "  의료기관명: {prior_clinic1_name}                     소재지: {prior_clinic1_address}"
+    },
+    "prior_clinic2": {
+      "t": 0,
+      "r": 21,
+      "c": 1,
+      "p": 2,
+      "text": "  의료기관명: {prior_clinic2_name}                     소재지: {prior_clinic2_address}"
+    },
+    "consent_sign": {
+      "t": 38,
+      "r": 7,
+      "c": 0,
+      "p": 0,
+      "text": "                                                        성명  {consent_name}                   (서명 또는 인)"
+    },
+    "branch": {
+      "t": 38,
+      "r": 8,
+      "c": 0,
+      "p": 0,
+      "text": "근로복지공단  {branch_name}  지역본부(지사)장 귀하"
     },
     "duration": {
       "t": 72,

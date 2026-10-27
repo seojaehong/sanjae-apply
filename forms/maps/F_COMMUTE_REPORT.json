@@ -2,133 +2,1217 @@
   "form_id": "F_COMMUTE_REPORT",
   "source_file": "(출퇴근재해)요양급여신청서및소견서(2026.7.7. 개정).pdf",
   "source_sha256": "938ef1d63c68bef0ee76e5b1bfcea4aa5213bbcb790915eeebaa6e34d8ccbb71",
-  "page_size": { "width": 595.0, "height": 841.0 },
-  "_about": "출퇴근재해용 합본 5쪽. p1 요양급여신청서는 F_YOYANG_APPLY 와 프로브(words·hlines·vlines·green_boxes·brackets) 전부 일치해(261026 대조) 그 슬롯을 그대로 복사했다. p5 출퇴근재해 발생신고서는 재해자 기재 칸만, 키 앞에 commute_. p2 뒷면·p3·p4 소견서는 뺀다. 체크 □ 는 글자 bbox 중심(rawdict). 좌표 단위 pt, 원점 쪽 왼쪽 위.",
+  "page_size": {
+    "width": 595.0,
+    "height": 841.0
+  },
+  "_about": "출퇴근재해용 합본 5쪽. p1 요양급여신청서·p2 뒷면(다른 보상·안내·개인정보 동의)은 F_YOYANG_APPLY 와 프로브(words·hlines·vlines·green_boxes·brackets) 전부 일치해(p1 261026, p2 261027 대조) 그 슬롯(좌표·label)을 그대로 복사했다(0.5.4 사업주여부·친인척·근로자유형·이전 의료기관·위임장·다른 보상·개인정보 동의·지사 포함). p5 출퇴근재해 발생신고서는 재해자 기재 칸 전부, 키 앞에 commute_. p3·p4 소견서(의료기관 작성)는 뺀다(forms/coverage_exempt). 체크 □ 는 글자 bbox 중심(rawdict). 좌표 단위 pt, 원점 쪽 왼쪽 위.",
   "slots": {
-    "name": { "kind": "text", "page": 1, "x": 95, "y": 150, "size": 10, "maxWidth": 220 },
-    "rrn": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 325.6, "y0": 135.8, "x1": 339.4, "y1": 152.2 },
-      { "x0": 342.7, "y0": 135.8, "x1": 356.4, "y1": 152.2 },
-      { "x0": 359.7, "y0": 135.8, "x1": 373.7, "y1": 152.2 },
-      { "x0": 376.0, "y0": 135.8, "x1": 390.8, "y1": 152.2 },
-      { "x0": 393.1, "y0": 135.8, "x1": 407.8, "y1": 152.2 },
-      { "x0": 410.1, "y0": 135.8, "x1": 424.1, "y1": 152.2 },
-      { "x0": 430.4, "y0": 135.8, "x1": 445.1, "y1": 152.2 },
-      { "x0": 447.4, "y0": 135.8, "x1": 462.1, "y1": 152.2 },
-      { "x0": 464.4, "y0": 135.8, "x1": 478.5, "y1": 152.2 },
-      { "x0": 481.4, "y0": 135.8, "x1": 495.5, "y1": 152.2 },
-      { "x0": 498.8, "y0": 135.8, "x1": 512.5, "y1": 152.2 },
-      { "x0": 515.1, "y0": 135.8, "x1": 529.9, "y1": 152.2 },
-      { "x0": 531.5, "y0": 135.8, "x1": 546.9, "y1": 152.2 }
-    ] },
-    "address": { "kind": "text", "page": 1, "x": 65, "y": 181, "size": 8.5, "maxWidth": 282 },
-    "mobile": { "kind": "text", "page": 1, "x": 392, "y": 165.5, "size": 9, "maxWidth": 150 },
-    "phone": { "kind": "text", "page": 1, "x": 392, "y": 183, "size": 9, "maxWidth": 150 },
-    "accident_datetime": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 114.5, "y0": 190.1, "x1": 128.6, "y1": 206.5 },
-      { "x0": 131.6, "y0": 190.1, "x1": 145.6, "y1": 206.5 },
-      { "x0": 147.9, "y0": 190.1, "x1": 162.0, "y1": 206.5 },
-      { "x0": 164.9, "y0": 190.1, "x1": 179.7, "y1": 206.5 },
-      { "x0": 188.5, "y0": 190.1, "x1": 202.6, "y1": 206.5 },
-      { "x0": 205.5, "y0": 190.1, "x1": 219.6, "y1": 206.5 },
-      { "x0": 229.1, "y0": 190.1, "x1": 243.8, "y1": 206.5 },
-      { "x0": 246.1, "y0": 190.1, "x1": 260.2, "y1": 206.5 },
-      { "x0": 269.7, "y0": 190.1, "x1": 284.0, "y1": 206.5 },
-      { "x0": 287.0, "y0": 190.1, "x1": 300.8, "y1": 206.5 },
-      { "x0": 310.3, "y0": 190.1, "x1": 324.3, "y1": 206.5 },
-      { "x0": 327.6, "y0": 190.1, "x1": 341.3, "y1": 206.5 }
-    ] },
-    "hire_year": { "kind": "text", "page": 1, "x": 419, "y": 203, "size": 9 },
-    "hire_month": { "kind": "text", "page": 1, "x": 457, "y": 203, "size": 9 },
-    "hire_day": { "kind": "text", "page": 1, "x": 483, "y": 203, "size": 9 },
-    "work_start": { "kind": "text", "page": 1, "x": 106, "y": 226, "size": 9, "maxWidth": 110 },
-    "work_end": { "kind": "text", "page": 1, "x": 270, "y": 226, "size": 9, "maxWidth": 110 },
-    "job": { "kind": "text", "page": 1, "x": 418, "y": 226, "size": 9, "maxWidth": 125 },
-    "claim_kind_accident": { "kind": "check", "page": 1, "x": 163, "y": 322 },
-    "claim_kind_disease": { "kind": "check", "page": 1, "x": 261, "y": 322 },
-    "claim_kind_commute": { "kind": "check", "page": 1, "x": 440, "y": 322 },
-    "worker_type_employee": { "kind": "check", "page": 1, "x": 168, "y": 293 },
-    "employer_name": { "kind": "text", "page": 1, "x": 110, "y": 345, "size": 9, "maxWidth": 128 },
-    "owner_name": { "kind": "text", "page": 1, "x": 293, "y": 345, "size": 9, "maxWidth": 112 },
-    "workplace_phone": { "kind": "text", "page": 1, "x": 464, "y": 345, "size": 9, "maxWidth": 82 },
-    "workplace_no": { "kind": "boxes", "page": 1, "size": 8, "boxes": [
-      { "x0": 212.1, "y0": 353.1, "x1": 226.1, "y1": 363.6 },
-      { "x0": 229.4, "y0": 353.1, "x1": 243.5, "y1": 363.6 },
-      { "x0": 246.4, "y0": 353.1, "x1": 260.5, "y1": 363.6 },
-      { "x0": 266.1, "y0": 353.1, "x1": 280.5, "y1": 363.6 },
-      { "x0": 283.1, "y0": 353.1, "x1": 297.8, "y1": 363.6 },
-      { "x0": 303.4, "y0": 353.1, "x1": 317.5, "y1": 363.6 },
-      { "x0": 320.7, "y0": 353.1, "x1": 334.5, "y1": 363.6 },
-      { "x0": 337.7, "y0": 353.1, "x1": 351.8, "y1": 363.6 },
-      { "x0": 354.8, "y0": 353.1, "x1": 368.8, "y1": 363.6 },
-      { "x0": 371.1, "y0": 353.1, "x1": 385.5, "y1": 363.6 },
-      { "x0": 391.7, "y0": 353.1, "x1": 405.7, "y1": 363.6 }
-    ] },
-    "workplace_address": { "kind": "text", "page": 1, "x": 110, "y": 385, "size": 9, "maxWidth": 430 },
-    "narrative": { "kind": "multiline", "page": 1, "x0": 61.4, "y0": 424.2, "x1": 547.9, "y1": 500.0, "size": 8.5, "lineHeight": 12.5 },
-    "police_yes": { "kind": "check", "page": 1, "x": 455, "y": 510 },
-    "police_no": { "kind": "check", "page": 1, "x": 502, "y": 510 },
-    "fire_yes": { "kind": "check", "page": 1, "x": 455, "y": 530 },
-    "fire_no": { "kind": "check", "page": 1, "x": 502, "y": 530 },
-    "insurer_yes": { "kind": "check", "page": 1, "x": 455, "y": 551 },
-    "insurer_no": { "kind": "check", "page": 1, "x": 502, "y": 551 },
-    "witness_name": { "kind": "text", "page": 1, "x": 183, "y": 578, "size": 8.5, "maxWidth": 60 },
-    "witness_phone": { "kind": "text", "page": 1, "x": 290, "y": 578, "size": 8.5, "maxWidth": 90 },
-    "witness_relation": { "kind": "text", "page": 1, "x": 469, "y": 578, "size": 8.5, "maxWidth": 70 },
-    "apply_year": { "kind": "text", "page": 1, "x": 229, "y": 752, "size": 9.5 },
-    "apply_month": { "kind": "text", "page": 1, "x": 281, "y": 752, "size": 9.5 },
-    "apply_day": { "kind": "text", "page": 1, "x": 323, "y": 752, "size": 9.5 },
-    "applicant_name": { "kind": "text", "page": 1, "x": 330, "y": 768, "size": 9.5, "maxWidth": 90 },
-
-    "commute_name": { "kind": "text", "page": 5, "x": 177, "y": 113, "size": 10, "maxWidth": 160 },
-    "commute_birth": { "kind": "text", "page": 5, "x": 411, "y": 113, "size": 10, "maxWidth": 135 },
-    "commute_type_to_work": { "kind": "check", "page": 5, "x": 183.6, "y": 129.1 },
-    "commute_type_from_work": { "kind": "check", "page": 5, "x": 268.9, "y": 129.1 },
-    "commute_type_between_sites": { "kind": "check", "page": 5, "x": 354.3, "y": 129.1 },
-    "commute_accident_traffic": { "kind": "check", "page": 5, "x": 183.4, "y": 154.1 },
-    "commute_accident_traffic_detail": { "kind": "text", "page": 5, "x": 365, "y": 158, "size": 8, "maxWidth": 30 },
-    "commute_accident_other": { "kind": "check", "page": 5, "x": 420.4, "y": 154.1 },
-    "commute_accident_other_detail": { "kind": "text", "page": 5, "x": 508, "y": 158, "size": 8, "maxWidth": 32 },
-    "commute_vehicle_employer": { "kind": "check", "page": 5, "x": 183.4, "y": 174.0 },
-    "commute_vehicle_other": { "kind": "check", "page": 5, "x": 183.4, "y": 187.0 },
-    "commute_accident_datetime": { "kind": "text", "page": 5, "x": 177, "y": 213, "size": 10, "maxWidth": 370 },
-    "commute_duration_hour": { "kind": "text", "page": 5, "x": 180, "y": 240, "size": 10, "maxWidth": 17 },
-    "commute_duration_min": { "kind": "text", "page": 5, "x": 205, "y": 240, "size": 10, "maxWidth": 60 },
-    "commute_depart_place": { "kind": "text", "page": 5, "x": 202, "y": 297, "size": 9, "maxWidth": 248 },
-    "commute_depart_time": { "kind": "text", "page": 5, "x": 459, "y": 297, "size": 9, "maxWidth": 88 },
-    "commute_accident_place": { "kind": "text", "page": 5, "x": 202, "y": 328, "size": 9, "maxWidth": 248 },
-    "commute_accident_time": { "kind": "text", "page": 5, "x": 459, "y": 328, "size": 9, "maxWidth": 88 },
-    "commute_arrive_place": { "kind": "text", "page": 5, "x": 202, "y": 358, "size": 9, "maxWidth": 248 },
-    "commute_arrive_time": { "kind": "text", "page": 5, "x": 459, "y": 358, "size": 9, "maxWidth": 88 },
-    "commute_deviation_yes": { "kind": "check", "page": 5, "x": 194.2, "y": 387.0 },
-    "commute_deviation_reason": { "kind": "text", "page": 5, "x": 243, "y": 391, "size": 8.5, "maxWidth": 140 },
-    "commute_deviation_no": { "kind": "check", "page": 5, "x": 406.5, "y": 387.0 },
-    "commute_diagram": { "kind": "multiline", "page": 5, "x0": 172.7, "y0": 397.2, "x1": 551.6, "y1": 590.0, "size": 8.5, "lineHeight": 12.5 },
-    "commute_my_driver": { "kind": "text", "page": 5, "x": 177, "y": 657, "size": 8.5, "maxWidth": 84 },
-    "commute_my_accident_type": { "kind": "text", "page": 5, "x": 269, "y": 657, "size": 8.5, "maxWidth": 87 },
-    "commute_my_vehicle_no": { "kind": "text", "page": 5, "x": 364, "y": 657, "size": 8.5, "maxWidth": 88 },
-    "commute_my_insurance_kind": { "kind": "text", "page": 5, "x": 460, "y": 657, "size": 8.5, "maxWidth": 87 },
-    "commute_my_insurer": { "kind": "text", "page": 5, "x": 177, "y": 676, "size": 8.5, "maxWidth": 84 },
-    "commute_my_claim_no": { "kind": "text", "page": 5, "x": 269, "y": 676, "size": 8.5, "maxWidth": 87 },
-    "commute_my_paid": { "kind": "text", "page": 5, "x": 364, "y": 676, "size": 8.5, "maxWidth": 88 },
-    "commute_my_paid_amount": { "kind": "text", "page": 5, "x": 460, "y": 676, "size": 8.5, "maxWidth": 87 },
-    "commute_other_driver": { "kind": "text", "page": 5, "x": 177, "y": 695, "size": 8.5, "maxWidth": 84 },
-    "commute_other_accident_type": { "kind": "text", "page": 5, "x": 269, "y": 695, "size": 8.5, "maxWidth": 87 },
-    "commute_other_vehicle_no": { "kind": "text", "page": 5, "x": 364, "y": 695, "size": 8.5, "maxWidth": 88 },
-    "commute_other_insurance_kind": { "kind": "text", "page": 5, "x": 460, "y": 695, "size": 8.5, "maxWidth": 87 },
-    "commute_other_insurer": { "kind": "text", "page": 5, "x": 177, "y": 714, "size": 8.5, "maxWidth": 84 },
-    "commute_other_claim_no": { "kind": "text", "page": 5, "x": 269, "y": 714, "size": 8.5, "maxWidth": 87 },
-    "commute_other_paid": { "kind": "text", "page": 5, "x": 364, "y": 714, "size": 8.5, "maxWidth": 88 },
-    "commute_other_paid_amount": { "kind": "text", "page": 5, "x": 460, "y": 714, "size": 8.5, "maxWidth": 87 },
-    "commute_apply_year": { "kind": "text", "page": 5, "x": 393, "y": 757, "size": 9.5 },
-    "commute_apply_month": { "kind": "text", "page": 5, "x": 445, "y": 757, "size": 9.5 },
-    "commute_apply_day": { "kind": "text", "page": 5, "x": 484, "y": 757, "size": 9.5 },
-    "commute_applicant_name": { "kind": "text", "page": 5, "x": 300, "y": 779, "size": 9.5, "maxWidth": 88 }
+    "name": {
+      "kind": "text",
+      "page": 1,
+      "x": 95,
+      "y": 150,
+      "size": 10,
+      "maxWidth": 220,
+      "label": "재해자 성명"
+    },
+    "rrn": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 325.6,
+          "y0": 135.8,
+          "x1": 339.4,
+          "y1": 152.2
+        },
+        {
+          "x0": 342.7,
+          "y0": 135.8,
+          "x1": 356.4,
+          "y1": 152.2
+        },
+        {
+          "x0": 359.7,
+          "y0": 135.8,
+          "x1": 373.7,
+          "y1": 152.2
+        },
+        {
+          "x0": 376.0,
+          "y0": 135.8,
+          "x1": 390.8,
+          "y1": 152.2
+        },
+        {
+          "x0": 393.1,
+          "y0": 135.8,
+          "x1": 407.8,
+          "y1": 152.2
+        },
+        {
+          "x0": 410.1,
+          "y0": 135.8,
+          "x1": 424.1,
+          "y1": 152.2
+        },
+        {
+          "x0": 430.4,
+          "y0": 135.8,
+          "x1": 445.1,
+          "y1": 152.2
+        },
+        {
+          "x0": 447.4,
+          "y0": 135.8,
+          "x1": 462.1,
+          "y1": 152.2
+        },
+        {
+          "x0": 464.4,
+          "y0": 135.8,
+          "x1": 478.5,
+          "y1": 152.2
+        },
+        {
+          "x0": 481.4,
+          "y0": 135.8,
+          "x1": 495.5,
+          "y1": 152.2
+        },
+        {
+          "x0": 498.8,
+          "y0": 135.8,
+          "x1": 512.5,
+          "y1": 152.2
+        },
+        {
+          "x0": 515.1,
+          "y0": 135.8,
+          "x1": 529.9,
+          "y1": 152.2
+        },
+        {
+          "x0": 531.5,
+          "y0": 135.8,
+          "x1": 546.9,
+          "y1": 152.2
+        }
+      ],
+      "label": "재해자 주민등록번호(외국인등록번호) 13자리"
+    },
+    "address": {
+      "kind": "text",
+      "page": 1,
+      "x": 65,
+      "y": 181,
+      "size": 8.5,
+      "maxWidth": 282,
+      "label": "재해자 주소"
+    },
+    "mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 392,
+      "y": 165.5,
+      "size": 9,
+      "maxWidth": 150,
+      "label": "휴대전화"
+    },
+    "phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 392,
+      "y": 183,
+      "size": 9,
+      "maxWidth": 150,
+      "label": "전화번호"
+    },
+    "accident_datetime": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 114.5,
+          "y0": 190.1,
+          "x1": 128.6,
+          "y1": 206.5
+        },
+        {
+          "x0": 131.6,
+          "y0": 190.1,
+          "x1": 145.6,
+          "y1": 206.5
+        },
+        {
+          "x0": 147.9,
+          "y0": 190.1,
+          "x1": 162.0,
+          "y1": 206.5
+        },
+        {
+          "x0": 164.9,
+          "y0": 190.1,
+          "x1": 179.7,
+          "y1": 206.5
+        },
+        {
+          "x0": 188.5,
+          "y0": 190.1,
+          "x1": 202.6,
+          "y1": 206.5
+        },
+        {
+          "x0": 205.5,
+          "y0": 190.1,
+          "x1": 219.6,
+          "y1": 206.5
+        },
+        {
+          "x0": 229.1,
+          "y0": 190.1,
+          "x1": 243.8,
+          "y1": 206.5
+        },
+        {
+          "x0": 246.1,
+          "y0": 190.1,
+          "x1": 260.2,
+          "y1": 206.5
+        },
+        {
+          "x0": 269.7,
+          "y0": 190.1,
+          "x1": 284.0,
+          "y1": 206.5
+        },
+        {
+          "x0": 287.0,
+          "y0": 190.1,
+          "x1": 300.8,
+          "y1": 206.5
+        },
+        {
+          "x0": 310.3,
+          "y0": 190.1,
+          "x1": 324.3,
+          "y1": 206.5
+        },
+        {
+          "x0": 327.6,
+          "y0": 190.1,
+          "x1": 341.3,
+          "y1": 206.5
+        }
+      ],
+      "label": "재해발생 일시 YYYYMMDDhhmm"
+    },
+    "hire_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 419,
+      "y": 203,
+      "size": 9,
+      "label": "채용일자 년"
+    },
+    "hire_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 457,
+      "y": 203,
+      "size": 9,
+      "label": "채용일자 월"
+    },
+    "hire_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 483,
+      "y": 203,
+      "size": 9,
+      "label": "채용일자 일"
+    },
+    "work_start": {
+      "kind": "text",
+      "page": 1,
+      "x": 106,
+      "y": 226,
+      "size": 9,
+      "maxWidth": 110,
+      "label": "출근시간"
+    },
+    "work_end": {
+      "kind": "text",
+      "page": 1,
+      "x": 270,
+      "y": 226,
+      "size": 9,
+      "maxWidth": 110,
+      "label": "퇴근시간"
+    },
+    "job": {
+      "kind": "text",
+      "page": 1,
+      "x": 418,
+      "y": 226,
+      "size": 9,
+      "maxWidth": 125,
+      "label": "직종"
+    },
+    "claim_kind_accident": {
+      "kind": "check",
+      "page": 1,
+      "x": 163,
+      "y": 322,
+      "label": "신청 구분: 업무상 사고"
+    },
+    "claim_kind_disease": {
+      "kind": "check",
+      "page": 1,
+      "x": 261,
+      "y": 322,
+      "label": "신청 구분: 업무상 질병(진폐·CS2 포함)"
+    },
+    "claim_kind_commute": {
+      "kind": "check",
+      "page": 1,
+      "x": 440,
+      "y": 322,
+      "label": "신청 구분: 출퇴근 재해"
+    },
+    "worker_type_employee": {
+      "kind": "check",
+      "page": 1,
+      "x": 168,
+      "y": 293,
+      "label": "근로자유형: 근로자"
+    },
+    "employer_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 110,
+      "y": 345,
+      "size": 9,
+      "maxWidth": 128,
+      "label": "사업장명"
+    },
+    "owner_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 293,
+      "y": 345,
+      "size": 9,
+      "maxWidth": 112,
+      "label": "사업주명"
+    },
+    "workplace_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 464,
+      "y": 345,
+      "size": 9,
+      "maxWidth": 82,
+      "label": "사업장 연락처"
+    },
+    "workplace_no": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 8,
+      "boxes": [
+        {
+          "x0": 212.1,
+          "y0": 353.1,
+          "x1": 226.1,
+          "y1": 363.6
+        },
+        {
+          "x0": 229.4,
+          "y0": 353.1,
+          "x1": 243.5,
+          "y1": 363.6
+        },
+        {
+          "x0": 246.4,
+          "y0": 353.1,
+          "x1": 260.5,
+          "y1": 363.6
+        },
+        {
+          "x0": 266.1,
+          "y0": 353.1,
+          "x1": 280.5,
+          "y1": 363.6
+        },
+        {
+          "x0": 283.1,
+          "y0": 353.1,
+          "x1": 297.8,
+          "y1": 363.6
+        },
+        {
+          "x0": 303.4,
+          "y0": 353.1,
+          "x1": 317.5,
+          "y1": 363.6
+        },
+        {
+          "x0": 320.7,
+          "y0": 353.1,
+          "x1": 334.5,
+          "y1": 363.6
+        },
+        {
+          "x0": 337.7,
+          "y0": 353.1,
+          "x1": 351.8,
+          "y1": 363.6
+        },
+        {
+          "x0": 354.8,
+          "y0": 353.1,
+          "x1": 368.8,
+          "y1": 363.6
+        },
+        {
+          "x0": 371.1,
+          "y0": 353.1,
+          "x1": 385.5,
+          "y1": 363.6
+        },
+        {
+          "x0": 391.7,
+          "y0": 353.1,
+          "x1": 405.7,
+          "y1": 363.6
+        }
+      ],
+      "label": "사업장관리번호 11자리"
+    },
+    "business_start_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 472,
+      "y": 368.5,
+      "size": 8,
+      "maxWidth": 67,
+      "label": "사업장: (사업개시번호: ) 괄호 안"
+    },
+    "workplace_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 110,
+      "y": 385,
+      "size": 9,
+      "maxWidth": 430,
+      "label": "사업장 주소"
+    },
+    "narrative": {
+      "kind": "multiline",
+      "page": 1,
+      "x0": 61.4,
+      "y0": 424.2,
+      "x1": 547.9,
+      "y1": 500.0,
+      "size": 8.5,
+      "lineHeight": 12.5,
+      "label": "재해 발생 경위(언제·어디서·무엇을 하다가·어떻게)"
+    },
+    "police_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 455,
+      "y": 510,
+      "label": "경찰서 신고(접수) 사실: 예"
+    },
+    "police_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 502,
+      "y": 510,
+      "label": "경찰서 신고(접수) 사실: 아니오"
+    },
+    "fire_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 455,
+      "y": 530,
+      "label": "119·소방서 신고 사실: 예"
+    },
+    "fire_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 502,
+      "y": 530,
+      "label": "119·소방서 신고 사실: 아니오"
+    },
+    "insurer_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 455,
+      "y": 551,
+      "label": "자동차 보험사 사고 신고 사실: 예"
+    },
+    "insurer_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 502,
+      "y": 551,
+      "label": "자동차 보험사 사고 신고 사실: 아니오"
+    },
+    "witness_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 183,
+      "y": 578,
+      "size": 8.5,
+      "maxWidth": 60,
+      "label": "목격자 성명"
+    },
+    "witness_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 290,
+      "y": 578,
+      "size": 8.5,
+      "maxWidth": 90,
+      "label": "목격자 연락처"
+    },
+    "witness_relation": {
+      "kind": "text",
+      "page": 1,
+      "x": 469,
+      "y": 578,
+      "size": 8.5,
+      "maxWidth": 70,
+      "label": "목격자와 재해자의 관계"
+    },
+    "apply_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 229,
+      "y": 752,
+      "size": 9.5,
+      "label": "신청일 년"
+    },
+    "apply_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 281,
+      "y": 752,
+      "size": 9.5,
+      "label": "신청일 월"
+    },
+    "apply_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 323,
+      "y": 752,
+      "size": 9.5,
+      "label": "신청일 일"
+    },
+    "applicant_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 330,
+      "y": 768,
+      "size": 9.5,
+      "maxWidth": 90,
+      "label": "신청인 성명"
+    },
+    "employer_relation_none": {
+      "kind": "check",
+      "page": 1,
+      "x": 168,
+      "y": 238,
+      "label": "보험가입자(사업주)와의 관계 · 사업주여부: 해당없음"
+    },
+    "employer_relation_actual": {
+      "kind": "check",
+      "page": 1,
+      "x": 168,
+      "y": 253,
+      "label": "사업주여부: 실제사업주(동업자포함)"
+    },
+    "employer_relation_subcontract": {
+      "kind": "check",
+      "page": 1,
+      "x": 291,
+      "y": 253,
+      "label": "사업주여부: 하수급사업주"
+    },
+    "relative_none": {
+      "kind": "check",
+      "page": 1,
+      "x": 168,
+      "y": 268,
+      "label": "친인척여부: 해당 없음"
+    },
+    "relative_spouse": {
+      "kind": "check",
+      "page": 1,
+      "x": 168,
+      "y": 281,
+      "label": "친인척여부: 배우자"
+    },
+    "relative_parent": {
+      "kind": "check",
+      "page": 1,
+      "x": 220,
+      "y": 281,
+      "label": "친인척여부: 부모"
+    },
+    "relative_child": {
+      "kind": "check",
+      "page": 1,
+      "x": 265,
+      "y": 281,
+      "label": "친인척여부: 자녀"
+    },
+    "relative_sibling": {
+      "kind": "check",
+      "page": 1,
+      "x": 315,
+      "y": 281,
+      "label": "친인척여부: 형제자매"
+    },
+    "relative_other": {
+      "kind": "check",
+      "page": 1,
+      "x": 372,
+      "y": 281,
+      "label": "친인척여부: 기타 친인척"
+    },
+    "relative_other_text": {
+      "kind": "text",
+      "page": 1,
+      "x": 431,
+      "y": 284,
+      "size": 7.5,
+      "maxWidth": 40,
+      "label": "기타 친인척( ) 괄호 안 관계"
+    },
+    "worker_type_labor_provider": {
+      "kind": "check",
+      "page": 1,
+      "x": 219,
+      "y": 293,
+      "label": "근로자유형: 노무제공자"
+    },
+    "worker_type_sme_owner": {
+      "kind": "check",
+      "page": 1,
+      "x": 286,
+      "y": 293,
+      "label": "근로자유형: 중소기업사업주"
+    },
+    "worker_type_sme_family": {
+      "kind": "check",
+      "page": 1,
+      "x": 370,
+      "y": 293,
+      "label": "근로자유형: 중소기업사업주 가족종사자"
+    },
+    "worker_type_student_researcher": {
+      "kind": "check",
+      "page": 1,
+      "x": 497,
+      "y": 293,
+      "label": "근로자유형: 학생연구자"
+    },
+    "worker_type_injured_child": {
+      "kind": "check",
+      "page": 1,
+      "x": 168,
+      "y": 304,
+      "label": "근로자유형: 건강손상자녀"
+    },
+    "worker_type_special": {
+      "kind": "check",
+      "page": 1,
+      "x": 244,
+      "y": 304,
+      "label": "근로자유형: 특수형태근로종사자('23.6.30. 이전 재해)"
+    },
+    "worker_type_field_trainee": {
+      "kind": "check",
+      "page": 1,
+      "x": 419,
+      "y": 304,
+      "label": "근로자유형: 현장실습생"
+    },
+    "prior_clinic1_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 123,
+      "y": 610.5,
+      "size": 8,
+      "maxWidth": 160,
+      "label": "현재 요양 의료기관 전에 진료받은 의료기관 1 · 의료기관명"
+    },
+    "prior_clinic1_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 320,
+      "y": 610.5,
+      "size": 8,
+      "maxWidth": 222,
+      "label": "전에 진료받은 의료기관 1 · 소재지"
+    },
+    "prior_clinic2_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 123,
+      "y": 626.5,
+      "size": 8,
+      "maxWidth": 160,
+      "label": "전에 진료받은 의료기관 2 · 의료기관명"
+    },
+    "prior_clinic2_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 320,
+      "y": 626.5,
+      "size": 8,
+      "maxWidth": 222,
+      "label": "전에 진료받은 의료기관 2 · 소재지"
+    },
+    "delegator_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 150,
+      "y": 706,
+      "size": 8,
+      "maxWidth": 70,
+      "label": "의료기관 대행 제출 위임(동의)장 · 위임하는 자(신청인) 성명"
+    },
+    "delegate_clinic_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 400,
+      "y": 706,
+      "size": 8,
+      "maxWidth": 74,
+      "label": "위임(동의)장 · 위임받는 자(의료기관) 이름"
+    },
+    "other_comp_yes": {
+      "kind": "check",
+      "page": 2,
+      "x": 98,
+      "y": 72,
+      "label": "(뒷면) 다른 보상: 민법 등으로 보상·배상금 수령 사실 예"
+    },
+    "other_comp_no": {
+      "kind": "check",
+      "page": 2,
+      "x": 156,
+      "y": 72,
+      "label": "(뒷면) 다른 보상: 민법 등으로 보상·배상금 수령 사실 아니오"
+    },
+    "other_comp_date": {
+      "kind": "text",
+      "page": 2,
+      "x": 70,
+      "y": 108,
+      "size": 8,
+      "maxWidth": 86,
+      "label": "보상·배상금 수령 내역 · 수령일자"
+    },
+    "other_comp_amount": {
+      "kind": "text",
+      "page": 2,
+      "x": 166,
+      "y": 108,
+      "size": 8,
+      "maxWidth": 84,
+      "label": "보상·배상금 수령 내역 · 수령금액"
+    },
+    "other_comp_payer": {
+      "kind": "text",
+      "page": 2,
+      "x": 259,
+      "y": 108,
+      "size": 8,
+      "maxWidth": 108,
+      "label": "보상·배상금 수령 내역 · 지급한 자(기관) 또는 지급처"
+    },
+    "consent_sensitive_yes": {
+      "kind": "check",
+      "page": 2,
+      "x": 409,
+      "y": 346,
+      "label": "[필수] 민감정보 수집·이용 동의: 동의함"
+    },
+    "consent_sensitive_no": {
+      "kind": "check",
+      "page": 2,
+      "x": 456,
+      "y": 346,
+      "label": "[필수] 민감정보 수집·이용 동의: 동의하지 않음"
+    },
+    "consent_promo_yes": {
+      "kind": "check",
+      "page": 2,
+      "x": 409,
+      "y": 447,
+      "label": "[선택] 부가서비스 제공을 위한 개인정보 수집·이용 동의: 동의함"
+    },
+    "consent_promo_no": {
+      "kind": "check",
+      "page": 2,
+      "x": 456,
+      "y": 447,
+      "label": "[선택] 부가서비스 제공을 위한 개인정보 수집·이용 동의: 동의하지 않음"
+    },
+    "consent_rehab_yes": {
+      "kind": "check",
+      "page": 2,
+      "x": 409,
+      "y": 590,
+      "label": "[선택] 재활서비스 제공을 위한 개인정보 수집·이용 및 제3자 제공 동의: 동의함"
+    },
+    "consent_rehab_no": {
+      "kind": "check",
+      "page": 2,
+      "x": 456,
+      "y": 590,
+      "label": "[선택] 재활서비스 제공을 위한 개인정보 수집·이용 및 제3자 제공 동의: 동의하지 않음"
+    },
+    "consent_return_yes": {
+      "kind": "check",
+      "page": 2,
+      "x": 409,
+      "y": 673,
+      "label": "[선택] 사업주 직장복귀계획서 제출제도 참여 동의: 동의함"
+    },
+    "consent_return_no": {
+      "kind": "check",
+      "page": 2,
+      "x": 456,
+      "y": 673,
+      "label": "[선택] 사업주 직장복귀계획서 제출제도 참여 동의: 동의하지 않음"
+    },
+    "consent_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 345,
+      "y": 764,
+      "size": 8,
+      "maxWidth": 105,
+      "label": "(뒷면) 개인정보 동의 서명란 성명"
+    },
+    "branch_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 120,
+      "y": 780,
+      "size": 8,
+      "maxWidth": 46,
+      "label": "근로복지공단 ○○지역본부(지사)장 귀하 — 지사 이름"
+    },
+    "commute_name": {
+      "kind": "text",
+      "page": 5,
+      "x": 177,
+      "y": 113,
+      "size": 10,
+      "maxWidth": 160,
+      "label": "(출퇴근재해 발생신고서) 일반사항: 재해자 성명"
+    },
+    "commute_birth": {
+      "kind": "text",
+      "page": 5,
+      "x": 411,
+      "y": 113,
+      "size": 10,
+      "maxWidth": 135,
+      "label": "(출퇴근재해 발생신고서) 일반사항: 재해자 생년월일"
+    },
+    "commute_type_to_work": {
+      "kind": "check",
+      "page": 5,
+      "x": 183.6,
+      "y": 129.1,
+      "label": "(출퇴근재해 발생신고서) 출퇴근 구분: 출근중 사고"
+    },
+    "commute_type_from_work": {
+      "kind": "check",
+      "page": 5,
+      "x": 268.9,
+      "y": 129.1,
+      "label": "(출퇴근재해 발생신고서) 출퇴근 구분: 퇴근중 사고"
+    },
+    "commute_type_between_sites": {
+      "kind": "check",
+      "page": 5,
+      "x": 354.3,
+      "y": 129.1,
+      "label": "(출퇴근재해 발생신고서) 출퇴근 구분: 사업장간 이동중 사고"
+    },
+    "commute_accident_traffic": {
+      "kind": "check",
+      "page": 5,
+      "x": 183.4,
+      "y": 154.1,
+      "label": "(출퇴근재해 발생신고서) 사고 유형: 교통사고(버스, 지하철, 택시, 승용, 기타)"
+    },
+    "commute_accident_traffic_detail": {
+      "kind": "text",
+      "page": 5,
+      "x": 365,
+      "y": 158,
+      "size": 8,
+      "maxWidth": 30,
+      "label": "(출퇴근재해 발생신고서) 사고 유형: 교통사고 「기타:   」 괄호 안 교통수단"
+    },
+    "commute_accident_other": {
+      "kind": "check",
+      "page": 5,
+      "x": 420.4,
+      "y": 154.1,
+      "label": "(출퇴근재해 발생신고서) 사고 유형: 도보 등 기타사고"
+    },
+    "commute_accident_other_detail": {
+      "kind": "text",
+      "page": 5,
+      "x": 508,
+      "y": 158,
+      "size": 8,
+      "maxWidth": 32,
+      "label": "(출퇴근재해 발생신고서) 사고 유형: 도보 등 기타사고(   ) 괄호 안 내용"
+    },
+    "commute_vehicle_employer": {
+      "kind": "check",
+      "page": 5,
+      "x": 183.4,
+      "y": 174.0,
+      "label": "(출퇴근재해 발생신고서) 교통수단 유형: 사업주가 제공한 교통수단 이용 중 사고"
+    },
+    "commute_vehicle_other": {
+      "kind": "check",
+      "page": 5,
+      "x": 183.4,
+      "y": 187.0,
+      "label": "(출퇴근재해 발생신고서) 교통수단 유형: 그 외(대중교통, 자가용, 도보 등) 사고"
+    },
+    "commute_accident_datetime": {
+      "kind": "text",
+      "page": 5,
+      "x": 177,
+      "y": 213,
+      "size": 10,
+      "maxWidth": 370,
+      "label": "(출퇴근재해 발생신고서) 사고발생 일시"
+    },
+    "commute_duration_hour": {
+      "kind": "text",
+      "page": 5,
+      "x": 180,
+      "y": 240,
+      "size": 10,
+      "maxWidth": 17,
+      "label": "(출퇴근재해 발생신고서) 통상 출퇴근 소요시간 · 시간( : 앞)"
+    },
+    "commute_duration_min": {
+      "kind": "text",
+      "page": 5,
+      "x": 205,
+      "y": 240,
+      "size": 10,
+      "maxWidth": 60,
+      "label": "(출퇴근재해 발생신고서) 통상 출퇴근 소요시간 · 분( : 뒤)"
+    },
+    "commute_depart_place": {
+      "kind": "text",
+      "page": 5,
+      "x": 202,
+      "y": 297,
+      "size": 9,
+      "maxWidth": 248,
+      "label": "(출퇴근재해 발생신고서) 재해발생 상황 · 출발장소: 장소(주소)"
+    },
+    "commute_depart_time": {
+      "kind": "text",
+      "page": 5,
+      "x": 459,
+      "y": 297,
+      "size": 9,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 재해발생 상황 · 출발장소: 시간"
+    },
+    "commute_accident_place": {
+      "kind": "text",
+      "page": 5,
+      "x": 202,
+      "y": 328,
+      "size": 9,
+      "maxWidth": 248,
+      "label": "(출퇴근재해 발생신고서) 재해발생 상황 · 사고장소: 장소(주소)"
+    },
+    "commute_accident_time": {
+      "kind": "text",
+      "page": 5,
+      "x": 459,
+      "y": 328,
+      "size": 9,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 재해발생 상황 · 사고장소: 시간"
+    },
+    "commute_arrive_place": {
+      "kind": "text",
+      "page": 5,
+      "x": 202,
+      "y": 358,
+      "size": 9,
+      "maxWidth": 248,
+      "label": "(출퇴근재해 발생신고서) 재해발생 상황 · 도착(목적)장소: 장소(주소)"
+    },
+    "commute_arrive_time": {
+      "kind": "text",
+      "page": 5,
+      "x": 459,
+      "y": 358,
+      "size": 9,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 재해발생 상황 · 도착(목적)장소: 시간"
+    },
+    "commute_deviation_yes": {
+      "kind": "check",
+      "page": 5,
+      "x": 194.2,
+      "y": 387.0,
+      "label": "(출퇴근재해 발생신고서) 일탈/중단: 출퇴근 경로를 벗어나거나(일탈) 멈춘(중단) 사실 있음"
+    },
+    "commute_deviation_reason": {
+      "kind": "text",
+      "page": 5,
+      "x": 243,
+      "y": 391,
+      "size": 8.5,
+      "maxWidth": 140,
+      "label": "(출퇴근재해 발생신고서) 일탈/중단: 있음(사유:   ) 괄호 안 사유"
+    },
+    "commute_deviation_no": {
+      "kind": "check",
+      "page": 5,
+      "x": 406.5,
+      "y": 387.0,
+      "label": "(출퇴근재해 발생신고서) 일탈/중단: 없음"
+    },
+    "commute_diagram": {
+      "kind": "multiline",
+      "page": 5,
+      "x0": 172.7,
+      "y0": 397.2,
+      "x1": 551.6,
+      "y1": 590.0,
+      "size": 8.5,
+      "lineHeight": 12.5,
+      "label": "(출퇴근재해 발생신고서) 사고 상황도(필요시 작성)"
+    },
+    "commute_my_driver": {
+      "kind": "text",
+      "page": 5,
+      "x": 177,
+      "y": 657,
+      "size": 8.5,
+      "maxWidth": 84,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 운전자명"
+    },
+    "commute_my_accident_type": {
+      "kind": "text",
+      "page": 5,
+      "x": 269,
+      "y": 657,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 교통사고 유형"
+    },
+    "commute_my_vehicle_no": {
+      "kind": "text",
+      "page": 5,
+      "x": 364,
+      "y": 657,
+      "size": 8.5,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 차량번호"
+    },
+    "commute_my_insurance_kind": {
+      "kind": "text",
+      "page": 5,
+      "x": 460,
+      "y": 657,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 보험종류"
+    },
+    "commute_my_insurer": {
+      "kind": "text",
+      "page": 5,
+      "x": 177,
+      "y": 676,
+      "size": 8.5,
+      "maxWidth": 84,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 보험사명"
+    },
+    "commute_my_claim_no": {
+      "kind": "text",
+      "page": 5,
+      "x": 269,
+      "y": 676,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 사고접수번호"
+    },
+    "commute_my_paid": {
+      "kind": "text",
+      "page": 5,
+      "x": 364,
+      "y": 676,
+      "size": 8.5,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 보험금 수령여부"
+    },
+    "commute_my_paid_amount": {
+      "kind": "text",
+      "page": 5,
+      "x": 460,
+      "y": 676,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 재해자 탑승 차량: 보험금 수령액(원)"
+    },
+    "commute_other_driver": {
+      "kind": "text",
+      "page": 5,
+      "x": 177,
+      "y": 695,
+      "size": 8.5,
+      "maxWidth": 84,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 운전자명"
+    },
+    "commute_other_accident_type": {
+      "kind": "text",
+      "page": 5,
+      "x": 269,
+      "y": 695,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 교통사고 유형"
+    },
+    "commute_other_vehicle_no": {
+      "kind": "text",
+      "page": 5,
+      "x": 364,
+      "y": 695,
+      "size": 8.5,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 차량번호"
+    },
+    "commute_other_insurance_kind": {
+      "kind": "text",
+      "page": 5,
+      "x": 460,
+      "y": 695,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 보험종류"
+    },
+    "commute_other_insurer": {
+      "kind": "text",
+      "page": 5,
+      "x": 177,
+      "y": 714,
+      "size": 8.5,
+      "maxWidth": 84,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 보험사명"
+    },
+    "commute_other_claim_no": {
+      "kind": "text",
+      "page": 5,
+      "x": 269,
+      "y": 714,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 사고접수번호"
+    },
+    "commute_other_paid": {
+      "kind": "text",
+      "page": 5,
+      "x": 364,
+      "y": 714,
+      "size": 8.5,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 보험금 수령여부"
+    },
+    "commute_other_paid_amount": {
+      "kind": "text",
+      "page": 5,
+      "x": 460,
+      "y": 714,
+      "size": 8.5,
+      "maxWidth": 87,
+      "label": "(출퇴근재해 발생신고서) 보험정보 · 상대방 차량: 보험금 수령액(원)"
+    },
+    "commute_apply_year": {
+      "kind": "text",
+      "page": 5,
+      "x": 393,
+      "y": 757,
+      "size": 9.5,
+      "label": "(출퇴근재해 발생신고서) 작성일 년"
+    },
+    "commute_apply_month": {
+      "kind": "text",
+      "page": 5,
+      "x": 445,
+      "y": 757,
+      "size": 9.5,
+      "label": "(출퇴근재해 발생신고서) 작성일 월"
+    },
+    "commute_apply_day": {
+      "kind": "text",
+      "page": 5,
+      "x": 484,
+      "y": 757,
+      "size": 9.5,
+      "label": "(출퇴근재해 발생신고서) 작성일 일"
+    },
+    "commute_applicant_name": {
+      "kind": "text",
+      "page": 5,
+      "x": 300,
+      "y": 779,
+      "size": 9.5,
+      "maxWidth": 88,
+      "label": "(출퇴근재해 발생신고서) 신고인(근로자) 성명"
+    }
   },
   "stamps": {
-    "applicant": { "page": 1, "x": 457.8, "y": 763.5, "size": 42 },
-    "delegation": { "page": 1, "x": 251.4, "y": 702.7, "size": 42 },
-    "consent": { "page": 2, "x": 491.2, "y": 760.4, "size": 42 },
-    "commute_reporter": { "page": 5, "x": 429.7, "y": 774.7, "size": 42 }
+    "applicant": {
+      "page": 1,
+      "x": 457.8,
+      "y": 763.5,
+      "size": 42
+    },
+    "delegation": {
+      "page": 1,
+      "x": 251.4,
+      "y": 702.7,
+      "size": 42
+    },
+    "consent": {
+      "page": 2,
+      "x": 491.2,
+      "y": 760.4,
+      "size": 42
+    },
+    "commute_reporter": {
+      "page": 5,
+      "x": 429.7,
+      "y": 774.7,
+      "size": 42
+    }
   }
 }

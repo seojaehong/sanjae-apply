@@ -35,7 +35,6 @@
   "apply_day": "26",
   "applicant_phone": "010-0000-0000",
   "applicant_name": "홍길동",
-
   "confirm_year": "2026",
   "confirm_month": "10",
   "confirm_day": "15",
@@ -47,5 +46,19 @@
   "confirm_apply_day": "26",
   "confirm_address": "서울 중구 세종대로 110 101동 1001호",
   "confirm_phone": "010-0000-0000",
-  "confirm_name": "홍길동"
+  "confirm_name": "홍길동",
+  "employer_reporter_name": "김사장",
+  "employer_reporter_birth": "1970-01-01",
+  "employer_reporter_postal_code": "04520",
+  "employer_reporter_phone": "02-111-1111",
+  "employer_reporter_address": "서울특별시 중구 세종대로 100",
+  "employer_reporter_mobile": "010-1111-1111",
+  "phone": "02-000-0000",
+  "third_phone": "02-222-2222",
+  "employer_sign_phone": "02-111-1111",
+  "employer_sign_name": "김사장",
+  "agent_phone": "010-3333-3333",
+  "agent_name": "김대리",
+  "branch_name": "서울",
+  "confirm_branch_name": "서울"
 }

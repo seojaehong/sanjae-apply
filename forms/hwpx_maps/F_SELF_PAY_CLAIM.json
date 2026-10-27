@@ -3,7 +3,7 @@
   "source_file": "F_SELF_PAY_CLAIM.hwpx",
   "source_sha256": "f4be35f3d172f3380cebea271a72767d75634e9fe99842d6e782ff1a64ac0c53",
   "expect_pages": 2,
-  "_about": "본인부담 치료비 청구서(별지 제10호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 청구서 큰 표(19행×27열), T1~T13 주민번호 상자, T14~T23 재해발생일시 상자(10개=년월일시), T24~T30 입원 기간 상자(r6 c6 안쪽, 1×7·1×3·1×3·1×7·1×3·1×3·1×3), T31~T37 통원 기간 상자(r7 c6), T38 = 다른보상 수령내역 표(r11 c3 안쪽), T39 개인정보 이용내역, T40~ = 재해발생 경위·소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ⑤직종(r3 c26)·우편번호(r4 c7 p0)는 「□□□」 글자라 cell 로 글자를 덮는다. ★엔진 한계: 입원·통원 상자(T24~T37)는 안쪽표 한 개가 「숫자칸(폭 1303, 사각 테두리)·간격칸(폭 283, 상하 테두리 없음)」 교대 구조(년 = 4+3, 월·일·일간 = 2+1)라 digits(안쪽표마다 첫 칸만)·cells(간격칸을 못 건너뜀) 둘 다 맞지 않는다. 상자 칸(r6 c6·r7 c6)의 유일한 문단은 안쪽표를 품고 있어 템플릿·cell 도 못 쓰고, after 는 같은 문단에 두 번 걸면 그 문단의 linesegarray 삭제 편집이 같은 구간으로 두 번 쌓여 edits 겹침 검사(fillHwpx 「편집 겹침」)에 걸린다 — 문단당 after 한 번만 된다. 그래서 지금은 바로 옆 라벨 칸(r6 c1 「입원」·r7 c1 「통원」)에 세 값을 한 템플릿으로 넣는다. 간격칸을 건너뛰는 op 가 생기면 입원 = T24 r0 c0/c2/c4/c6(년)·T25 c0/c2(월)·T26 c0/c2(일)·T27~T29(끝)·T30 c0/c2(일간), 통원 = T31~T37 같은 꼴로 바꿀 것. (261027) 입원·통원 기간은 boxes op(상자 주소 나열)로 T24~T37 숫자칸에 직접 넣는다.",
+  "_about": "본인부담 치료비 청구서(별지 제10호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 청구서 큰 표(19행×27열), T1~T13 주민번호 상자, T14~T23 재해발생일시 상자(10개=년월일시), T24~T30 입원 기간 상자(r6 c6 안쪽, 1×7·1×3·1×3·1×7·1×3·1×3·1×3), T31~T37 통원 기간 상자(r7 c6), T38 = 다른보상 수령내역 표(r11 c3 안쪽), T39 개인정보 이용내역, T40~ = 재해발생 경위·소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ⑤직종(r3 c26)·우편번호(r4 c7 p0)는 「□□□」 글자라 cell 로 글자를 덮는다. ★엔진 한계: 입원·통원 상자(T24~T37)는 안쪽표 한 개가 「숫자칸(폭 1303, 사각 테두리)·간격칸(폭 283, 상하 테두리 없음)」 교대 구조(년 = 4+3, 월·일·일간 = 2+1)라 digits(안쪽표마다 첫 칸만)·cells(간격칸을 못 건너뜀) 둘 다 맞지 않는다. 상자 칸(r6 c6·r7 c6)의 유일한 문단은 안쪽표를 품고 있어 템플릿·cell 도 못 쓰고, after 는 같은 문단에 두 번 걸면 그 문단의 linesegarray 삭제 편집이 같은 구간으로 두 번 쌓여 edits 겹침 검사(fillHwpx 「편집 겹침」)에 걸린다 — 문단당 after 한 번만 된다. 그래서 지금은 바로 옆 라벨 칸(r6 c1 「입원」·r7 c1 「통원」)에 세 값을 한 템플릿으로 넣는다. 간격칸을 건너뛰는 op 가 생기면 입원 = T24 r0 c0/c2/c4/c6(년)·T25 c0/c2(월)·T26 c0/c2(일)·T27~T29(끝)·T30 c0/c2(일간), 통원 = T31~T37 같은 꼴로 바꿀 것. (261027) 입원·통원 기간은 boxes op(상자 주소 나열)로 T24~T37 숫자칸에 직접 넣는다. (0.5.4) T0 r13 c0 개인정보 동의 = n1 「□ 개인정보 이용 내역」 글머리표라 예=n2·아니오=n3, p4 날짜·성명 템플릿. r14 p3 대리인·관계, r15 지사, r16 p2 위임장 = group 템플릿(「(서명 또는 인)」 라벨 유지). T40 r0~r6 = 뒷면 재해발생 경위 등(신청인 작성, substitute_*·worker_type_*·claim_kind_*·narrative = r5 c1 p1), r7~r13·T41·T42 = 소견서(의료기관 작성, 면제).",
   "slots": {
     "claim_type_yoyangbi": {
       "kind": "check",
@@ -411,6 +411,184 @@
     "email": {
       "kind": "group",
       "template": "contact"
+    },
+    "consent_promo_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 0,
+      "n": 2
+    },
+    "consent_promo_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 13,
+      "c": 0,
+      "n": 3
+    },
+    "consent_year": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "consent_month": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "consent_day": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "consent_name": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "agent_name": {
+      "kind": "group",
+      "template": "agent"
+    },
+    "agent_relation": {
+      "kind": "group",
+      "template": "agent"
+    },
+    "branch_name": {
+      "kind": "group",
+      "template": "branch"
+    },
+    "delegator_name": {
+      "kind": "group",
+      "template": "delegation"
+    },
+    "delegate_clinic_name": {
+      "kind": "group",
+      "template": "delegation"
+    },
+    "substitute_name": {
+      "kind": "cell",
+      "t": 40,
+      "r": 1,
+      "c": 1
+    },
+    "substitute_rrn": {
+      "kind": "cell",
+      "t": 40,
+      "r": 1,
+      "c": 4
+    },
+    "substitute_accident_year": {
+      "kind": "group",
+      "template": "substitute_accident"
+    },
+    "substitute_accident_month": {
+      "kind": "group",
+      "template": "substitute_accident"
+    },
+    "substitute_accident_day": {
+      "kind": "group",
+      "template": "substitute_accident"
+    },
+    "worker_type_employee": {
+      "kind": "check",
+      "t": 40,
+      "r": 2,
+      "c": 1,
+      "n": 1
+    },
+    "worker_type_labor_provider": {
+      "kind": "check",
+      "t": 40,
+      "r": 2,
+      "c": 1,
+      "n": 2
+    },
+    "worker_type_sme_owner": {
+      "kind": "check",
+      "t": 40,
+      "r": 2,
+      "c": 1,
+      "n": 3
+    },
+    "worker_type_sme_family": {
+      "kind": "check",
+      "t": 40,
+      "r": 2,
+      "c": 1,
+      "n": 4
+    },
+    "worker_type_student_researcher": {
+      "kind": "check",
+      "t": 40,
+      "r": 2,
+      "c": 1,
+      "n": 5
+    },
+    "worker_type_injured_child": {
+      "kind": "check",
+      "t": 40,
+      "r": 3,
+      "c": 1,
+      "n": 1
+    },
+    "worker_type_special": {
+      "kind": "check",
+      "t": 40,
+      "r": 3,
+      "c": 1,
+      "n": 2
+    },
+    "worker_type_field_trainee": {
+      "kind": "check",
+      "t": 40,
+      "r": 3,
+      "c": 1,
+      "n": 3
+    },
+    "claim_kind_accident": {
+      "kind": "check",
+      "t": 40,
+      "r": 4,
+      "c": 1,
+      "n": 1
+    },
+    "claim_kind_disease": {
+      "kind": "check",
+      "t": 40,
+      "r": 4,
+      "c": 1,
+      "n": 2
+    },
+    "claim_kind_commute": {
+      "kind": "check",
+      "t": 40,
+      "r": 4,
+      "c": 1,
+      "n": 3
+    },
+    "narrative": {
+      "kind": "cell",
+      "t": 40,
+      "r": 5,
+      "c": 1,
+      "p": 1
+    },
+    "substitute_year": {
+      "kind": "group",
+      "template": "substitute_date"
+    },
+    "substitute_month": {
+      "kind": "group",
+      "template": "substitute_date"
+    },
+    "substitute_day": {
+      "kind": "group",
+      "template": "substitute_date"
+    },
+    "substitute_applicant_name": {
+      "kind": "group",
+      "template": "substitute_applicant"
+    },
+    "substitute_agent_name": {
+      "kind": "group",
+      "template": "substitute_agent"
     }
   },
   "templates": {
@@ -469,6 +647,62 @@
       "c": 0,
       "p": 4,
       "text": "   휴대전화 : {applicant_mobile}   (유선전화 : {applicant_phone} )  E-mail : {email}"
+    },
+    "consent_sign": {
+      "t": 0,
+      "r": 13,
+      "c": 0,
+      "p": 4,
+      "text": "                                             {consent_year}년       {consent_month}월       {consent_day}일        성명  {consent_name}          (서명 또는 인)"
+    },
+    "agent": {
+      "t": 0,
+      "r": 14,
+      "c": 0,
+      "p": 3,
+      "text": "   대 리 인 : {agent_name}           (서명 또는 인)     산재근로자와의 관계 : {agent_relation} "
+    },
+    "branch": {
+      "t": 0,
+      "r": 15,
+      "c": 0,
+      "p": 0,
+      "text": "근로복지공단      {branch_name}      지역본부(지사)장 귀하"
+    },
+    "delegation": {
+      "t": 0,
+      "r": 16,
+      "c": 0,
+      "p": 2,
+      "text": "위임하는 자 {delegator_name}      (서명 또는 인)        위임받는 자 {delegate_clinic_name}     (서명 또는 인)"
+    },
+    "substitute_accident": {
+      "t": 40,
+      "r": 1,
+      "c": 7,
+      "p": 0,
+      "text": "    {substitute_accident_year}년 {substitute_accident_month}월 {substitute_accident_day}일 "
+    },
+    "substitute_date": {
+      "t": 40,
+      "r": 6,
+      "c": 0,
+      "p": 1,
+      "text": "                                                                {substitute_year}년     {substitute_month}월     {substitute_day}일"
+    },
+    "substitute_applicant": {
+      "t": 40,
+      "r": 6,
+      "c": 0,
+      "p": 2,
+      "text": "   신 청 인 : {substitute_applicant_name}    (서명 또는 인)"
+    },
+    "substitute_agent": {
+      "t": 40,
+      "r": 6,
+      "c": 0,
+      "p": 4,
+      "text": "   대 리 인 : {substitute_agent_name}      (서명 또는 인)"
     }
   },
   "stamps": {

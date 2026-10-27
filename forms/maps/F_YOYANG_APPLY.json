@@ -390,6 +390,15 @@
       ],
       "label": "사업장관리번호 11자리"
     },
+    "business_start_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 472,
+      "y": 368.5,
+      "size": 8,
+      "maxWidth": 67,
+      "label": "사업장: (사업개시번호: ) 괄호 안"
+    },
     "workplace_address": {
       "kind": "text",
       "page": 1,

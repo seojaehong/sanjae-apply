@@ -3,7 +3,7 @@
   "source_file": "F_HUYEOP_CLAIM.hwpx",
   "source_sha256": "70b6042e2a9a402bed1f72c32ff46a9911817de2fe6264d9aec3404811742847",
   "expect_pages": 3,
-  "_about": "휴업급여 및 상병보상연금 청구서(별지 제7호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 앞면 청구서 표, T1~T8 생년월일 상자(r5 c2 안쪽), T9~T16 재해발생일 상자(r6 c1 p1 안쪽), T17 = 확인사항 ③ 보상 내역 표(r11 c1 p5 안쪽: r1 c0 수령일자·c1 수령금액·c2 지급한 자), T18~ 안내·구비서류·진단서(신청인 칸 없음). 칸 이름은 forms/maps 와 같다. 성명은 값 칸이 따로 없어 라벨 문단(r5 c1)을 group 으로 다시 쓴다. accident_datetime 은 digits take:8(261027 엔진 take 추가). (옛 메모) accident_datetime 은 상자가 8개(YYYYMMDD)인데 값이 12자라 digits 가 멈추므로(글자 12 > 상자 8) 라벨 「재해발생일」 뒤에 after 로 통째로 붙였다 — 상자는 빈 채로 남는다. 엔진에 자르기(또는 digits max) 가 생기면 {kind:digits,t:0,r:6,c:1,count:8} 로 바꾼다.",
+  "_about": "휴업급여 및 상병보상연금 청구서(별지 제7호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 앞면 청구서 표, T1~T8 생년월일 상자(r5 c2 안쪽), T9~T16 재해발생일 상자(r6 c1 p1 안쪽), T17 = 확인사항 ③ 보상 내역 표(r11 c1 p5 안쪽: r1 c0 수령일자·c1 수령금액·c2 지급한 자), T18~ 안내·구비서류·진단서(신청인 칸 없음). 칸 이름은 forms/maps 와 같다. 성명은 값 칸이 따로 없어 라벨 문단(r5 c1)을 group 으로 다시 쓴다. accident_datetime 은 digits take:8(261027 엔진 take 추가). (옛 메모) accident_datetime 은 상자가 8개(YYYYMMDD)인데 값이 12자라 digits 가 멈추므로(글자 12 > 상자 8) 라벨 「재해발생일」 뒤에 after 로 통째로 붙였다 — 상자는 빈 채로 남는다. 엔진에 자르기(또는 digits max) 가 생기면 {kind:digits,t:0,r:6,c:1,count:8} 로 바꾼다. (0.5.4) 신청 쪽 칸 전수: 대행 제출 동의서 청구인 성명·의료기관 이름(delegator_name·delegate_clinic_name, T0 r15 c0 p2 group), 지사 이름(branch_name, T0 r16 c0 group). 처리란·간격 줄·T27 진단서는 forms/coverage_exempt/F_HUYEOP_CLAIM.json.",
   "slots": {
     "claim_huyeop": {
       "kind": "check",
@@ -210,6 +210,18 @@
     "agent_phone": {
       "kind": "group",
       "template": "agent"
+    },
+    "delegator_name": {
+      "kind": "group",
+      "template": "delegation"
+    },
+    "delegate_clinic_name": {
+      "kind": "group",
+      "template": "delegation"
+    },
+    "branch_name": {
+      "kind": "group",
+      "template": "branch"
     }
   },
   "templates": {
@@ -254,6 +266,20 @@
       "c": 0,
       "p": 3,
       "text": "대 리 인      {agent_name}         (서명 또는 인) ☎ {agent_phone}"
+    },
+    "delegation": {
+      "t": 0,
+      "r": 15,
+      "c": 0,
+      "p": 2,
+      "text": "청구인   {delegator_name}                    (서명 또는 인)          의료기관   {delegate_clinic_name}                  (서명 또는 인)"
+    },
+    "branch": {
+      "t": 0,
+      "r": 16,
+      "c": 0,
+      "p": 0,
+      "text": "근로복지공단    {branch_name}    지역본부(지사)장 귀하"
     }
   },
   "stamps": {

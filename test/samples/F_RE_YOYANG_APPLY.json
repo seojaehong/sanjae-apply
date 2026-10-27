@@ -37,5 +37,20 @@
   "apply_day": "26",
   "applicant_name": "홍길동",
   "phone": "02-000-0000",
-  "applicant_mobile": "010-0000-0000"
+  "applicant_mobile": "010-0000-0000",
+  "agent_name": "김대리",
+  "agent_phone": "02-111-2222",
+  "agent_mobile": "010-1111-1111",
+  "consent_promo_yes": true,
+  "consent_promo_no": false,
+  "consent_year": "2026",
+  "consent_month": "10",
+  "consent_day": "26",
+  "consent_name": "홍길동",
+  "delegation_year": "2026",
+  "delegation_month": "10",
+  "delegation_day": "26",
+  "delegator_name": "홍길동",
+  "delegate_clinic_name": "가나다병원",
+  "branch_name": "경기"
 }

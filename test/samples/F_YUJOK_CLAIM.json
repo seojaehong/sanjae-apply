@@ -73,5 +73,9 @@
   "applicant_name": "홍배우",
   "applicant_phone": "010-0000-0000",
   "agent_name": "김대리",
-  "agent_phone": "010-1111-1111"
+  "agent_phone": "010-1111-1111",
+  "consent_promo_yes": true,
+  "consent_promo_no": false,
+  "consent_name": "홍배우",
+  "branch_name": "서울"
 }

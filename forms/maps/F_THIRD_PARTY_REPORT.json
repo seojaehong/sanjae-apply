@@ -2,96 +2,794 @@
   "form_id": "F_THIRD_PARTY_REPORT",
   "source_file": "제3자 행위에 따른 재해발생신고서 및 확인서.pdf",
   "source_sha256": "e179cbf85ca2bef405ae3ac757cd46e96e3ec29df600ae3e75742058cc4cc8ef",
-  "page_size": { "width": 595.0, "height": 841.0 },
-  "_about": "제3자의 행위에 따른 재해발생신고서(p1) + 확인서(p2, 키 앞 confirm_). 신고인(산재근로자)이 쓰는 칸만 — 신고인(사업주) 행·대리인 서명줄은 뺀다. 발생연월일(accident_datetime, 공통 키)은 년월일 8칸뿐이라 12자리 값의 앞 8자리만 들어간다 — 녹색 스캔이 년·월 라벨 칸(폭 11.8)을 함께 잡아 격자선(y 390.4/408.6)으로 잡았다. 우편번호 □ 는 글자 bbox(rawdict). 좌표 단위 pt, 원점 쪽 왼쪽 위. 261026 실측.",
+  "page_size": {
+    "width": 595.0,
+    "height": 841.0
+  },
+  "_about": "제3자의 행위에 따른 재해발생신고서(p1) + 확인서(p2, 키 앞 confirm_). 신고하는 쪽이 쓰는 칸 전부 — 신고인(산재근로자)·신고인(사업주) 행(employer_reporter_*), 주소 ☎ 전화, 사업주·대리인 서명줄(employer_sign_*·agent_*), 지사 이름(branch_name·confirm_branch_name)까지(0.5.4). 발생연월일(accident_datetime, 공통 키)은 년월일 8칸뿐이라 12자리 값의 앞 8자리만 들어간다 — 녹색 스캔이 년·월 라벨 칸(폭 11.8)을 함께 잡아 격자선(y 390.4/408.6)으로 잡았다. 우편번호 □ 는 글자 bbox(rawdict). 좌표 단위 pt, 원점 쪽 왼쪽 위. 261026 실측.",
   "slots": {
-    "name": { "kind": "text", "page": 1, "x": 117, "y": 210, "size": 9, "maxWidth": 62 },
-    "rrn": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 183.9, "y0": 194.4, "x1": 198.0, "y1": 212.7 },
-      { "x0": 200.6, "y0": 194.4, "x1": 214.7, "y1": 212.7 },
-      { "x0": 217.6, "y0": 194.4, "x1": 231.7, "y1": 212.7 },
-      { "x0": 234.7, "y0": 194.4, "x1": 248.7, "y1": 212.7 },
-      { "x0": 251.7, "y0": 194.4, "x1": 265.7, "y1": 212.7 },
-      { "x0": 268.4, "y0": 194.4, "x1": 282.8, "y1": 212.7 },
-      { "x0": 289.0, "y0": 194.4, "x1": 303.1, "y1": 212.7 },
-      { "x0": 305.7, "y0": 194.4, "x1": 319.7, "y1": 212.7 },
-      { "x0": 322.7, "y0": 194.4, "x1": 336.8, "y1": 212.7 },
-      { "x0": 339.7, "y0": 194.4, "x1": 353.8, "y1": 212.7 },
-      { "x0": 356.7, "y0": 194.4, "x1": 370.8, "y1": 212.7 },
-      { "x0": 373.4, "y0": 194.4, "x1": 387.8, "y1": 212.7 },
-      { "x0": 390.4, "y0": 194.4, "x1": 404.5, "y1": 212.7 }
-    ] },
-    "job": { "kind": "text", "page": 1, "x": 480, "y": 210, "size": 8.5, "maxWidth": 53 },
-    "postal_code": { "kind": "boxes", "page": 1, "size": 7, "boxes": [
-      { "x0": 155.9, "y0": 219.8, "x1": 163.9, "y1": 228.8 },
-      { "x0": 164.0, "y0": 219.8, "x1": 171.9, "y1": 228.8 },
-      { "x0": 172.0, "y0": 219.8, "x1": 180.0, "y1": 228.8 },
-      { "x0": 179.9, "y0": 219.8, "x1": 187.9, "y1": 228.8 },
-      { "x0": 187.9, "y0": 219.8, "x1": 195.9, "y1": 228.8 }
-    ] },
-    "address": { "kind": "text", "page": 1, "x": 150, "y": 240, "size": 8.5, "maxWidth": 270 },
-    "mobile": { "kind": "text", "page": 1, "x": 463, "y": 236, "size": 8.5, "maxWidth": 70 },
-    "third_name": { "kind": "text", "page": 1, "x": 150, "y": 258, "size": 9, "maxWidth": 82 },
-    "third_rrn": { "kind": "text", "page": 1, "x": 301, "y": 258, "size": 9, "maxWidth": 132 },
-    "third_job": { "kind": "text", "page": 1, "x": 500, "y": 258, "size": 8.5, "maxWidth": 33 },
-    "third_postal_code": { "kind": "boxes", "page": 1, "size": 7, "boxes": [
-      { "x0": 155.9, "y0": 266.1, "x1": 163.9, "y1": 275.1 },
-      { "x0": 164.0, "y0": 266.1, "x1": 171.9, "y1": 275.1 },
-      { "x0": 172.0, "y0": 266.1, "x1": 180.0, "y1": 275.1 },
-      { "x0": 179.9, "y0": 266.1, "x1": 187.9, "y1": 275.1 },
-      { "x0": 187.9, "y0": 266.1, "x1": 195.9, "y1": 275.1 }
-    ] },
-    "third_address": { "kind": "text", "page": 1, "x": 150, "y": 286, "size": 8.5, "maxWidth": 270 },
-    "third_mobile": { "kind": "text", "page": 1, "x": 463, "y": 282, "size": 8.5, "maxWidth": 70 },
-    "third_employer_name": { "kind": "text", "page": 1, "x": 134, "y": 325, "size": 8.5, "maxWidth": 70 },
-    "third_employer_rep": { "kind": "text", "page": 1, "x": 212, "y": 325, "size": 8.5, "maxWidth": 61 },
-    "third_employer_rep_birth": { "kind": "text", "page": 1, "x": 281, "y": 325, "size": 8.5, "maxWidth": 58 },
-    "third_employer_address": { "kind": "text", "page": 1, "x": 347, "y": 325, "size": 8.5, "maxWidth": 106 },
-    "third_employer_workplace_no": { "kind": "text", "page": 1, "x": 461, "y": 325, "size": 8.5, "maxWidth": 71 },
-    "insurer_name": { "kind": "text", "page": 1, "x": 117, "y": 378, "size": 8.5, "maxWidth": 62 },
-    "insurance_type": { "kind": "text", "page": 1, "x": 187, "y": 378, "size": 8.5, "maxWidth": 55 },
-    "insurer_claim_no": { "kind": "text", "page": 1, "x": 250, "y": 378, "size": 8.5, "maxWidth": 89 },
-    "insurer_contact": { "kind": "text", "page": 1, "x": 359, "y": 378, "size": 8.5, "maxWidth": 94 },
-    "insured_vehicle_no": { "kind": "text", "page": 1, "x": 461, "y": 378, "size": 8.5, "maxWidth": 71 },
-    "accident_datetime": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 178.6, "y0": 390.4, "x1": 193.1, "y1": 408.6 },
-      { "x0": 195.6, "y0": 390.4, "x1": 210.1, "y1": 408.6 },
-      { "x0": 212.5, "y0": 390.4, "x1": 227.0, "y1": 408.6 },
-      { "x0": 229.4, "y0": 390.4, "x1": 243.9, "y1": 408.6 },
-      { "x0": 255.3, "y0": 390.4, "x1": 269.9, "y1": 408.6 },
-      { "x0": 272.4, "y0": 390.4, "x1": 286.9, "y1": 408.6 },
-      { "x0": 298.3, "y0": 390.4, "x1": 312.8, "y1": 408.6 },
-      { "x0": 315.2, "y0": 390.4, "x1": 329.7, "y1": 408.6 }
-    ] },
-    "accident_place": { "kind": "text", "page": 1, "x": 418, "y": 403, "size": 8.5, "maxWidth": 114 },
-    "narrative": { "kind": "multiline", "page": 1, "x0": 177.4, "y0": 414.3, "x1": 536.2, "y1": 479.8, "size": 8.5, "lineHeight": 12.5 },
-    "injury_desc": { "kind": "multiline", "page": 1, "x0": 177.4, "y0": 479.8, "x1": 536.2, "y1": 511.7, "size": 8.5, "lineHeight": 12.5 },
-    "comp_amount": { "kind": "text", "page": 1, "x": 246, "y": 531, "size": 8.5, "maxWidth": 90 },
-    "comp_year": { "kind": "text", "page": 1, "x": 425, "y": 531, "size": 8.5, "maxWidth": 28 },
-    "comp_month": { "kind": "text", "page": 1, "x": 477, "y": 531, "size": 8.5, "maxWidth": 12 },
-    "comp_day": { "kind": "text", "page": 1, "x": 513, "y": 531, "size": 8.5, "maxWidth": 12 },
-    "settlement_desc": { "kind": "multiline", "page": 1, "x0": 241.7, "y0": 539.2, "x1": 536.2, "y1": 590.4, "size": 8.5, "lineHeight": 12.5 },
-    "apply_year": { "kind": "text", "page": 1, "x": 195, "y": 611, "size": 9.5 },
-    "apply_month": { "kind": "text", "page": 1, "x": 240, "y": 611, "size": 9.5 },
-    "apply_day": { "kind": "text", "page": 1, "x": 271, "y": 611, "size": 9.5 },
-    "applicant_phone": { "kind": "text", "page": 1, "x": 108, "y": 643, "size": 8.5, "maxWidth": 103 },
-    "applicant_name": { "kind": "text", "page": 1, "x": 340, "y": 643, "size": 9.5, "maxWidth": 86 },
-
-    "confirm_year": { "kind": "text", "page": 2, "x": 106, "y": 139, "size": 9, "maxWidth": 46 },
-    "confirm_month": { "kind": "text", "page": 2, "x": 173, "y": 139, "size": 9, "maxWidth": 36 },
-    "confirm_day": { "kind": "text", "page": 2, "x": 230, "y": 139, "size": 9, "maxWidth": 36 },
-    "confirm_hour": { "kind": "text", "page": 2, "x": 286, "y": 139, "size": 9, "maxWidth": 36 },
-    "confirm_place": { "kind": "text", "page": 2, "x": 343, "y": 139, "size": 9, "maxWidth": 109 },
-    "confirm_offender": { "kind": "text", "page": 2, "x": 86, "y": 155, "size": 9, "maxWidth": 31 },
-    "confirm_apply_year": { "kind": "text", "page": 2, "x": 228, "y": 681, "size": 9.5 },
-    "confirm_apply_month": { "kind": "text", "page": 2, "x": 285, "y": 681, "size": 9.5 },
-    "confirm_apply_day": { "kind": "text", "page": 2, "x": 329, "y": 681, "size": 9.5 },
-    "confirm_address": { "kind": "text", "page": 2, "x": 298, "y": 721, "size": 8.5, "maxWidth": 153 },
-    "confirm_phone": { "kind": "text", "page": 2, "x": 469, "y": 721, "size": 8.5, "maxWidth": 65 },
-    "confirm_name": { "kind": "text", "page": 2, "x": 298, "y": 739, "size": 9.5, "maxWidth": 136 }
+    "name": {
+      "kind": "text",
+      "page": 1,
+      "x": 117,
+      "y": 210,
+      "size": 9,
+      "maxWidth": 62,
+      "label": "신고인(산재근로자) 성명"
+    },
+    "rrn": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 183.9,
+          "y0": 194.4,
+          "x1": 198.0,
+          "y1": 212.7
+        },
+        {
+          "x0": 200.6,
+          "y0": 194.4,
+          "x1": 214.7,
+          "y1": 212.7
+        },
+        {
+          "x0": 217.6,
+          "y0": 194.4,
+          "x1": 231.7,
+          "y1": 212.7
+        },
+        {
+          "x0": 234.7,
+          "y0": 194.4,
+          "x1": 248.7,
+          "y1": 212.7
+        },
+        {
+          "x0": 251.7,
+          "y0": 194.4,
+          "x1": 265.7,
+          "y1": 212.7
+        },
+        {
+          "x0": 268.4,
+          "y0": 194.4,
+          "x1": 282.8,
+          "y1": 212.7
+        },
+        {
+          "x0": 289.0,
+          "y0": 194.4,
+          "x1": 303.1,
+          "y1": 212.7
+        },
+        {
+          "x0": 305.7,
+          "y0": 194.4,
+          "x1": 319.7,
+          "y1": 212.7
+        },
+        {
+          "x0": 322.7,
+          "y0": 194.4,
+          "x1": 336.8,
+          "y1": 212.7
+        },
+        {
+          "x0": 339.7,
+          "y0": 194.4,
+          "x1": 353.8,
+          "y1": 212.7
+        },
+        {
+          "x0": 356.7,
+          "y0": 194.4,
+          "x1": 370.8,
+          "y1": 212.7
+        },
+        {
+          "x0": 373.4,
+          "y0": 194.4,
+          "x1": 387.8,
+          "y1": 212.7
+        },
+        {
+          "x0": 390.4,
+          "y0": 194.4,
+          "x1": 404.5,
+          "y1": 212.7
+        }
+      ],
+      "label": "신고인(산재근로자) 주민등록번호 13자리"
+    },
+    "job": {
+      "kind": "text",
+      "page": 1,
+      "x": 480,
+      "y": 210,
+      "size": 8.5,
+      "maxWidth": 53,
+      "label": "신고인(산재근로자) 직종"
+    },
+    "postal_code": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 7,
+      "boxes": [
+        {
+          "x0": 155.9,
+          "y0": 219.8,
+          "x1": 163.9,
+          "y1": 228.8
+        },
+        {
+          "x0": 164.0,
+          "y0": 219.8,
+          "x1": 171.9,
+          "y1": 228.8
+        },
+        {
+          "x0": 172.0,
+          "y0": 219.8,
+          "x1": 180.0,
+          "y1": 228.8
+        },
+        {
+          "x0": 179.9,
+          "y0": 219.8,
+          "x1": 187.9,
+          "y1": 228.8
+        },
+        {
+          "x0": 187.9,
+          "y0": 219.8,
+          "x1": 195.9,
+          "y1": 228.8
+        }
+      ],
+      "label": "신고인(산재근로자) 주소 우편번호 5자리"
+    },
+    "address": {
+      "kind": "text",
+      "page": 1,
+      "x": 155,
+      "y": 240,
+      "size": 8.5,
+      "maxWidth": 265,
+      "label": "신고인(산재근로자) 주소"
+    },
+    "mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 463,
+      "y": 236,
+      "size": 8.5,
+      "maxWidth": 70,
+      "label": "신고인(산재근로자) 휴대전화"
+    },
+    "third_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 155,
+      "y": 258,
+      "size": 9,
+      "maxWidth": 77,
+      "label": "제3자(가해자) 성명"
+    },
+    "third_rrn": {
+      "kind": "text",
+      "page": 1,
+      "x": 310,
+      "y": 258,
+      "size": 9,
+      "maxWidth": 122,
+      "label": "제3자(가해자) 주민등록번호"
+    },
+    "third_job": {
+      "kind": "text",
+      "page": 1,
+      "x": 500,
+      "y": 258,
+      "size": 8.5,
+      "maxWidth": 33,
+      "label": "제3자(가해자) 직종"
+    },
+    "third_postal_code": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 7,
+      "boxes": [
+        {
+          "x0": 155.9,
+          "y0": 266.1,
+          "x1": 163.9,
+          "y1": 275.1
+        },
+        {
+          "x0": 164.0,
+          "y0": 266.1,
+          "x1": 171.9,
+          "y1": 275.1
+        },
+        {
+          "x0": 172.0,
+          "y0": 266.1,
+          "x1": 180.0,
+          "y1": 275.1
+        },
+        {
+          "x0": 179.9,
+          "y0": 266.1,
+          "x1": 187.9,
+          "y1": 275.1
+        },
+        {
+          "x0": 187.9,
+          "y0": 266.1,
+          "x1": 195.9,
+          "y1": 275.1
+        }
+      ],
+      "label": "제3자(가해자) 주소 우편번호 5자리"
+    },
+    "third_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 155,
+      "y": 286,
+      "size": 8.5,
+      "maxWidth": 265,
+      "label": "제3자(가해자) 주소"
+    },
+    "third_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 463,
+      "y": 282,
+      "size": 8.5,
+      "maxWidth": 70,
+      "label": "제3자(가해자) 휴대전화"
+    },
+    "third_employer_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 134,
+      "y": 325,
+      "size": 8.5,
+      "maxWidth": 70,
+      "label": "제3자(가해자) 근무처 명칭"
+    },
+    "third_employer_rep": {
+      "kind": "text",
+      "page": 1,
+      "x": 212,
+      "y": 325,
+      "size": 8.5,
+      "maxWidth": 61,
+      "label": "제3자(가해자) 근무처 대표자성명"
+    },
+    "third_employer_rep_birth": {
+      "kind": "text",
+      "page": 1,
+      "x": 281,
+      "y": 325,
+      "size": 8.5,
+      "maxWidth": 58,
+      "label": "제3자(가해자) 근무처 대표자 생년월일"
+    },
+    "third_employer_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 347,
+      "y": 325,
+      "size": 8.5,
+      "maxWidth": 106,
+      "label": "제3자(가해자) 근무처 소재지"
+    },
+    "third_employer_workplace_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 461,
+      "y": 325,
+      "size": 8.5,
+      "maxWidth": 71,
+      "label": "제3자(가해자) 근무처 사업장관리번호"
+    },
+    "insurer_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 117,
+      "y": 378,
+      "size": 8.5,
+      "maxWidth": 62,
+      "label": "제3자(책임보험자) 보험사명"
+    },
+    "insurance_type": {
+      "kind": "text",
+      "page": 1,
+      "x": 187,
+      "y": 378,
+      "size": 8.5,
+      "maxWidth": 55,
+      "label": "제3자(책임보험자) 보험 유형(책임/종합/기타)"
+    },
+    "insurer_claim_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 250,
+      "y": 378,
+      "size": 8.5,
+      "maxWidth": 89,
+      "label": "제3자(책임보험자) 사고접수번호"
+    },
+    "insurer_contact": {
+      "kind": "text",
+      "page": 1,
+      "x": 359,
+      "y": 378,
+      "size": 8.5,
+      "maxWidth": 94,
+      "label": "제3자(책임보험자) 보험사 담당자명(연락처)"
+    },
+    "insured_vehicle_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 461,
+      "y": 378,
+      "size": 8.5,
+      "maxWidth": 71,
+      "label": "제3자(책임보험자) 보험가입 차량번호"
+    },
+    "accident_datetime": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 178.6,
+          "y0": 390.4,
+          "x1": 193.1,
+          "y1": 408.6
+        },
+        {
+          "x0": 195.6,
+          "y0": 390.4,
+          "x1": 210.1,
+          "y1": 408.6
+        },
+        {
+          "x0": 212.5,
+          "y0": 390.4,
+          "x1": 227.0,
+          "y1": 408.6
+        },
+        {
+          "x0": 229.4,
+          "y0": 390.4,
+          "x1": 243.9,
+          "y1": 408.6
+        },
+        {
+          "x0": 255.3,
+          "y0": 390.4,
+          "x1": 269.9,
+          "y1": 408.6
+        },
+        {
+          "x0": 272.4,
+          "y0": 390.4,
+          "x1": 286.9,
+          "y1": 408.6
+        },
+        {
+          "x0": 298.3,
+          "y0": 390.4,
+          "x1": 312.8,
+          "y1": 408.6
+        },
+        {
+          "x0": 315.2,
+          "y0": 390.4,
+          "x1": 329.7,
+          "y1": 408.6
+        }
+      ],
+      "label": "재해사실 발생연월일 YYYYMMDD(12자리 값이면 앞 8자리만 들어간다)"
+    },
+    "accident_place": {
+      "kind": "text",
+      "page": 1,
+      "x": 418,
+      "y": 403,
+      "size": 8.5,
+      "maxWidth": 114,
+      "label": "재해사실 발생장소"
+    },
+    "narrative": {
+      "kind": "multiline",
+      "page": 1,
+      "x0": 177.4,
+      "y0": 414.3,
+      "x1": 536.2,
+      "y1": 479.8,
+      "size": 8.5,
+      "lineHeight": 12.5,
+      "label": "재해사실 원인 및 경위"
+    },
+    "injury_desc": {
+      "kind": "multiline",
+      "page": 1,
+      "x0": 177.4,
+      "y0": 479.8,
+      "x1": 536.2,
+      "y1": 511.7,
+      "size": 8.5,
+      "lineHeight": 12.5,
+      "label": "재해사실 상병부위 및 상병명"
+    },
+    "comp_amount": {
+      "kind": "text",
+      "page": 1,
+      "x": 246,
+      "y": 531,
+      "size": 8.5,
+      "maxWidth": 90,
+      "label": "기타: 가해자로부터 손해배상을 받았을 때 받은 금액(원)"
+    },
+    "comp_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 425,
+      "y": 531,
+      "size": 8.5,
+      "maxWidth": 28,
+      "label": "기타: 손해배상 받은 연월일 년"
+    },
+    "comp_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 477,
+      "y": 531,
+      "size": 8.5,
+      "maxWidth": 12,
+      "label": "기타: 손해배상 받은 연월일 월"
+    },
+    "comp_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 513,
+      "y": 531,
+      "size": 8.5,
+      "maxWidth": 12,
+      "label": "기타: 손해배상 받은 연월일 일"
+    },
+    "settlement_desc": {
+      "kind": "multiline",
+      "page": 1,
+      "x0": 241.7,
+      "y0": 539.2,
+      "x1": 536.2,
+      "y1": 590.4,
+      "size": 8.5,
+      "lineHeight": 12.5,
+      "label": "기타: 가해자와 손해배상에 관하여 합의된 때에는 그 내용"
+    },
+    "apply_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 195,
+      "y": 611,
+      "size": 9.5,
+      "label": "신고일 년"
+    },
+    "apply_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 240,
+      "y": 611,
+      "size": 9.5,
+      "label": "신고일 월"
+    },
+    "apply_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 271,
+      "y": 611,
+      "size": 9.5,
+      "label": "신고일 일"
+    },
+    "applicant_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 108,
+      "y": 643,
+      "size": 8.5,
+      "maxWidth": 103,
+      "label": "신고인(수급권자) 서명줄 (☎ ) 전화번호"
+    },
+    "applicant_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 340,
+      "y": 643,
+      "size": 9.5,
+      "maxWidth": 86,
+      "label": "신고인(수급권자) 성명"
+    },
+    "confirm_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 106,
+      "y": 139,
+      "size": 9,
+      "maxWidth": 46,
+      "label": "확인서: 재해 일시 년"
+    },
+    "confirm_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 173,
+      "y": 139,
+      "size": 9,
+      "maxWidth": 36,
+      "label": "확인서: 재해 일시 월"
+    },
+    "confirm_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 230,
+      "y": 139,
+      "size": 9,
+      "maxWidth": 36,
+      "label": "확인서: 재해 일시 일"
+    },
+    "confirm_hour": {
+      "kind": "text",
+      "page": 2,
+      "x": 286,
+      "y": 139,
+      "size": 9,
+      "maxWidth": 36,
+      "label": "확인서: 재해 일시 시"
+    },
+    "confirm_place": {
+      "kind": "text",
+      "page": 2,
+      "x": 343,
+      "y": 139,
+      "size": 9,
+      "maxWidth": 109,
+      "label": "확인서: ○○에서 — 재해 장소"
+    },
+    "confirm_offender": {
+      "kind": "text",
+      "page": 2,
+      "x": 86,
+      "y": 155,
+      "size": 9,
+      "maxWidth": 31,
+      "label": "확인서: 가해자 ○○의 행위로 — 가해자 성명"
+    },
+    "confirm_apply_year": {
+      "kind": "text",
+      "page": 2,
+      "x": 228,
+      "y": 681,
+      "size": 9.5,
+      "label": "확인서 작성일 년"
+    },
+    "confirm_apply_month": {
+      "kind": "text",
+      "page": 2,
+      "x": 285,
+      "y": 681,
+      "size": 9.5,
+      "label": "확인서 작성일 월"
+    },
+    "confirm_apply_day": {
+      "kind": "text",
+      "page": 2,
+      "x": 329,
+      "y": 681,
+      "size": 9.5,
+      "label": "확인서 작성일 일"
+    },
+    "confirm_address": {
+      "kind": "text",
+      "page": 2,
+      "x": 298,
+      "y": 721,
+      "size": 8.5,
+      "maxWidth": 153,
+      "label": "확인서 확인자(수급권자) 주소"
+    },
+    "confirm_phone": {
+      "kind": "text",
+      "page": 2,
+      "x": 469,
+      "y": 721,
+      "size": 8.5,
+      "maxWidth": 65,
+      "label": "확인서 확인자(수급권자) ☎ 전화번호"
+    },
+    "confirm_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 298,
+      "y": 739,
+      "size": 9.5,
+      "maxWidth": 136,
+      "label": "확인서 확인자(수급권자) 성명"
+    },
+    "employer_reporter_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 155,
+      "y": 144,
+      "size": 9,
+      "maxWidth": 149,
+      "label": "신고인(사업주) 성명"
+    },
+    "employer_reporter_birth": {
+      "kind": "text",
+      "page": 1,
+      "x": 386,
+      "y": 144,
+      "size": 9,
+      "maxWidth": 146,
+      "label": "신고인(사업주) 생년월일"
+    },
+    "employer_reporter_postal_code": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 7,
+      "boxes": [
+        {
+          "x0": 155.9,
+          "y0": 152.5,
+          "x1": 163.9,
+          "y1": 161.5
+        },
+        {
+          "x0": 164.0,
+          "y0": 152.5,
+          "x1": 171.9,
+          "y1": 161.5
+        },
+        {
+          "x0": 172.0,
+          "y0": 152.5,
+          "x1": 180.0,
+          "y1": 161.5
+        },
+        {
+          "x0": 179.9,
+          "y0": 152.5,
+          "x1": 187.9,
+          "y1": 161.5
+        },
+        {
+          "x0": 187.9,
+          "y0": 152.5,
+          "x1": 195.9,
+          "y1": 161.5
+        }
+      ],
+      "label": "신고인(사업주) 주소 우편번호 5자리"
+    },
+    "employer_reporter_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 450,
+      "y": 160,
+      "size": 8.5,
+      "maxWidth": 83,
+      "label": "신고인(사업주) 주소 ☎ 전화번호"
+    },
+    "employer_reporter_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 155,
+      "y": 172,
+      "size": 8.5,
+      "maxWidth": 265,
+      "label": "신고인(사업주) 주소"
+    },
+    "employer_reporter_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 463,
+      "y": 168.5,
+      "size": 8.5,
+      "maxWidth": 70,
+      "label": "신고인(사업주) 휴대전화"
+    },
+    "phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 450,
+      "y": 227.3,
+      "size": 8.5,
+      "maxWidth": 83,
+      "label": "신고인(산재근로자) 주소 ☎ 전화번호"
+    },
+    "third_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 450,
+      "y": 273.6,
+      "size": 8.5,
+      "maxWidth": 83,
+      "label": "제3자(가해자) 주소 ☎ 전화번호"
+    },
+    "employer_sign_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 108,
+      "y": 627,
+      "size": 8.5,
+      "maxWidth": 103,
+      "label": "신고인(사업주) 서명줄 (☎ ) 전화번호"
+    },
+    "employer_sign_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 340,
+      "y": 627,
+      "size": 9.5,
+      "maxWidth": 86,
+      "label": "신고인(사업주) 서명줄 성명"
+    },
+    "agent_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 108,
+      "y": 659,
+      "size": 8.5,
+      "maxWidth": 103,
+      "label": "대리인 서명줄 (☎ ) 전화번호"
+    },
+    "agent_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 340,
+      "y": 659,
+      "size": 9.5,
+      "maxWidth": 86,
+      "label": "대리인 성명"
+    },
+    "branch_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 236,
+      "y": 678,
+      "size": 10,
+      "maxWidth": 80,
+      "label": "근로복지공단 ○○ 지역본부(지사)장 귀하 — 지사 이름"
+    },
+    "confirm_branch_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 237,
+      "y": 761,
+      "size": 10,
+      "maxWidth": 80,
+      "label": "확인서: 근로복지공단 ○○ 지역본부(지사)장 귀하 — 지사 이름"
+    }
   },
   "stamps": {
-    "applicant": { "page": 1, "x": 460.4, "y": 639.4, "size": 42 },
-    "confirm": { "page": 2, "x": 475.6, "y": 734.7, "size": 42 }
+    "applicant": {
+      "page": 1,
+      "x": 460.4,
+      "y": 639.4,
+      "size": 42
+    },
+    "confirm": {
+      "page": 2,
+      "x": 475.6,
+      "y": 734.7,
+      "size": 42
+    }
   }
 }

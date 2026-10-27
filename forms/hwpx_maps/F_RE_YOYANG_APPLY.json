@@ -3,7 +3,7 @@
   "source_file": "F_RE_YOYANG_APPLY.hwpx",
   "source_sha256": "a8b5c973433fd2e97c9a1869c473a6711880fa08e602134696594f5a0408f908",
   "expect_pages": 2,
-  "_about": "재요양 신청서(별지 제33호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 신청서 큰 표(24행×15열), T1~T13 주민번호 상자, T14~T21 재해일자 상자(8개=년월일), T22 = 다른보상 수령내역 표(r14 c1 안쪽: 수령일자·수령금액·지급처), T23 개인정보 이용내역, T24~ = 재요양 소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ★⑥사유(r9 c6 p0·p2)·⑧취업여부(r12 c4 p0·p2·p4)의 체크 상자는 전각 괄호 「〔  〕」라 check op(BOX_RE = [ ]·□·☐)가 못 본다. 그래서 괄호형 체크 템플릿(불리언 true → 「V」, false → 빈 글자, 261027 엔진)으로 문단을 통째 쓴다 — 「〔 {x} 〕」는 false 면 원문 「〔  〕」 그대로, true 면 「〔 V 〕」. provider_job 은 employment_provider 와 같은 문단(r12 c4 p2)이라 한 템플릿에 함께 둔다. 엔진 check 가 〔 〕를 보게 되면 check op(r9 c6 n=1 고정물제거 · 2 의지장착 · 3 치과보철 · 4 재발 · 5 수술 · 6 비수술 · 7 기타 / r12 c4 n=1 근로자 · 2 노무제공자 · 3 미취업)로 바꿀 수 있으나, 그러면 provider_job 템플릿과 「편집 겹침」이 나므로 provider_job 을 after(label 「직종:」)로 바꿔야 한다. ★엔진 한계: accident_datetime 값 12자리 vs 상자 8개 → digits 가 멈추므로 라벨 문단(r6 c12 p0)에 템플릿. 엔진이 자르게 되면 {\"kind\":\"digits\",\"t\":0,\"r\":6,\"c\":12,\"count\":8}. (261027) accident_datetime 은 digits take:8 로 바꿈.",
+  "_about": "재요양 신청서(별지 제33호) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 신청서 큰 표(24행×15열), T1~T13 주민번호 상자, T14~T21 재해일자 상자(8개=년월일), T22 = 다른보상 수령내역 표(r14 c1 안쪽: 수령일자·수령금액·지급처), T23 개인정보 이용내역, T24~ = 재요양 소견서(의사 기재, 넣지 않는다). 칸 이름은 forms/maps 와 같다. ★⑥사유(r9 c6 p0·p2)·⑧취업여부(r12 c4 p0·p2·p4)의 체크 상자는 전각 괄호 「〔  〕」라 check op(BOX_RE = [ ]·□·☐)가 못 본다. 그래서 괄호형 체크 템플릿(불리언 true → 「V」, false → 빈 글자, 261027 엔진)으로 문단을 통째 쓴다 — 「〔 {x} 〕」는 false 면 원문 「〔  〕」 그대로, true 면 「〔 V 〕」. provider_job 은 employment_provider 와 같은 문단(r12 c4 p2)이라 한 템플릿에 함께 둔다. 엔진 check 가 〔 〕를 보게 되면 check op(r9 c6 n=1 고정물제거 · 2 의지장착 · 3 치과보철 · 4 재발 · 5 수술 · 6 비수술 · 7 기타 / r12 c4 n=1 근로자 · 2 노무제공자 · 3 미취업)로 바꿀 수 있으나, 그러면 provider_job 템플릿과 「편집 겹침」이 나므로 provider_job 을 after(label 「직종:」)로 바꿔야 한다. ★엔진 한계: accident_datetime 값 12자리 vs 상자 8개 → digits 가 멈추므로 라벨 문단(r6 c12 p0)에 템플릿. 엔진이 자르게 되면 {\"kind\":\"digits\",\"t\":0,\"r\":6,\"c\":12,\"count\":8}. (261027) accident_datetime 은 digits take:8 로 바꿈. (0.5.4) 대리인 줄(r16 p3)·개인정보 이용 동의 예/아니오(r18 c0 n2·n3, n1 은 글머리표 □)·동의 서명란 날짜·성명(r18 p4)·대행 제출 위임 날짜(r20 p2)·위임하는 자/위임받는 자(r20 p3)·지사(r22) 칸을 더했다. 템플릿은 원문 문단 글자에 {칸} 만 끼웠다(「(서명 또는 인)」 수 그대로).",
   "slots": {
     "name": {
       "kind": "cell",
@@ -193,6 +193,72 @@
     "applicant_mobile": {
       "kind": "group",
       "template": "applicant"
+    },
+    "agent_name": {
+      "kind": "group",
+      "template": "agent"
+    },
+    "agent_phone": {
+      "kind": "group",
+      "template": "agent"
+    },
+    "agent_mobile": {
+      "kind": "group",
+      "template": "agent"
+    },
+    "consent_promo_yes": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 0,
+      "n": 2
+    },
+    "consent_promo_no": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 0,
+      "n": 3
+    },
+    "consent_year": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "consent_month": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "consent_day": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "consent_name": {
+      "kind": "group",
+      "template": "consent_sign"
+    },
+    "delegation_year": {
+      "kind": "group",
+      "template": "delegation_date"
+    },
+    "delegation_month": {
+      "kind": "group",
+      "template": "delegation_date"
+    },
+    "delegation_day": {
+      "kind": "group",
+      "template": "delegation_date"
+    },
+    "delegator_name": {
+      "kind": "group",
+      "template": "delegation_sign"
+    },
+    "delegate_clinic_name": {
+      "kind": "group",
+      "template": "delegation_sign"
+    },
+    "branch_name": {
+      "kind": "group",
+      "template": "branch"
     }
   },
   "templates": {
@@ -278,7 +344,42 @@
       "r": 16,
       "c": 0,
       "p": 2,
-      "text": "         신 청 인:   {applicant_name}   (서명 또는 인)    전화번호: {phone}    휴대전화: {applicant_mobile}"
+      "text": "         신 청 인:  {applicant_name}                      (서명 또는 인)    전화번호: {phone}                    휴대전화: {applicant_mobile}"
+    },
+    "agent": {
+      "t": 0,
+      "r": 16,
+      "c": 0,
+      "p": 3,
+      "text": "         대 리 인:  {agent_name}                      (서명 또는 인)    전화번호: {agent_phone}                    휴대전화: {agent_mobile}"
+    },
+    "consent_sign": {
+      "t": 0,
+      "r": 18,
+      "c": 0,
+      "p": 4,
+      "text": "                                             {consent_year}년       {consent_month}월       {consent_day}일        성명  {consent_name}              (서명 또는 인)"
+    },
+    "delegation_date": {
+      "t": 0,
+      "r": 20,
+      "c": 0,
+      "p": 2,
+      "text": "                                              {delegation_year}년     {delegation_month}월     {delegation_day}일"
+    },
+    "delegation_sign": {
+      "t": 0,
+      "r": 20,
+      "c": 0,
+      "p": 3,
+      "text": "     위임하는 자:  {delegator_name}                      (서명 또는 인)      위임받는 자:  {delegate_clinic_name}                         (서명 또는 인)"
+    },
+    "branch": {
+      "t": 0,
+      "r": 22,
+      "c": 0,
+      "p": 0,
+      "text": "근로복지공단  {branch_name}     지역본부(지사)장 귀중"
     }
   },
   "stamps": {

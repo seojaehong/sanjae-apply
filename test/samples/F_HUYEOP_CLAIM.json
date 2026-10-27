@@ -35,5 +35,8 @@
   "applicant_name": "홍길동",
   "applicant_phone": "010-0000-0000",
   "agent_name": "김대리",
-  "agent_phone": "010-1111-1111"
+  "agent_phone": "010-1111-1111",
+  "delegator_name": "홍길동",
+  "delegate_clinic_name": "가나다병원",
+  "branch_name": "경기"
 }

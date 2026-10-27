@@ -151,5 +151,11 @@
   "choice_year": "2026",
   "choice_month": "10",
   "choice_day": "26",
-  "choice_name": "홍길동"
+  "choice_name": "홍길동",
+  "agent_name": "김대리",
+  "agent_phone": "010-1111-1111",
+  "delegate_clinic_name": "가나다병원",
+  "branch_name": "경기",
+  "noise_agent_name": "김대리",
+  "noise_agent_phone": "010-1111-1111"
 }

@@ -2,91 +2,648 @@
   "form_id": "F_UNPAID_CLAIM",
   "source_file": "[별지 제29호 서식] 미지급 보험급여 청구서(20230705 개정).pdf",
   "source_sha256": "eab33ab2144a20d913084bb1fdccfa85382d0da4c0c4c534589772416d1ad002",
-  "page_size": { "width": 595.0, "height": 841.0 },
-  "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 1쪽만. 격자선·녹색 상자·괄호는 probe_form.py 261026 실측. 생년월일·재해발생일 상자는 get_drawings 가로선 x 구간(녹색 스캔은 「년」「월」 라벨 자리를 한 상자로 합쳐 잡았다). 체크 x 는 「[」 x1 과 「]」 x0 의 중간, 「( )」 는 괄호 사이 중간. 사망한 수급권자·청구인 행의 월·일 칸은 라벨 사이 9pt 뿐이라 size 7. accident_datetime 은 12자리를 받아도 앞 8자리만 들어간다. 청구인은 3행(claimant1~3).",
+  "page_size": {
+    "width": 595.0,
+    "height": 841.0
+  },
+  "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 1쪽만. 격자선·녹색 상자·괄호는 probe_form.py 261026 실측. 생년월일·재해발생일 상자는 get_drawings 가로선 x 구간(녹색 스캔은 「년」「월」 라벨 자리를 한 상자로 합쳐 잡았다). 체크 x 는 「[」 x1 과 「]」 x0 의 중간, 「( )」 는 괄호 사이 중간. 사망한 수급권자·청구인 행의 월·일 칸은 라벨 사이 9pt 뿐이라 size 7. accident_datetime 은 12자리를 받아도 앞 8자리만 들어간다. 청구인은 3행(claimant1~3). (0.5.4) 신청 쪽 칸 전수: 지사 이름(branch_name, T0 r25 c0 group). 처리란·간격 줄은 forms/coverage_exempt/F_UNPAID_CLAIM.json.",
   "slots": {
-    "name": { "kind": "text", "page": 1, "x": 145, "y": 153, "size": 10, "maxWidth": 93 },
-    "birth_date": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 294.4, "y0": 137.2, "x1": 308.8, "y1": 155.6 },
-      { "x0": 311.4, "y0": 137.2, "x1": 325.7, "y1": 155.6 },
-      { "x0": 328.3, "y0": 137.2, "x1": 342.7, "y1": 155.6 },
-      { "x0": 345.3, "y0": 137.2, "x1": 359.7, "y1": 155.6 },
-      { "x0": 376.2, "y0": 137.2, "x1": 390.6, "y1": 155.6 },
-      { "x0": 393.1, "y0": 137.2, "x1": 407.5, "y1": 155.6 },
-      { "x0": 424.2, "y0": 137.2, "x1": 438.6, "y1": 155.6 },
-      { "x0": 441.1, "y0": 137.2, "x1": 455.5, "y1": 155.6 }
-    ] },
-    "accident_datetime": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 229.9, "y0": 161.2, "x1": 244.3, "y1": 179.4 },
-      { "x0": 246.8, "y0": 161.2, "x1": 261.2, "y1": 179.4 },
-      { "x0": 263.9, "y0": 161.2, "x1": 278.1, "y1": 179.4 },
-      { "x0": 280.8, "y0": 161.2, "x1": 295.2, "y1": 179.4 },
-      { "x0": 311.7, "y0": 161.2, "x1": 326.1, "y1": 179.4 },
-      { "x0": 328.7, "y0": 161.2, "x1": 343.1, "y1": 179.4 },
-      { "x0": 359.7, "y0": 161.2, "x1": 374.1, "y1": 179.4 },
-      { "x0": 376.6, "y0": 161.2, "x1": 391.0, "y1": 179.4 }
-    ] },
-    "deceased_name": { "kind": "text", "page": 1, "x": 142, "y": 218, "size": 9.5, "maxWidth": 71 },
-    "deceased_birth_year": { "kind": "text", "page": 1, "x": 275, "y": 211, "size": 8, "maxWidth": 23 },
-    "deceased_birth_month": { "kind": "text", "page": 1, "x": 310.3, "y": 211, "size": 7, "maxWidth": 8.8 },
-    "deceased_birth_day": { "kind": "text", "page": 1, "x": 330.1, "y": 211, "size": 7, "maxWidth": 8.8 },
-    "death_year": { "kind": "text", "page": 1, "x": 449, "y": 210.5, "size": 8, "maxWidth": 23 },
-    "death_month": { "kind": "text", "page": 1, "x": 484.7, "y": 210.5, "size": 7, "maxWidth": 8.8 },
-    "death_day": { "kind": "text", "page": 1, "x": 504.5, "y": 210.5, "size": 7, "maxWidth": 8.8 },
-    "deceased_relation": { "kind": "text", "page": 1, "x": 196, "y": 244, "size": 9, "maxWidth": 81 },
-    "death_cause": { "kind": "text", "page": 1, "x": 327, "y": 244, "size": 9, "maxWidth": 213 },
-    "claimant1_name": { "kind": "text", "page": 1, "x": 123, "y": 286, "size": 9, "maxWidth": 54 },
-    "claimant1_birth_year": { "kind": "text", "page": 1, "x": 206, "y": 281.5, "size": 8, "maxWidth": 23 },
-    "claimant1_birth_month": { "kind": "text", "page": 1, "x": 241.0, "y": 281.5, "size": 7, "maxWidth": 8.8 },
-    "claimant1_birth_day": { "kind": "text", "page": 1, "x": 260.8, "y": 281.5, "size": 7, "maxWidth": 8.8 },
-    "claimant1_address": { "kind": "text", "page": 1, "x": 294, "y": 279.5, "size": 8, "maxWidth": 190 },
-    "claimant1_mobile": { "kind": "text", "page": 1, "x": 426.5, "y": 290, "size": 7, "maxWidth": 52.5 },
-    "claimant1_relation": { "kind": "text", "page": 1, "x": 492, "y": 286, "size": 9, "maxWidth": 49 },
-    "claimant2_name": { "kind": "text", "page": 1, "x": 123, "y": 308.5, "size": 9, "maxWidth": 54 },
-    "claimant2_birth_year": { "kind": "text", "page": 1, "x": 206, "y": 304.2, "size": 8, "maxWidth": 23 },
-    "claimant2_birth_month": { "kind": "text", "page": 1, "x": 241.0, "y": 304.2, "size": 7, "maxWidth": 8.8 },
-    "claimant2_birth_day": { "kind": "text", "page": 1, "x": 260.8, "y": 304.2, "size": 7, "maxWidth": 8.8 },
-    "claimant2_address": { "kind": "text", "page": 1, "x": 294, "y": 302, "size": 8, "maxWidth": 190 },
-    "claimant2_mobile": { "kind": "text", "page": 1, "x": 426.5, "y": 312.5, "size": 7, "maxWidth": 52.5 },
-    "claimant2_relation": { "kind": "text", "page": 1, "x": 492, "y": 308.5, "size": 9, "maxWidth": 49 },
-    "claimant3_name": { "kind": "text", "page": 1, "x": 123, "y": 331, "size": 9, "maxWidth": 54 },
-    "claimant3_birth_year": { "kind": "text", "page": 1, "x": 206, "y": 326.7, "size": 8, "maxWidth": 23 },
-    "claimant3_birth_month": { "kind": "text", "page": 1, "x": 241.0, "y": 326.7, "size": 7, "maxWidth": 8.8 },
-    "claimant3_birth_day": { "kind": "text", "page": 1, "x": 260.8, "y": 326.7, "size": 7, "maxWidth": 8.8 },
-    "claimant3_address": { "kind": "text", "page": 1, "x": 294, "y": 324.5, "size": 8, "maxWidth": 190 },
-    "claimant3_mobile": { "kind": "text", "page": 1, "x": 426.5, "y": 335, "size": 7, "maxWidth": 52.5 },
-    "claimant3_relation": { "kind": "text", "page": 1, "x": 492, "y": 331, "size": 9, "maxWidth": 49 },
-    "bank_name": { "kind": "text", "page": 1, "x": 207, "y": 352, "size": 9, "maxWidth": 200 },
-    "account_no": { "kind": "text", "page": 1, "x": 179, "y": 367.5, "size": 9, "maxWidth": 235 },
-    "account_holder": { "kind": "text", "page": 1, "x": 468, "y": 367.5, "size": 9, "maxWidth": 58 },
-    "account_type_normal": { "kind": "check", "page": 1, "x": 140.4, "y": 378.3 },
-    "account_type_protected": { "kind": "check", "page": 1, "x": 242.7, "y": 378.3 },
-    "unpaid_yoyang": { "kind": "check", "page": 1, "x": 172.4, "y": 402.3 },
-    "unpaid_huyeop": { "kind": "check", "page": 1, "x": 244.0, "y": 402.3 },
-    "unpaid_janghae": { "kind": "check", "page": 1, "x": 315.6, "y": 402.3 },
-    "unpaid_ganbyeong": { "kind": "check", "page": 1, "x": 387.0, "y": 402.3 },
-    "unpaid_yujok": { "kind": "check", "page": 1, "x": 458.6, "y": 402.3 },
-    "unpaid_jangrye": { "kind": "check", "page": 1, "x": 521.5, "y": 402.3 },
-    "unpaid_sangbyeong": { "kind": "check", "page": 1, "x": 191.3, "y": 417.0 },
-    "unpaid_jaehwal": { "kind": "check", "page": 1, "x": 282.0, "y": 417.0 },
-    "unpaid_jinpye_bosang": { "kind": "check", "page": 1, "x": 372.7, "y": 417.0 },
-    "unpaid_jinpye_yujok": { "kind": "check", "page": 1, "x": 463.2, "y": 417.0 },
-    "compensation_yes": { "kind": "check", "page": 1, "x": 431.3, "y": 455.9 },
-    "compensation_no": { "kind": "check", "page": 1, "x": 493.8, "y": 455.9 },
-    "comp_received_date": { "kind": "text", "page": 1, "x": 122, "y": 511, "size": 8.5, "maxWidth": 49 },
-    "comp_received_amount": { "kind": "text", "page": 1, "x": 179, "y": 511, "size": 8.5, "maxWidth": 82 },
-    "comp_payer": { "kind": "text", "page": 1, "x": 269, "y": 511, "size": 8.5, "maxWidth": 82 },
-    "info_consent_yes": { "kind": "check", "page": 1, "x": 376.4, "y": 645.1 },
-    "info_consent_no": { "kind": "check", "page": 1, "x": 425.0, "y": 645.1 },
-    "apply_year": { "kind": "text", "page": 1, "x": 293, "y": 692, "size": 9, "maxWidth": 24 },
-    "apply_month": { "kind": "text", "page": 1, "x": 339, "y": 692, "size": 9, "maxWidth": 12 },
-    "apply_day": { "kind": "text", "page": 1, "x": 374, "y": 692, "size": 9, "maxWidth": 12 },
-    "applicant_name": { "kind": "text", "page": 1, "x": 306, "y": 716.5, "size": 9.5, "maxWidth": 85 },
-    "applicant_phone": { "kind": "text", "page": 1, "x": 474, "y": 716.5, "size": 9, "maxWidth": 69 },
-    "agent_name": { "kind": "text", "page": 1, "x": 306, "y": 728, "size": 9.5, "maxWidth": 85 },
-    "agent_phone": { "kind": "text", "page": 1, "x": 474, "y": 728, "size": 9, "maxWidth": 69 }
+    "name": {
+      "kind": "text",
+      "page": 1,
+      "x": 145,
+      "y": 153,
+      "size": 10,
+      "maxWidth": 93,
+      "label": "산재근로자: 성명"
+    },
+    "birth_date": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 294.4,
+          "y0": 137.2,
+          "x1": 308.8,
+          "y1": 155.6
+        },
+        {
+          "x0": 311.4,
+          "y0": 137.2,
+          "x1": 325.7,
+          "y1": 155.6
+        },
+        {
+          "x0": 328.3,
+          "y0": 137.2,
+          "x1": 342.7,
+          "y1": 155.6
+        },
+        {
+          "x0": 345.3,
+          "y0": 137.2,
+          "x1": 359.7,
+          "y1": 155.6
+        },
+        {
+          "x0": 376.2,
+          "y0": 137.2,
+          "x1": 390.6,
+          "y1": 155.6
+        },
+        {
+          "x0": 393.1,
+          "y0": 137.2,
+          "x1": 407.5,
+          "y1": 155.6
+        },
+        {
+          "x0": 424.2,
+          "y0": 137.2,
+          "x1": 438.6,
+          "y1": 155.6
+        },
+        {
+          "x0": 441.1,
+          "y0": 137.2,
+          "x1": 455.5,
+          "y1": 155.6
+        }
+      ],
+      "label": "산재근로자: 생년월일 YYYYMMDD 8자리"
+    },
+    "accident_datetime": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 229.9,
+          "y0": 161.2,
+          "x1": 244.3,
+          "y1": 179.4
+        },
+        {
+          "x0": 246.8,
+          "y0": 161.2,
+          "x1": 261.2,
+          "y1": 179.4
+        },
+        {
+          "x0": 263.9,
+          "y0": 161.2,
+          "x1": 278.1,
+          "y1": 179.4
+        },
+        {
+          "x0": 280.8,
+          "y0": 161.2,
+          "x1": 295.2,
+          "y1": 179.4
+        },
+        {
+          "x0": 311.7,
+          "y0": 161.2,
+          "x1": 326.1,
+          "y1": 179.4
+        },
+        {
+          "x0": 328.7,
+          "y0": 161.2,
+          "x1": 343.1,
+          "y1": 179.4
+        },
+        {
+          "x0": 359.7,
+          "y0": 161.2,
+          "x1": 374.1,
+          "y1": 179.4
+        },
+        {
+          "x0": 376.6,
+          "y0": 161.2,
+          "x1": 391.0,
+          "y1": 179.4
+        }
+      ],
+      "label": "산재근로자: 재해발생일 YYYYMMDD(12자리 YYYYMMDDhhmm 를 주면 앞 8자리만)"
+    },
+    "deceased_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 142,
+      "y": 218,
+      "size": 9.5,
+      "maxWidth": 71,
+      "label": "사망한 수급권자: 성명(산재근로자와 같으면 비움)"
+    },
+    "deceased_birth_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 275,
+      "y": 211,
+      "size": 8,
+      "maxWidth": 23,
+      "label": "사망한 수급권자: 생년월일 년"
+    },
+    "deceased_birth_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 310.3,
+      "y": 211,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "사망한 수급권자: 생년월일 월"
+    },
+    "deceased_birth_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 330.1,
+      "y": 211,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "사망한 수급권자: 생년월일 일"
+    },
+    "death_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 449,
+      "y": 210.5,
+      "size": 8,
+      "maxWidth": 23,
+      "label": "사망한 수급권자: 사망일 년"
+    },
+    "death_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 484.7,
+      "y": 210.5,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "사망한 수급권자: 사망일 월"
+    },
+    "death_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 504.5,
+      "y": 210.5,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "사망한 수급권자: 사망일 일"
+    },
+    "deceased_relation": {
+      "kind": "text",
+      "page": 1,
+      "x": 196,
+      "y": 244,
+      "size": 9,
+      "maxWidth": 81,
+      "label": "사망한 수급권자: 근로자와의 관계"
+    },
+    "death_cause": {
+      "kind": "text",
+      "page": 1,
+      "x": 327,
+      "y": 244,
+      "size": 9,
+      "maxWidth": 213,
+      "label": "사망한 수급권자: 사망원인"
+    },
+    "claimant1_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 123,
+      "y": 286,
+      "size": 9,
+      "maxWidth": 54,
+      "label": "청구인 1행: 성명"
+    },
+    "claimant1_birth_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 206,
+      "y": 281.5,
+      "size": 8,
+      "maxWidth": 23,
+      "label": "청구인 1행: 생년월일 년"
+    },
+    "claimant1_birth_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 241.0,
+      "y": 281.5,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "청구인 1행: 생년월일 월"
+    },
+    "claimant1_birth_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 260.8,
+      "y": 281.5,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "청구인 1행: 생년월일 일"
+    },
+    "claimant1_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 294,
+      "y": 279.5,
+      "size": 8,
+      "maxWidth": 190,
+      "label": "청구인 1행: 주소"
+    },
+    "claimant1_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 426.5,
+      "y": 290,
+      "size": 7,
+      "maxWidth": 52.5,
+      "label": "청구인 1행: (휴대전화: )"
+    },
+    "claimant1_relation": {
+      "kind": "text",
+      "page": 1,
+      "x": 492,
+      "y": 286,
+      "size": 9,
+      "maxWidth": 49,
+      "label": "청구인 1행: 관계"
+    },
+    "claimant2_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 123,
+      "y": 308.5,
+      "size": 9,
+      "maxWidth": 54,
+      "label": "청구인 2행: 성명"
+    },
+    "claimant2_birth_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 206,
+      "y": 304.2,
+      "size": 8,
+      "maxWidth": 23,
+      "label": "청구인 2행: 생년월일 년"
+    },
+    "claimant2_birth_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 241.0,
+      "y": 304.2,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "청구인 2행: 생년월일 월"
+    },
+    "claimant2_birth_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 260.8,
+      "y": 304.2,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "청구인 2행: 생년월일 일"
+    },
+    "claimant2_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 294,
+      "y": 302,
+      "size": 8,
+      "maxWidth": 190,
+      "label": "청구인 2행: 주소"
+    },
+    "claimant2_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 426.5,
+      "y": 312.5,
+      "size": 7,
+      "maxWidth": 52.5,
+      "label": "청구인 2행: (휴대전화: )"
+    },
+    "claimant2_relation": {
+      "kind": "text",
+      "page": 1,
+      "x": 492,
+      "y": 308.5,
+      "size": 9,
+      "maxWidth": 49,
+      "label": "청구인 2행: 관계"
+    },
+    "claimant3_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 123,
+      "y": 331,
+      "size": 9,
+      "maxWidth": 54,
+      "label": "청구인 3행: 성명"
+    },
+    "claimant3_birth_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 206,
+      "y": 326.7,
+      "size": 8,
+      "maxWidth": 23,
+      "label": "청구인 3행: 생년월일 년"
+    },
+    "claimant3_birth_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 241.0,
+      "y": 326.7,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "청구인 3행: 생년월일 월"
+    },
+    "claimant3_birth_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 260.8,
+      "y": 326.7,
+      "size": 7,
+      "maxWidth": 8.8,
+      "label": "청구인 3행: 생년월일 일"
+    },
+    "claimant3_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 294,
+      "y": 324.5,
+      "size": 8,
+      "maxWidth": 190,
+      "label": "청구인 3행: 주소"
+    },
+    "claimant3_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 426.5,
+      "y": 335,
+      "size": 7,
+      "maxWidth": 52.5,
+      "label": "청구인 3행: (휴대전화: )"
+    },
+    "claimant3_relation": {
+      "kind": "text",
+      "page": 1,
+      "x": 492,
+      "y": 331,
+      "size": 9,
+      "maxWidth": 49,
+      "label": "청구인 3행: 관계"
+    },
+    "bank_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 207,
+      "y": 352,
+      "size": 9,
+      "maxWidth": 200,
+      "label": "수령계좌: 은행(증권사)명"
+    },
+    "account_no": {
+      "kind": "text",
+      "page": 1,
+      "x": 179,
+      "y": 367.5,
+      "size": 9,
+      "maxWidth": 235,
+      "label": "수령계좌: 계좌번호"
+    },
+    "account_holder": {
+      "kind": "text",
+      "page": 1,
+      "x": 468,
+      "y": 367.5,
+      "size": 9,
+      "maxWidth": 58,
+      "label": "수령계좌: (예금주 : ) 예금주 성명"
+    },
+    "account_type_normal": {
+      "kind": "check",
+      "page": 1,
+      "x": 140.4,
+      "y": 378.3,
+      "label": "수령계좌: 보통계좌"
+    },
+    "account_type_protected": {
+      "kind": "check",
+      "page": 1,
+      "x": 242.7,
+      "y": 378.3,
+      "label": "수령계좌: 보험급여 전용계좌(희망지킴이-압류금지계좌)"
+    },
+    "unpaid_yoyang": {
+      "kind": "check",
+      "page": 1,
+      "x": 172.4,
+      "y": 402.3,
+      "label": "미지급 보험급여 종류: 요양급여( )"
+    },
+    "unpaid_huyeop": {
+      "kind": "check",
+      "page": 1,
+      "x": 244.0,
+      "y": 402.3,
+      "label": "미지급 보험급여 종류: 휴업급여( )"
+    },
+    "unpaid_janghae": {
+      "kind": "check",
+      "page": 1,
+      "x": 315.6,
+      "y": 402.3,
+      "label": "미지급 보험급여 종류: 장해급여( )"
+    },
+    "unpaid_ganbyeong": {
+      "kind": "check",
+      "page": 1,
+      "x": 387.0,
+      "y": 402.3,
+      "label": "미지급 보험급여 종류: 간병급여( )"
+    },
+    "unpaid_yujok": {
+      "kind": "check",
+      "page": 1,
+      "x": 458.6,
+      "y": 402.3,
+      "label": "미지급 보험급여 종류: 유족급여( )"
+    },
+    "unpaid_jangrye": {
+      "kind": "check",
+      "page": 1,
+      "x": 521.5,
+      "y": 402.3,
+      "label": "미지급 보험급여 종류: 장례비( )"
+    },
+    "unpaid_sangbyeong": {
+      "kind": "check",
+      "page": 1,
+      "x": 191.3,
+      "y": 417.0,
+      "label": "미지급 보험급여 종류: 상병보상연금( )"
+    },
+    "unpaid_jaehwal": {
+      "kind": "check",
+      "page": 1,
+      "x": 282.0,
+      "y": 417.0,
+      "label": "미지급 보험급여 종류: 직업재활급여( )"
+    },
+    "unpaid_jinpye_bosang": {
+      "kind": "check",
+      "page": 1,
+      "x": 372.7,
+      "y": 417.0,
+      "label": "미지급 보험급여 종류: 진폐보상연금( )"
+    },
+    "unpaid_jinpye_yujok": {
+      "kind": "check",
+      "page": 1,
+      "x": 463.2,
+      "y": 417.0,
+      "label": "미지급 보험급여 종류: 진폐유족연금( )"
+    },
+    "compensation_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 431.3,
+      "y": 455.9,
+      "label": "확인사항 ①: 이 재해와 동일한 사유로 민법, 그 밖의 법령에 따른 배상 또는 보상을 받은 사실이 있습니까? 예( )"
+    },
+    "compensation_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 493.8,
+      "y": 455.9,
+      "label": "확인사항 ①: 이 재해와 동일한 사유로 민법, 그 밖의 법령에 따른 배상 또는 보상을 받은 사실이 있습니까? 아니오( )"
+    },
+    "comp_received_date": {
+      "kind": "text",
+      "page": 1,
+      "x": 122,
+      "y": 511,
+      "size": 8.5,
+      "maxWidth": 49,
+      "label": "확인사항 ② 배상·보상 수령 내역: 수령일자"
+    },
+    "comp_received_amount": {
+      "kind": "text",
+      "page": 1,
+      "x": 179,
+      "y": 511,
+      "size": 8.5,
+      "maxWidth": 82,
+      "label": "확인사항 ② 배상·보상 수령 내역: 수령금액"
+    },
+    "comp_payer": {
+      "kind": "text",
+      "page": 1,
+      "x": 269,
+      "y": 511,
+      "size": 8.5,
+      "maxWidth": 82,
+      "label": "확인사항 ② 배상·보상 수령 내역: 지급한 자"
+    },
+    "info_consent_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 376.4,
+      "y": 645.1,
+      "label": "행정정보 공동이용 동의서: 담당직원 확인사항(주민등록표 등본)을 확인하는 것에 동의 예"
+    },
+    "info_consent_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 425.0,
+      "y": 645.1,
+      "label": "행정정보 공동이용 동의서: 담당직원 확인사항(주민등록표 등본)을 확인하는 것에 동의 아니오"
+    },
+    "apply_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 293,
+      "y": 692,
+      "size": 9,
+      "maxWidth": 24,
+      "label": "청구일 년"
+    },
+    "apply_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 339,
+      "y": 692,
+      "size": 9,
+      "maxWidth": 12,
+      "label": "청구일 월"
+    },
+    "apply_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 374,
+      "y": 692,
+      "size": 9,
+      "maxWidth": 12,
+      "label": "청구일 일"
+    },
+    "applicant_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 306,
+      "y": 716.5,
+      "size": 9.5,
+      "maxWidth": 85,
+      "label": "청구인 : 성명(서명란)"
+    },
+    "applicant_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 474,
+      "y": 716.5,
+      "size": 9,
+      "maxWidth": 69,
+      "label": "청구인 ☎ 전화번호"
+    },
+    "agent_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 306,
+      "y": 728,
+      "size": 9.5,
+      "maxWidth": 85,
+      "label": "대리인 : 성명(서명란)"
+    },
+    "agent_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 474,
+      "y": 728,
+      "size": 9,
+      "maxWidth": 69,
+      "label": "대리인 ☎ 전화번호"
+    },
+    "branch_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 254,
+      "y": 758.5,
+      "size": 9,
+      "maxWidth": 41,
+      "label": "근로복지공단 ○○지역본부(지사)장 귀하 — 지사 이름"
+    }
   },
   "stamps": {
-    "applicant": { "page": 1, "x": 426.8, "y": 712.9, "size": 42 }
+    "applicant": {
+      "page": 1,
+      "x": 426.8,
+      "y": 712.9,
+      "size": 42
+    }
   }
 }

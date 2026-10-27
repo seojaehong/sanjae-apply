@@ -2,75 +2,606 @@
   "form_id": "F_RE_YOYANG_APPLY",
   "source_file": "F_RE_YOYANG_APPLY.pdf",
   "source_sha256": "99f1f5a73650a29d9ccb390d849e3cf5dab1d31032f47d718e7a617a4f5868c1",
-  "page_size": { "width": 595.0, "height": 841.0 },
-  "_about": "재요양 신청서(별지 33호) 1쪽. 좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 261026 probe_form.py 실측. 녹색 상자는 스캔이 이웃 테두리·라벨과 붙여 놓아 vlines 쌍으로 다시 잡았다. 체크 괄호가 전각 〔 〕라 brackets 에 안 잡혀 〔.x1 과 〕.x0 의 중점을 썼다. accident_datetime 은 공통 키를 그대로 쓰되 상자가 8개(년월일)라 12자리 값의 앞 8자리만 들어간다. 2쪽 소견서(의사 기재)는 뺐다.",
+  "page_size": {
+    "width": 595.0,
+    "height": 841.0
+  },
+  "_about": "재요양 신청서(별지 33호) 1쪽. 좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 261026 probe_form.py 실측. 녹색 상자는 스캔이 이웃 테두리·라벨과 붙여 놓아 vlines 쌍으로 다시 잡았다. 체크 괄호가 전각 〔 〕라 brackets 에 안 잡혀 〔.x1 과 〕.x0 의 중점을 썼다. accident_datetime 은 공통 키를 그대로 쓰되 상자가 8개(년월일)라 12자리 값의 앞 8자리만 들어간다. 2쪽 소견서(의사 기재)는 뺐다. (0.5.4) 대리인·개인정보 이용 동의·동의 서명란·대행 제출 위임(동의)·지사 칸을 더했다(probe 단어 bbox 실측).",
   "slots": {
-    "name": { "kind": "text", "page": 1, "x": 82, "y": 159.5, "size": 10, "maxWidth": 70 },
-    "rrn": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 161.9, "y0": 160.4, "x1": 176.3, "y1": 178.4 },
-      { "x0": 179.1, "y0": 160.4, "x1": 193.2, "y1": 178.4 },
-      { "x0": 196.1, "y0": 160.4, "x1": 209.7, "y1": 178.4 },
-      { "x0": 213.0, "y0": 160.4, "x1": 227.0, "y1": 178.4 },
-      { "x0": 229.9, "y0": 160.4, "x1": 244.1, "y1": 178.4 },
-      { "x0": 246.6, "y0": 160.4, "x1": 261.0, "y1": 178.4 },
-      { "x0": 266.9, "y0": 160.4, "x1": 281.0, "y1": 178.4 },
-      { "x0": 283.5, "y0": 160.4, "x1": 297.6, "y1": 178.4 },
-      { "x0": 300.8, "y0": 160.4, "x1": 315.0, "y1": 178.4 },
-      { "x0": 317.7, "y0": 160.4, "x1": 331.7, "y1": 178.4 },
-      { "x0": 334.5, "y0": 160.4, "x1": 348.7, "y1": 178.4 },
-      { "x0": 351.7, "y0": 160.4, "x1": 365.8, "y1": 178.4 },
-      { "x0": 368.6, "y0": 160.4, "x1": 382.7, "y1": 178.4 }
-    ] },
-    "accident_datetime": { "kind": "boxes", "page": 1, "size": 9, "boxes": [
-      { "x0": 389.3, "y0": 160.4, "x1": 403.9, "y1": 178.4 },
-      { "x0": 406.4, "y0": 160.4, "x1": 420.9, "y1": 178.4 },
-      { "x0": 423.6, "y0": 160.4, "x1": 437.8, "y1": 178.4 },
-      { "x0": 440.6, "y0": 160.4, "x1": 454.8, "y1": 178.4 },
-      { "x0": 466.2, "y0": 160.4, "x1": 480.3, "y1": 178.4 },
-      { "x0": 483.1, "y0": 160.4, "x1": 497.3, "y1": 178.4 },
-      { "x0": 508.8, "y0": 160.4, "x1": 522.9, "y1": 178.4 },
-      { "x0": 525.7, "y0": 160.4, "x1": 539.8, "y1": 178.4 }
-    ] },
-    "address": { "kind": "text", "page": 1, "x": 86, "y": 192, "size": 8.5, "maxWidth": 295 },
-    "mobile": { "kind": "text", "page": 1, "x": 438, "y": 192, "size": 9, "maxWidth": 110 },
-    "narrative": { "kind": "multiline", "page": 1, "x0": 43.4, "y0": 221, "x1": 552.8, "y1": 255.9, "size": 8.5, "lineHeight": 12.5 },
-    "reason_fixation_removal": { "kind": "check", "page": 1, "x": 207.7, "y": 267.6 },
-    "reason_prosthesis": { "kind": "check", "page": 1, "x": 387.5, "y": 267.6 },
-    "reason_dental": { "kind": "check", "page": 1, "x": 500.3, "y": 267.6 },
-    "reason_relapse": { "kind": "check", "page": 1, "x": 207.7, "y": 285.6 },
-    "relapse_surgery": { "kind": "check", "page": 1, "x": 347.9, "y": 285.6 },
-    "relapse_nonsurgery": { "kind": "check", "page": 1, "x": 393.1, "y": 285.6 },
-    "reason_other": { "kind": "check", "page": 1, "x": 466.1, "y": 285.6 },
-    "surgery_name": { "kind": "text", "page": 1, "x": 225, "y": 313, "size": 9, "maxWidth": 153 },
-    "surgery_year": { "kind": "text", "page": 1, "x": 454, "y": 313, "size": 9, "maxWidth": 26 },
-    "surgery_month": { "kind": "text", "page": 1, "x": 495, "y": 313, "size": 8.5, "maxWidth": 11 },
-    "surgery_day": { "kind": "text", "page": 1, "x": 521, "y": 313, "size": 8.5, "maxWidth": 11 },
-    "prev_hospital1_name": { "kind": "text", "page": 1, "x": 112, "y": 345, "size": 9, "maxWidth": 93 },
-    "prev_hospital1_address": { "kind": "text", "page": 1, "x": 244, "y": 345, "size": 9, "maxWidth": 304 },
-    "prev_hospital2_name": { "kind": "text", "page": 1, "x": 112, "y": 357.5, "size": 9, "maxWidth": 93 },
-    "prev_hospital2_address": { "kind": "text", "page": 1, "x": 244, "y": 357.5, "size": 9, "maxWidth": 304 },
-    "employment_worker": { "kind": "check", "page": 1, "x": 138.2, "y": 371.9 },
-    "employment_provider": { "kind": "check", "page": 1, "x": 138.2, "y": 389.9 },
-    "provider_job": { "kind": "text", "page": 1, "x": 240, "y": 394, "size": 8, "maxWidth": 32 },
-    "employment_none": { "kind": "check", "page": 1, "x": 138.2, "y": 407.9 },
-    "employer_name": { "kind": "text", "page": 1, "x": 359, "y": 380, "size": 9, "maxWidth": 96 },
-    "workplace_phone": { "kind": "text", "page": 1, "x": 495, "y": 380, "size": 8.5, "maxWidth": 54 },
-    "workplace_address": { "kind": "text", "page": 1, "x": 359, "y": 404, "size": 9, "maxWidth": 190 },
-    "other_comp_yes": { "kind": "check", "page": 1, "x": 472.4, "y": 419.8 },
-    "other_comp_no": { "kind": "check", "page": 1, "x": 515.6, "y": 419.8 },
-    "comp_date": { "kind": "text", "page": 1, "x": 72, "y": 462.5, "size": 8.5, "maxWidth": 88 },
-    "comp_amount": { "kind": "text", "page": 1, "x": 168, "y": 462.5, "size": 8.5, "maxWidth": 84 },
-    "comp_payer": { "kind": "text", "page": 1, "x": 260, "y": 462.5, "size": 8.5, "maxWidth": 110 },
-    "apply_year": { "kind": "text", "page": 1, "x": 320, "y": 512.5, "size": 9.5 },
-    "apply_month": { "kind": "text", "page": 1, "x": 378, "y": 512.5, "size": 9.5 },
-    "apply_day": { "kind": "text", "page": 1, "x": 413, "y": 512.5, "size": 9.5 },
-    "applicant_name": { "kind": "text", "page": 1, "x": 126, "y": 529.5, "size": 9.5, "maxWidth": 92 },
-    "phone": { "kind": "text", "page": 1, "x": 325, "y": 529.5, "size": 9, "maxWidth": 81 },
-    "applicant_mobile": { "kind": "text", "page": 1, "x": 452, "y": 529.5, "size": 9, "maxWidth": 97 }
+    "name": {
+      "kind": "text",
+      "page": 1,
+      "x": 82,
+      "y": 159.5,
+      "size": 10,
+      "maxWidth": 70,
+      "label": "① 재해자 성명"
+    },
+    "rrn": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 161.9,
+          "y0": 160.4,
+          "x1": 176.3,
+          "y1": 178.4
+        },
+        {
+          "x0": 179.1,
+          "y0": 160.4,
+          "x1": 193.2,
+          "y1": 178.4
+        },
+        {
+          "x0": 196.1,
+          "y0": 160.4,
+          "x1": 209.7,
+          "y1": 178.4
+        },
+        {
+          "x0": 213.0,
+          "y0": 160.4,
+          "x1": 227.0,
+          "y1": 178.4
+        },
+        {
+          "x0": 229.9,
+          "y0": 160.4,
+          "x1": 244.1,
+          "y1": 178.4
+        },
+        {
+          "x0": 246.6,
+          "y0": 160.4,
+          "x1": 261.0,
+          "y1": 178.4
+        },
+        {
+          "x0": 266.9,
+          "y0": 160.4,
+          "x1": 281.0,
+          "y1": 178.4
+        },
+        {
+          "x0": 283.5,
+          "y0": 160.4,
+          "x1": 297.6,
+          "y1": 178.4
+        },
+        {
+          "x0": 300.8,
+          "y0": 160.4,
+          "x1": 315.0,
+          "y1": 178.4
+        },
+        {
+          "x0": 317.7,
+          "y0": 160.4,
+          "x1": 331.7,
+          "y1": 178.4
+        },
+        {
+          "x0": 334.5,
+          "y0": 160.4,
+          "x1": 348.7,
+          "y1": 178.4
+        },
+        {
+          "x0": 351.7,
+          "y0": 160.4,
+          "x1": 365.8,
+          "y1": 178.4
+        },
+        {
+          "x0": 368.6,
+          "y0": 160.4,
+          "x1": 382.7,
+          "y1": 178.4
+        }
+      ],
+      "label": "② 재해자 주민등록번호 13자리"
+    },
+    "accident_datetime": {
+      "kind": "boxes",
+      "page": 1,
+      "size": 9,
+      "boxes": [
+        {
+          "x0": 389.3,
+          "y0": 160.4,
+          "x1": 403.9,
+          "y1": 178.4
+        },
+        {
+          "x0": 406.4,
+          "y0": 160.4,
+          "x1": 420.9,
+          "y1": 178.4
+        },
+        {
+          "x0": 423.6,
+          "y0": 160.4,
+          "x1": 437.8,
+          "y1": 178.4
+        },
+        {
+          "x0": 440.6,
+          "y0": 160.4,
+          "x1": 454.8,
+          "y1": 178.4
+        },
+        {
+          "x0": 466.2,
+          "y0": 160.4,
+          "x1": 480.3,
+          "y1": 178.4
+        },
+        {
+          "x0": 483.1,
+          "y0": 160.4,
+          "x1": 497.3,
+          "y1": 178.4
+        },
+        {
+          "x0": 508.8,
+          "y0": 160.4,
+          "x1": 522.9,
+          "y1": 178.4
+        },
+        {
+          "x0": 525.7,
+          "y0": 160.4,
+          "x1": 539.8,
+          "y1": 178.4
+        }
+      ],
+      "label": "③ 재해일자(년월일 상자 8칸 — YYYYMMDDhhmm 값은 앞 8자리만)"
+    },
+    "address": {
+      "kind": "text",
+      "page": 1,
+      "x": 86,
+      "y": 192,
+      "size": 8.5,
+      "maxWidth": 295,
+      "label": "④ 재해자 주소"
+    },
+    "mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 438,
+      "y": 192,
+      "size": 9,
+      "maxWidth": 110,
+      "label": "④ 주소 옆 (휴대전화) — 재해자 휴대전화"
+    },
+    "narrative": {
+      "kind": "multiline",
+      "page": 1,
+      "x0": 43.4,
+      "y0": 221,
+      "x1": 552.8,
+      "y1": 255.9,
+      "size": 8.5,
+      "lineHeight": 12.5,
+      "label": "⑤ 재발하거나 악화된 경위(별지사용 가능)"
+    },
+    "reason_fixation_removal": {
+      "kind": "check",
+      "page": 1,
+      "x": 207.7,
+      "y": 267.6,
+      "label": "⑥ 재요양의 요건 · 사유: 신체내 고정물 제거수술(척추기기 제외)"
+    },
+    "reason_prosthesis": {
+      "kind": "check",
+      "page": 1,
+      "x": 387.5,
+      "y": 267.6,
+      "label": "⑥ 재요양의 요건 · 사유: 의지장착을 위한 요양"
+    },
+    "reason_dental": {
+      "kind": "check",
+      "page": 1,
+      "x": 500.3,
+      "y": 267.6,
+      "label": "⑥ 재요양의 요건 · 사유: 치과보철"
+    },
+    "reason_relapse": {
+      "kind": "check",
+      "page": 1,
+      "x": 207.7,
+      "y": 285.6,
+      "label": "⑥ 재요양의 요건 · 사유: 재발 또는 악화로 인한 요양"
+    },
+    "relapse_surgery": {
+      "kind": "check",
+      "page": 1,
+      "x": 347.9,
+      "y": 285.6,
+      "label": "⑥ 재발 또는 악화로 인한 요양: 수술"
+    },
+    "relapse_nonsurgery": {
+      "kind": "check",
+      "page": 1,
+      "x": 393.1,
+      "y": 285.6,
+      "label": "⑥ 재발 또는 악화로 인한 요양: 비수술"
+    },
+    "reason_other": {
+      "kind": "check",
+      "page": 1,
+      "x": 466.1,
+      "y": 285.6,
+      "label": "⑥ 재요양의 요건 · 사유: 기타"
+    },
+    "surgery_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 225,
+      "y": 313,
+      "size": 9,
+      "maxWidth": 153,
+      "label": "⑥ 수술할 경우 · 수술명"
+    },
+    "surgery_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 454,
+      "y": 313,
+      "size": 9,
+      "maxWidth": 26,
+      "label": "⑥ 수술할 경우 · 수술(예정)일자 년"
+    },
+    "surgery_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 495,
+      "y": 313,
+      "size": 8.5,
+      "maxWidth": 11,
+      "label": "⑥ 수술할 경우 · 수술(예정)일자 월"
+    },
+    "surgery_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 521,
+      "y": 313,
+      "size": 8.5,
+      "maxWidth": 11,
+      "label": "⑥ 수술할 경우 · 수술(예정)일자 일"
+    },
+    "prev_hospital1_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 112,
+      "y": 345,
+      "size": 9,
+      "maxWidth": 93,
+      "label": "⑦ 재요양 발생 후 현재 요양 중인 의료기관 전에 치료(진료) 받은 의료기관 1 · 의료기관명"
+    },
+    "prev_hospital1_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 244,
+      "y": 345,
+      "size": 9,
+      "maxWidth": 304,
+      "label": "⑦ 전에 치료(진료) 받은 의료기관 1 · 소재지"
+    },
+    "prev_hospital2_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 112,
+      "y": 357.5,
+      "size": 9,
+      "maxWidth": 93,
+      "label": "⑦ 전에 치료(진료) 받은 의료기관 2 · 의료기관명"
+    },
+    "prev_hospital2_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 244,
+      "y": 357.5,
+      "size": 9,
+      "maxWidth": 304,
+      "label": "⑦ 전에 치료(진료) 받은 의료기관 2 · 소재지"
+    },
+    "employment_worker": {
+      "kind": "check",
+      "page": 1,
+      "x": 138.2,
+      "y": 371.9,
+      "label": "⑧ 재요양 사유 발생 당시 취업(노무제공) 여부: 취업(근로자)"
+    },
+    "employment_provider": {
+      "kind": "check",
+      "page": 1,
+      "x": 138.2,
+      "y": 389.9,
+      "label": "⑧ 재요양 사유 발생 당시 취업(노무제공) 여부: 취업(노무제공자)"
+    },
+    "provider_job": {
+      "kind": "text",
+      "page": 1,
+      "x": 240,
+      "y": 394,
+      "size": 8,
+      "maxWidth": 32,
+      "label": "⑧ 취업(노무제공자/직종:   ) 괄호 안 직종"
+    },
+    "employment_none": {
+      "kind": "check",
+      "page": 1,
+      "x": 138.2,
+      "y": 407.9,
+      "label": "⑧ 재요양 사유 발생 당시 취업(노무제공) 여부: 미취업"
+    },
+    "employer_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 359,
+      "y": 380,
+      "size": 9,
+      "maxWidth": 96,
+      "label": "⑧ 사업장명(연락처) · 사업장명"
+    },
+    "workplace_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 495,
+      "y": 380,
+      "size": 8.5,
+      "maxWidth": 54,
+      "label": "⑧ 사업장명(연락처) · (연락처)"
+    },
+    "workplace_address": {
+      "kind": "text",
+      "page": 1,
+      "x": 359,
+      "y": 404,
+      "size": 9,
+      "maxWidth": 190,
+      "label": "⑧ 사업장 소재지"
+    },
+    "other_comp_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 472.4,
+      "y": 419.8,
+      "label": "다른보상 ① 본 재해와 동일한 사유로 민법, 기타 법령에 따라 보상 또는 배상금을 수령한 사실: 예"
+    },
+    "other_comp_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 515.6,
+      "y": 419.8,
+      "label": "다른보상 ① 보상 또는 배상금을 수령한 사실: 아니오"
+    },
+    "comp_date": {
+      "kind": "text",
+      "page": 1,
+      "x": 72,
+      "y": 462.5,
+      "size": 8.5,
+      "maxWidth": 88,
+      "label": "다른보상 ② 수령 내역 · 수령일자"
+    },
+    "comp_amount": {
+      "kind": "text",
+      "page": 1,
+      "x": 168,
+      "y": 462.5,
+      "size": 8.5,
+      "maxWidth": 84,
+      "label": "다른보상 ② 수령 내역 · 수령금액"
+    },
+    "comp_payer": {
+      "kind": "text",
+      "page": 1,
+      "x": 260,
+      "y": 462.5,
+      "size": 8.5,
+      "maxWidth": 110,
+      "label": "다른보상 ② 수령 내역 · 지급한 자(기관) 또는 지급처"
+    },
+    "apply_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 320,
+      "y": 512.5,
+      "size": 9.5,
+      "label": "신청일 년"
+    },
+    "apply_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 378,
+      "y": 512.5,
+      "size": 9.5,
+      "label": "신청일 월"
+    },
+    "apply_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 413,
+      "y": 512.5,
+      "size": 9.5,
+      "label": "신청일 일"
+    },
+    "applicant_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 126,
+      "y": 529.5,
+      "size": 9.5,
+      "maxWidth": 92,
+      "label": "신청인 성명"
+    },
+    "phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 325,
+      "y": 529.5,
+      "size": 9,
+      "maxWidth": 81,
+      "label": "신청인 전화번호"
+    },
+    "applicant_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 452,
+      "y": 529.5,
+      "size": 9,
+      "maxWidth": 97,
+      "label": "신청인 휴대전화"
+    },
+    "agent_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 126,
+      "y": 542,
+      "size": 9,
+      "maxWidth": 92,
+      "label": "대리인 성명"
+    },
+    "agent_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 325,
+      "y": 542,
+      "size": 9,
+      "maxWidth": 81,
+      "label": "대리인 전화번호"
+    },
+    "agent_mobile": {
+      "kind": "text",
+      "page": 1,
+      "x": 452,
+      "y": 542,
+      "size": 9,
+      "maxWidth": 97,
+      "label": "대리인 휴대전화"
+    },
+    "consent_promo_yes": {
+      "kind": "check",
+      "page": 1,
+      "x": 145.9,
+      "y": 661.3,
+      "label": "부가서비스 제공을 위한 개인정보 이용 동의서(선택사항) · 개인정보 이용에 동의하십니까: 예"
+    },
+    "consent_promo_no": {
+      "kind": "check",
+      "page": 1,
+      "x": 187.8,
+      "y": 661.3,
+      "label": "부가서비스 제공을 위한 개인정보 이용 동의서(선택사항) · 개인정보 이용에 동의하십니까: 아니오"
+    },
+    "consent_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 208,
+      "y": 679,
+      "size": 9,
+      "label": "개인정보 이용 동의서 서명란 · 년"
+    },
+    "consent_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 255,
+      "y": 679,
+      "size": 9,
+      "label": "개인정보 이용 동의서 서명란 · 월"
+    },
+    "consent_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 292,
+      "y": 679,
+      "size": 9,
+      "label": "개인정보 이용 동의서 서명란 · 일"
+    },
+    "consent_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 368,
+      "y": 679,
+      "size": 9,
+      "maxWidth": 57,
+      "label": "개인정보 이용 동의서 서명란 · 성명"
+    },
+    "delegation_year": {
+      "kind": "text",
+      "page": 1,
+      "x": 339,
+      "y": 751,
+      "size": 9,
+      "label": "재요양 신청서 대행 제출 위임(동의) · 년"
+    },
+    "delegation_month": {
+      "kind": "text",
+      "page": 1,
+      "x": 379,
+      "y": 751,
+      "size": 9,
+      "label": "재요양 신청서 대행 제출 위임(동의) · 월"
+    },
+    "delegation_day": {
+      "kind": "text",
+      "page": 1,
+      "x": 409,
+      "y": 751,
+      "size": 9,
+      "label": "재요양 신청서 대행 제출 위임(동의) · 일"
+    },
+    "delegator_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 123,
+      "y": 765.5,
+      "size": 9,
+      "maxWidth": 94,
+      "label": "대행 제출 위임(동의) · 위임하는 자(신청인) 성명"
+    },
+    "delegate_clinic_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 345,
+      "y": 765.5,
+      "size": 9,
+      "maxWidth": 106,
+      "label": "대행 제출 위임(동의) · 위임받는 자(의료기관) 이름"
+    },
+    "branch_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 125,
+      "y": 786,
+      "size": 9,
+      "maxWidth": 35,
+      "label": "근로복지공단 ○○지역본부(지사)장 귀중 — 지사 이름"
+    }
   },
   "stamps": {
-    "applicant": { "page": 1, "x": 245.2, "y": 525.7, "size": 42 },
-    "delegation": { "page": 1, "x": 242.7, "y": 761.9, "size": 42 },
-    "consent": { "page": 1, "x": 451.1, "y": 676.3, "size": 42 }
+    "applicant": {
+      "page": 1,
+      "x": 245.2,
+      "y": 525.7,
+      "size": 42
+    },
+    "delegation": {
+      "page": 1,
+      "x": 242.7,
+      "y": 761.9,
+      "size": 42
+    },
+    "consent": {
+      "page": 1,
+      "x": 451.1,
+      "y": 676.3,
+      "size": 42
+    }
   }
 }

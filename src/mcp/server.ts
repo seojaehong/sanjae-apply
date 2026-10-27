@@ -18,7 +18,7 @@ import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, lo
 import { pngInfo } from "../stamp/png.js";
 import { buildStamps, resolveStamp } from "../stamp/resolve.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.3" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.4" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 

@@ -12,13 +12,15 @@
       "kind": "check",
       "page": 7,
       "x": 437.8,
-      "y": 118.15
+      "y": 118.15,
+      "label": "재활보조기구 처방전 및 검수확인서(기타) 지급 구분: 최초"
     },
     "claim_additional": {
       "kind": "check",
       "page": 7,
       "x": 478.8,
-      "y": 118.15
+      "y": 118.15,
+      "label": "재활보조기구 처방전 및 검수확인서(기타) 지급 구분: 추가지급"
     },
     "name": {
       "kind": "text",
@@ -26,7 +28,8 @@
       "x": 108,
       "y": 138.5,
       "size": 9,
-      "maxWidth": 82
+      "maxWidth": 82,
+      "label": "재해자 성명"
     },
     "birth_date": {
       "kind": "text",
@@ -34,7 +37,8 @@
       "x": 270,
       "y": 138.5,
       "size": 9,
-      "maxWidth": 119
+      "maxWidth": 119,
+      "label": "재해자 생년월일"
     },
     "accident_date": {
       "kind": "text",
@@ -42,7 +46,8 @@
       "x": 460,
       "y": 138.5,
       "size": 9,
-      "maxWidth": 74
+      "maxWidth": 74,
+      "label": "재해발생일"
     },
     "address": {
       "kind": "multiline",
@@ -52,7 +57,8 @@
       "x1": 266.4,
       "y1": 171.2,
       "size": 8,
-      "lineHeight": 11
+      "lineHeight": 11,
+      "label": "재해자 주소"
     },
     "phone": {
       "kind": "text",
@@ -60,7 +66,8 @@
       "x": 398,
       "y": 153.5,
       "size": 9,
-      "maxWidth": 136
+      "maxWidth": 136,
+      "label": "연락처: 자택 전화번호"
     },
     "mobile": {
       "kind": "text",
@@ -68,7 +75,8 @@
       "x": 398,
       "y": 168.5,
       "size": 9,
-      "maxWidth": 136
+      "maxWidth": 136,
+      "label": "연락처: 휴대폰"
     },
     "disease_name": {
       "kind": "text",
@@ -76,7 +84,8 @@
       "x": 108,
       "y": 183.5,
       "size": 9,
-      "maxWidth": 426
+      "maxWidth": 426,
+      "label": "상병명"
     },
     "delivery_yy": {
       "kind": "text",
@@ -84,7 +93,8 @@
       "x": 369,
       "y": 199.3,
       "size": 9,
-      "maxWidth": 21
+      "maxWidth": 21,
+      "label": "납품희망일 20( )년 — 연도 뒤 두 자리"
     },
     "delivery_mm": {
       "kind": "text",
@@ -92,7 +102,8 @@
       "x": 400,
       "y": 199.3,
       "size": 9,
-      "maxWidth": 29
+      "maxWidth": 29,
+      "label": "납품희망일 월"
     },
     "delivery_dd": {
       "kind": "text",
@@ -100,7 +111,8 @@
       "x": 440,
       "y": 199.3,
       "size": 9,
-      "maxWidth": 29
+      "maxWidth": 29,
+      "label": "납품희망일 일"
     }
   }
 }

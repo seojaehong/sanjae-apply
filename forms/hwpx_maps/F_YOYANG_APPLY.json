@@ -133,6 +133,13 @@
       "c": 6,
       "count": 11
     },
+    "business_start_no": {
+      "kind": "after",
+      "t": 0,
+      "r": 17,
+      "c": 6,
+      "label": "(사업개시번호:"
+    },
     "workplace_address": {
       "kind": "cell",
       "t": 0,

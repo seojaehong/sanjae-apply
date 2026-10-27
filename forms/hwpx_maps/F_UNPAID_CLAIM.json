@@ -3,7 +3,7 @@
   "source_file": "F_UNPAID_CLAIM.hwpx",
   "source_sha256": "5686af7891b940b3a30ea39e97fac0a66c6d722f98d440da29534bc6a43f2c24",
   "expect_pages": 1,
-  "_about": "미지급 보험급여 청구서(별지 제29호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 청구서 표 하나(1쪽), T1~T8 생년월일 상자(r4 c6 안쪽), T9~T16 재해발생일 상자(r5 c2 안쪽). 보상 내역은 T0 직접 칸(r18 c2 수령일자·c3 수령금액·c7 지급한 자). 성명·사망한 수급권자 성명·관계·사망원인은 값 칸이 따로 없어 라벨 문단을 group 으로 다시 쓴다. 청구인 3행 = r11~r13(c2 성명, c4 생년월일 group, c9 p0 주소·p1 휴대전화 group, c16 관계). accident_datetime 은 digits take:8(YYYYMMDD 상자 8개, 261027 엔진 take 추가). (옛 메모) ①accident_datetime: 상자 8개(YYYYMMDD)에 값 12자라 digits 가 멈춰(글자 12 > 상자 8) 라벨 「재해발생일」 뒤 after 로 통째로 붙였다 — 상자는 빈 채. 엔진에 자르기가 생기면 {kind:digits,t:0,r:5,c:2,count:8}. ②괄호형 체크: unpaid_*(r15 c2 「요양급여(  ), …」 10칸)·compensation_yes/no(r16 c2 p1 「예(  ), 아니오(  )」)는 BOX_RE 가 「(  )」를 못 잡아 check 가 멈추므로 그 문단을 group 으로 다시 쓰고 괄호 안에 칸을 끼웠다 — true 는 글자 「true」로 찍힌다. BOX_RE 에 \\(\\s*\\) 가 들어가면 check 로 바꾼다: unpaid_yoyang n1 … unpaid_jinpye_yujok n10(r15 c2), compensation_yes n1·no n2(r16 c2).",
+  "_about": "미지급 보험급여 청구서(별지 제29호, 2023.7.5 개정) 한글 채우기 지도. 주소 = (표 t, rowAddr r, colAddr c, 문단 p) — scripts/probe_hwpx.py 번호. T0 = 청구서 표 하나(1쪽), T1~T8 생년월일 상자(r4 c6 안쪽), T9~T16 재해발생일 상자(r5 c2 안쪽). 보상 내역은 T0 직접 칸(r18 c2 수령일자·c3 수령금액·c7 지급한 자). 성명·사망한 수급권자 성명·관계·사망원인은 값 칸이 따로 없어 라벨 문단을 group 으로 다시 쓴다. 청구인 3행 = r11~r13(c2 성명, c4 생년월일 group, c9 p0 주소·p1 휴대전화 group, c16 관계). accident_datetime 은 digits take:8(YYYYMMDD 상자 8개, 261027 엔진 take 추가). (옛 메모) ①accident_datetime: 상자 8개(YYYYMMDD)에 값 12자라 digits 가 멈춰(글자 12 > 상자 8) 라벨 「재해발생일」 뒤 after 로 통째로 붙였다 — 상자는 빈 채. 엔진에 자르기가 생기면 {kind:digits,t:0,r:5,c:2,count:8}. ②괄호형 체크: unpaid_*(r15 c2 「요양급여(  ), …」 10칸)·compensation_yes/no(r16 c2 p1 「예(  ), 아니오(  )」)는 BOX_RE 가 「(  )」를 못 잡아 check 가 멈추므로 그 문단을 group 으로 다시 쓰고 괄호 안에 칸을 끼웠다 — true 는 글자 「true」로 찍힌다. BOX_RE 에 \\(\\s*\\) 가 들어가면 check 로 바꾼다: unpaid_yoyang n1 … unpaid_jinpye_yujok n10(r15 c2), compensation_yes n1·no n2(r16 c2). (0.5.4) 신청 쪽 칸 전수: 지사 이름(branch_name, T0 r25 c0 group). 처리란·간격 줄은 forms/coverage_exempt/F_UNPAID_CLAIM.json.",
   "slots": {
     "name": {
       "kind": "group",
@@ -301,6 +301,10 @@
     "agent_phone": {
       "kind": "group",
       "template": "agent"
+    },
+    "branch_name": {
+      "kind": "group",
+      "template": "branch"
     }
   },
   "templates": {
@@ -429,6 +433,13 @@
       "c": 0,
       "p": 4,
       "text": "                                            대 리 인 : {agent_name}          (서명 또는 인) ☎ {agent_phone}"
+    },
+    "branch": {
+      "t": 0,
+      "r": 25,
+      "c": 0,
+      "p": 0,
+      "text": "근로복지공단   {branch_name}   지역본부(지사)장 귀하"
     }
   },
   "stamps": {

@@ -6,21 +6,23 @@
     "width": 595.0,
     "height": 841.0
   },
-  "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 261026 probe_form.py 실측. p1 장해급여 청구서(신청인란), p2 소음작업 종사 사실확인서(재해자란, noise_*), p7 일시금·연금 선택 확인서(choice_*). p3~p6 진단서·소견서는 의사 기재라 뺐다. 녹색 상자 스캔(green_boxes)이 자릿수와 어긋나(p1 8→9·10, p2 13→14) 상자는 위·아래 가로선 조각(hlines)의 x0·x1 로 잡았다. 체크 x 는 「[」x1 과 「]」x0 의 중점.",
+  "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 261026 probe_form.py 실측. p1 장해급여 청구서(신청인란), p2 소음작업 종사 사실확인서(재해자란, noise_*), p7 일시금·연금 선택 확인서(choice_*). p3~p6 진단서·소견서는 의사 기재라 뺐다. 녹색 상자 스캔(green_boxes)이 자릿수와 어긋나(p1 8→9·10, p2 13→14) 상자는 위·아래 가로선 조각(hlines)의 x0·x1 로 잡았다. 체크 x 는 「[」x1 과 「]」x0 의 중점. (0.5.4) 신청 쪽 칸 전수: 대리인(agent_name·agent_phone, T0 r17 c0 p3 group), 대행 동의서 의료기관 이름(delegate_clinic_name, proxy_name 템플릿에 추가), 지사 이름(branch_name, T0 r21 c0 group), 소음 확인서 대리인(noise_agent_name·noise_agent_phone, T50 r10 c0 p5 group). 의사 작성 T62·T87·T96·T105 와 처리란은 forms/coverage_exempt/F_JANGHAE_CLAIM.json.",
   "slots": {
     "claim_type_janghae": {
       "kind": "check",
       "page": 1,
       "x": 201.1,
       "y": 98.05,
-      "size": 12
+      "size": 12,
+      "label": "청구 종류: [ ] 장해급여 청구서"
     },
     "claim_type_complication": {
       "kind": "check",
       "page": 1,
       "x": 201.1,
       "y": 114.55,
-      "size": 12
+      "size": 12,
+      "label": "청구 종류: [ ] 합병증 등 예방관리 신청서"
     },
     "name": {
       "kind": "text",
@@ -28,7 +30,8 @@
       "x": 130,
       "y": 171,
       "size": 10,
-      "maxWidth": 88
+      "maxWidth": 88,
+      "label": "산재근로자: 성명"
     },
     "birth_date": {
       "kind": "boxes",
@@ -83,7 +86,8 @@
           "x1": 440.3,
           "y1": 179.9
         }
-      ]
+      ],
+      "label": "산재근로자: 생년월일 YYYYMMDD 8자리"
     },
     "accident_date": {
       "kind": "boxes",
@@ -138,19 +142,22 @@
           "x1": 256.9,
           "y1": 211.0
         }
-      ]
+      ],
+      "label": "산재근로자: 재해발생일 YYYYMMDD 8자리"
     },
     "account_change_yes": {
       "kind": "check",
       "page": 1,
       "x": 286.35,
-      "y": 222.95
+      "y": 222.95,
+      "label": "수령계좌: 수령계좌를 변경 하시겠습니까? 예"
     },
     "account_change_no": {
       "kind": "check",
       "page": 1,
       "x": 361.1,
-      "y": 222.95
+      "y": 222.95,
+      "label": "수령계좌: 수령계좌를 변경 하시겠습니까? 아니오"
     },
     "bank_name": {
       "kind": "text",
@@ -158,7 +165,8 @@
       "x": 182,
       "y": 246,
       "size": 9,
-      "maxWidth": 200
+      "maxWidth": 200,
+      "label": "수령계좌: 은행(증권사)명"
     },
     "account_no": {
       "kind": "text",
@@ -166,7 +174,8 @@
       "x": 154,
       "y": 265,
       "size": 9,
-      "maxWidth": 232
+      "maxWidth": 232,
+      "label": "수령계좌: 계좌번호"
     },
     "account_holder": {
       "kind": "text",
@@ -174,43 +183,50 @@
       "x": 442,
       "y": 265,
       "size": 9,
-      "maxWidth": 59
+      "maxWidth": 59,
+      "label": "수령계좌: (예금주 : ) 예금주 성명"
     },
     "account_type_normal": {
       "kind": "check",
       "page": 1,
       "x": 120.25,
-      "y": 280.4
+      "y": 280.4,
+      "label": "수령계좌: 보통계좌"
     },
     "account_type_protected": {
       "kind": "check",
       "page": 1,
       "x": 222.65,
-      "y": 280.4
+      "y": 280.4,
+      "label": "수령계좌: 보험급여 전용계좌(희망지킴이-압류금지계좌)"
     },
     "prior_disability_yes": {
       "kind": "check",
       "page": 1,
       "x": 434.05,
-      "y": 302.9
+      "y": 302.9,
+      "label": "확인사항 ①: 재해발생 이전에 업무상의 재해 외의 사유로 장해가 남은 사실이 있습니까? 예"
     },
     "prior_disability_no": {
       "kind": "check",
       "page": 1,
       "x": 483.05,
-      "y": 302.9
+      "y": 302.9,
+      "label": "확인사항 ①: 재해발생 이전에 업무상의 재해 외의 사유로 장해가 남은 사실이 있습니까? 아니오"
     },
     "other_compensation_yes": {
       "kind": "check",
       "page": 1,
       "x": 429.25,
-      "y": 331.9
+      "y": 331.9,
+      "label": "확인사항 ②: 이 재해와 동일한 사유로 민법, 그 외 법령에 따른 배상 또는 보상을 받았습니까? 예"
     },
     "other_compensation_no": {
       "kind": "check",
       "page": 1,
       "x": 470.15,
-      "y": 331.9
+      "y": 331.9,
+      "label": "확인사항 ②: 이 재해와 동일한 사유로 민법, 그 외 법령에 따른 배상 또는 보상을 받았습니까? 아니오"
     },
     "comp_date": {
       "kind": "text",
@@ -218,7 +234,8 @@
       "x": 100,
       "y": 383,
       "size": 8.5,
-      "maxWidth": 60
+      "maxWidth": 60,
+      "label": "확인사항 ② 배상·보상 수령 내역: 수령일자"
     },
     "comp_amount": {
       "kind": "text",
@@ -226,7 +243,8 @@
       "x": 168,
       "y": 383,
       "size": 8.5,
-      "maxWidth": 88
+      "maxWidth": 88,
+      "label": "확인사항 ② 배상·보상 수령 내역: 수령금액"
     },
     "comp_payer": {
       "kind": "text",
@@ -234,7 +252,8 @@
       "x": 264,
       "y": 383,
       "size": 8.5,
-      "maxWidth": 66
+      "maxWidth": 66,
+      "label": "확인사항 ② 배상·보상 수령 내역: 지급한 자"
     },
     "transport_cost": {
       "kind": "text",
@@ -242,7 +261,8 @@
       "x": 147,
       "y": 407,
       "size": 9,
-      "maxWidth": 68
+      "maxWidth": 68,
+      "label": "이송비: 이송비용( 원) — 장해진단·판정을 위한 교통비"
     },
     "transport_detail": {
       "kind": "text",
@@ -250,7 +270,8 @@
       "x": 284,
       "y": 407,
       "size": 9,
-      "maxWidth": 253
+      "maxWidth": 253,
+      "label": "이송비: 산출내역"
     },
     "complication_part": {
       "kind": "text",
@@ -258,7 +279,8 @@
       "x": 98,
       "y": 450.5,
       "size": 8.5,
-      "maxWidth": 279
+      "maxWidth": 279,
+      "label": "합병증 등 예방관리: 받고자 하는 구체적 부위(또는 상병명)"
     },
     "complication_hospital": {
       "kind": "text",
@@ -266,28 +288,32 @@
       "x": 386,
       "y": 450.5,
       "size": 8.5,
-      "maxWidth": 151
+      "maxWidth": 151,
+      "label": "합병증 등 예방관리: 의료기관명"
     },
     "apply_year": {
       "kind": "text",
       "page": 1,
       "x": 394,
       "y": 506.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "청구(신청)일 년"
     },
     "apply_month": {
       "kind": "text",
       "page": 1,
       "x": 437,
       "y": 506.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "청구(신청)일 월"
     },
     "apply_day": {
       "kind": "text",
       "page": 1,
       "x": 469,
       "y": 506.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "청구(신청)일 일"
     },
     "applicant_name": {
       "kind": "text",
@@ -295,7 +321,8 @@
       "x": 300,
       "y": 518.5,
       "size": 9.5,
-      "maxWidth": 58
+      "maxWidth": 58,
+      "label": "청구인 성명"
     },
     "mobile": {
       "kind": "text",
@@ -303,19 +330,22 @@
       "x": 452,
       "y": 518.5,
       "size": 9,
-      "maxWidth": 85
+      "maxWidth": 85,
+      "label": "청구인 ☎ 전화번호"
     },
     "proxy_consent_janghae": {
       "kind": "check",
       "page": 1,
       "x": 103.25,
-      "y": 557.5
+      "y": 557.5,
+      "label": "의료기관 대행 제출 동의서: [ ]장해급여 청구서"
     },
     "proxy_consent_complication": {
       "kind": "check",
       "page": 1,
       "x": 192.75,
-      "y": 557.5
+      "y": 557.5,
+      "label": "의료기관 대행 제출 동의서: [ ]합병증 등 예방관리 신청서"
     },
     "proxy_consent_name": {
       "kind": "text",
@@ -323,40 +353,46 @@
       "x": 110,
       "y": 586.5,
       "size": 9,
-      "maxWidth": 104
+      "maxWidth": 104,
+      "label": "의료기관 대행 제출 동의서 · 동의하는 청구인 성명"
     },
     "privacy_agree_yes": {
       "kind": "check",
       "page": 1,
       "x": 210.9,
-      "y": 696.9
+      "y": 696.9,
+      "label": "부가서비스 제공을 위한 개인정보 이용 동의서(선택사항): 개인정보 이용에 동의하십니까? 예"
     },
     "privacy_agree_no": {
       "kind": "check",
       "page": 1,
       "x": 243.4,
-      "y": 696.9
+      "y": 696.9,
+      "label": "부가서비스 제공을 위한 개인정보 이용 동의서(선택사항): 개인정보 이용에 동의하십니까? 아니오"
     },
     "privacy_year": {
       "kind": "text",
       "page": 1,
       "x": 211,
       "y": 713.5,
-      "size": 9
+      "size": 9,
+      "label": "개인정보 이용 동의서 작성일 년"
     },
     "privacy_month": {
       "kind": "text",
       "page": 1,
       "x": 259,
       "y": 713.5,
-      "size": 9
+      "size": 9,
+      "label": "개인정보 이용 동의서 작성일 월"
     },
     "privacy_day": {
       "kind": "text",
       "page": 1,
       "x": 296,
       "y": 713.5,
-      "size": 9
+      "size": 9,
+      "label": "개인정보 이용 동의서 작성일 일"
     },
     "privacy_name": {
       "kind": "text",
@@ -364,7 +400,8 @@
       "x": 370,
       "y": 713.5,
       "size": 9,
-      "maxWidth": 73
+      "maxWidth": 73,
+      "label": "개인정보 이용 동의서 서명란 성명"
     },
     "noise_name": {
       "kind": "text",
@@ -372,7 +409,8 @@
       "x": 237,
       "y": 155.5,
       "size": 10,
-      "maxWidth": 296
+      "maxWidth": 296,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 산재근로자 성명"
     },
     "noise_rrn": {
       "kind": "boxes",
@@ -457,7 +495,8 @@
           "x1": 498.1,
           "y1": 179.9
         }
-      ]
+      ],
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 주민등록번호(외국인등록번호) 13자리"
     },
     "noise_address": {
       "kind": "text",
@@ -465,19 +504,22 @@
       "x": 138,
       "y": 203,
       "size": 9,
-      "maxWidth": 395
+      "maxWidth": 395,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 주소"
     },
     "noise_employed_yes": {
       "kind": "check",
       "page": 2,
       "x": 316.45,
-      "y": 222.8
+      "y": 222.8,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 진단일 당시 재직(퇴직) 여부: 재직 중"
     },
     "noise_employed_no": {
       "kind": "check",
       "page": 2,
       "x": 401.2,
-      "y": 222.8
+      "y": 222.8,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 진단일 당시 재직(퇴직) 여부: 퇴직"
     },
     "noise_hire_date": {
       "kind": "boxes",
@@ -532,7 +574,8 @@
           "x1": 280.6,
           "y1": 255.9
         }
-      ]
+      ],
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 채용일자 YYYYMMDD 8자리"
     },
     "noise_retire_date": {
       "kind": "boxes",
@@ -587,7 +630,8 @@
           "x1": 504.1,
           "y1": 255.9
         }
-      ]
+      ],
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 퇴직일자 YYYYMMDD 8자리"
     },
     "noise_work_start": {
       "kind": "text",
@@ -595,7 +639,8 @@
       "x": 137,
       "y": 278,
       "size": 9,
-      "maxWidth": 88
+      "maxWidth": 88,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 출근시간"
     },
     "noise_work_end": {
       "kind": "text",
@@ -603,7 +648,8 @@
       "x": 300,
       "y": 278,
       "size": 9,
-      "maxWidth": 78
+      "maxWidth": 78,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 퇴근시간"
     },
     "noise_job": {
       "kind": "text",
@@ -611,61 +657,71 @@
       "x": 463,
       "y": 278,
       "size": 9,
-      "maxWidth": 70
+      "maxWidth": 70,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 직종"
     },
     "noise_employer_none": {
       "kind": "check",
       "page": 2,
       "x": 200.35,
-      "y": 289.8
+      "y": 289.8,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 보험가입자(사업주)와의 관계 · 사업주여부: 해당없음"
     },
     "noise_employer_actual": {
       "kind": "check",
       "page": 2,
       "x": 200.35,
-      "y": 305.7
+      "y": 305.7,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업주여부: 실제사업주(동업자포함)"
     },
     "noise_employer_sub": {
       "kind": "check",
       "page": 2,
       "x": 317.15,
-      "y": 305.7
+      "y": 305.7,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업주여부: 하수급사업주"
     },
     "noise_relative_none": {
       "kind": "check",
       "page": 2,
       "x": 200.35,
-      "y": 321.4
+      "y": 321.4,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 친인척여부: 해당 없음"
     },
     "noise_relative_spouse": {
       "kind": "check",
       "page": 2,
       "x": 200.35,
-      "y": 337.2
+      "y": 337.2,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 친인척여부: 배우자"
     },
     "noise_relative_parent": {
       "kind": "check",
       "page": 2,
       "x": 250.05,
-      "y": 337.2
+      "y": 337.2,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 친인척여부: 부모"
     },
     "noise_relative_child": {
       "kind": "check",
       "page": 2,
       "x": 294.1,
-      "y": 337.2
+      "y": 337.2,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 친인척여부: 자녀"
     },
     "noise_relative_sibling": {
       "kind": "check",
       "page": 2,
       "x": 341.8,
-      "y": 337.2
+      "y": 337.2,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 친인척여부: 형제자매"
     },
     "noise_relative_other": {
       "kind": "check",
       "page": 2,
       "x": 397.35,
-      "y": 337.2
+      "y": 337.2,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 친인척여부: 기타 친인척"
     },
     "noise_relative_other_text": {
       "kind": "text",
@@ -673,55 +729,64 @@
       "x": 454,
       "y": 341,
       "size": 8.5,
-      "maxWidth": 44
+      "maxWidth": 44,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 기타 친인척( ) 괄호 안 관계"
     },
     "noise_worker_employee": {
       "kind": "check",
       "page": 2,
       "x": 198.5,
-      "y": 351.0
+      "y": 351.0,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 근로자"
     },
     "noise_worker_labor_provider": {
       "kind": "check",
       "page": 2,
       "x": 242.35,
-      "y": 351.0
+      "y": 351.0,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 노무제공자"
     },
     "noise_worker_sme_owner": {
       "kind": "check",
       "page": 2,
       "x": 301.15,
-      "y": 351.0
+      "y": 351.0,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 중소기업사업주"
     },
     "noise_worker_sme_family": {
       "kind": "check",
       "page": 2,
       "x": 375.15,
-      "y": 351.0
+      "y": 351.0,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 중소기업사업주 가족종사자"
     },
     "noise_worker_student_researcher": {
       "kind": "check",
       "page": 2,
       "x": 489.55,
-      "y": 351.0
+      "y": 351.0,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 학생연구자"
     },
     "noise_worker_health_damaged_child": {
       "kind": "check",
       "page": 2,
       "x": 200.55,
-      "y": 362.7
+      "y": 362.7,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 건강손상자녀"
     },
     "noise_worker_special_type": {
       "kind": "check",
       "page": 2,
       "x": 276.4,
-      "y": 362.7
+      "y": 362.7,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 특수형태근로종사자('23.6.30. 이전 재해)"
     },
     "noise_worker_field_trainee": {
       "kind": "check",
       "page": 2,
       "x": 451.45,
-      "y": 362.7
+      "y": 362.7,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 근로자 유형: 현장실습생"
     },
     "noise_employer_name": {
       "kind": "text",
@@ -729,7 +794,8 @@
       "x": 122,
       "y": 394,
       "size": 9,
-      "maxWidth": 97
+      "maxWidth": 97,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업장명"
     },
     "noise_owner_name": {
       "kind": "text",
@@ -737,7 +803,8 @@
       "x": 289,
       "y": 394,
       "size": 9,
-      "maxWidth": 93
+      "maxWidth": 93,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업주명"
     },
     "noise_workplace_phone": {
       "kind": "text",
@@ -745,7 +812,8 @@
       "x": 446,
       "y": 394,
       "size": 9,
-      "maxWidth": 83
+      "maxWidth": 83,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업장 연락처(☎)"
     },
     "noise_workplace_no": {
       "kind": "boxes",
@@ -818,7 +886,8 @@
           "x1": 307.4,
           "y1": 430.2
         }
-      ]
+      ],
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업장관리번호(이용개시번호, 플랫폼 화물차주 관리번호) 11자리"
     },
     "noise_business_start_no": {
       "kind": "text",
@@ -826,7 +895,8 @@
       "x": 383,
       "y": 429,
       "size": 8.5,
-      "maxWidth": 97
+      "maxWidth": 97,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · (사업개시번호: )"
     },
     "noise_workplace_address": {
       "kind": "text",
@@ -834,7 +904,8 @@
       "x": 122,
       "y": 452.5,
       "size": 9,
-      "maxWidth": 407
+      "maxWidth": 407,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 사업장주소"
     },
     "noise_last_employer": {
       "kind": "text",
@@ -842,7 +913,8 @@
       "x": 122,
       "y": 512.4,
       "size": 8,
-      "maxWidth": 154
+      "maxWidth": 154,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 사업장명"
     },
     "noise_last_address": {
       "kind": "text",
@@ -850,7 +922,8 @@
       "x": 163,
       "y": 523.4,
       "size": 7,
-      "maxWidth": 73
+      "maxWidth": 73,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 사업장 주소( )"
     },
     "noise_last_job": {
       "kind": "text",
@@ -858,7 +931,8 @@
       "x": 284,
       "y": 518.9,
       "size": 8,
-      "maxWidth": 60
+      "maxWidth": 60,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 직종명"
     },
     "noise_last_from_year": {
       "kind": "text",
@@ -866,7 +940,8 @@
       "x": 363,
       "y": 508.9,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 년 (…부터)"
     },
     "noise_last_from_month": {
       "kind": "text",
@@ -874,7 +949,8 @@
       "x": 404,
       "y": 508.9,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 월 (…부터)"
     },
     "noise_last_from_day": {
       "kind": "text",
@@ -882,7 +958,8 @@
       "x": 433,
       "y": 508.9,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 일부터"
     },
     "noise_last_to_year": {
       "kind": "text",
@@ -890,7 +967,8 @@
       "x": 363,
       "y": 518.9,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 년 (…까지)"
     },
     "noise_last_to_month": {
       "kind": "text",
@@ -898,7 +976,8 @@
       "x": 404,
       "y": 518.9,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 월 (…까지)"
     },
     "noise_last_to_day": {
       "kind": "text",
@@ -906,7 +985,8 @@
       "x": 433,
       "y": 518.9,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 일까지"
     },
     "noise_last_years": {
       "kind": "text",
@@ -914,7 +994,8 @@
       "x": 400,
       "y": 528.9,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 합계 ( 년)"
     },
     "noise_last_months": {
       "kind": "text",
@@ -922,7 +1003,8 @@
       "x": 440,
       "y": 528.9,
       "size": 8,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 근무기간 합계 ( 월)"
     },
     "noise_last_note": {
       "kind": "text",
@@ -930,7 +1012,8 @@
       "x": 474,
       "y": 518.9,
       "size": 8,
-      "maxWidth": 55
+      "maxWidth": 55,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 최종소음작업장: 비고"
     },
     "noise_past1_employer": {
       "kind": "text",
@@ -938,7 +1021,8 @@
       "x": 122,
       "y": 544.0,
       "size": 8,
-      "maxWidth": 154
+      "maxWidth": 154,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 사업장명"
     },
     "noise_past1_address": {
       "kind": "text",
@@ -946,7 +1030,8 @@
       "x": 163,
       "y": 555.0,
       "size": 7,
-      "maxWidth": 73
+      "maxWidth": 73,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 사업장 주소( )"
     },
     "noise_past1_job": {
       "kind": "text",
@@ -954,7 +1039,8 @@
       "x": 284,
       "y": 550.5,
       "size": 8,
-      "maxWidth": 60
+      "maxWidth": 60,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 직종명"
     },
     "noise_past1_from_year": {
       "kind": "text",
@@ -962,7 +1048,8 @@
       "x": 363,
       "y": 540.5,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 년 (…부터)"
     },
     "noise_past1_from_month": {
       "kind": "text",
@@ -970,7 +1057,8 @@
       "x": 404,
       "y": 540.5,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 월 (…부터)"
     },
     "noise_past1_from_day": {
       "kind": "text",
@@ -978,7 +1066,8 @@
       "x": 433,
       "y": 540.5,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 일부터"
     },
     "noise_past1_to_year": {
       "kind": "text",
@@ -986,7 +1075,8 @@
       "x": 363,
       "y": 550.5,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 년 (…까지)"
     },
     "noise_past1_to_month": {
       "kind": "text",
@@ -994,7 +1084,8 @@
       "x": 404,
       "y": 550.5,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 월 (…까지)"
     },
     "noise_past1_to_day": {
       "kind": "text",
@@ -1002,7 +1093,8 @@
       "x": 433,
       "y": 550.5,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 일까지"
     },
     "noise_past1_years": {
       "kind": "text",
@@ -1010,7 +1102,8 @@
       "x": 400,
       "y": 560.5,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 합계 ( 년)"
     },
     "noise_past1_months": {
       "kind": "text",
@@ -1018,7 +1111,8 @@
       "x": 440,
       "y": 560.5,
       "size": 8,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 근무기간 합계 ( 월)"
     },
     "noise_past1_note": {
       "kind": "text",
@@ -1026,7 +1120,8 @@
       "x": 474,
       "y": 550.5,
       "size": 8,
-      "maxWidth": 55
+      "maxWidth": 55,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 1: 비고"
     },
     "noise_past2_employer": {
       "kind": "text",
@@ -1034,7 +1129,8 @@
       "x": 122,
       "y": 575.6,
       "size": 8,
-      "maxWidth": 154
+      "maxWidth": 154,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 사업장명"
     },
     "noise_past2_address": {
       "kind": "text",
@@ -1042,7 +1138,8 @@
       "x": 163,
       "y": 586.6,
       "size": 7,
-      "maxWidth": 73
+      "maxWidth": 73,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 사업장 주소( )"
     },
     "noise_past2_job": {
       "kind": "text",
@@ -1050,7 +1147,8 @@
       "x": 284,
       "y": 582.1,
       "size": 8,
-      "maxWidth": 60
+      "maxWidth": 60,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 직종명"
     },
     "noise_past2_from_year": {
       "kind": "text",
@@ -1058,7 +1156,8 @@
       "x": 363,
       "y": 572.1,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 년 (…부터)"
     },
     "noise_past2_from_month": {
       "kind": "text",
@@ -1066,7 +1165,8 @@
       "x": 404,
       "y": 572.1,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 월 (…부터)"
     },
     "noise_past2_from_day": {
       "kind": "text",
@@ -1074,7 +1174,8 @@
       "x": 433,
       "y": 572.1,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 일부터"
     },
     "noise_past2_to_year": {
       "kind": "text",
@@ -1082,7 +1183,8 @@
       "x": 363,
       "y": 582.1,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 년 (…까지)"
     },
     "noise_past2_to_month": {
       "kind": "text",
@@ -1090,7 +1192,8 @@
       "x": 404,
       "y": 582.1,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 월 (…까지)"
     },
     "noise_past2_to_day": {
       "kind": "text",
@@ -1098,7 +1201,8 @@
       "x": 433,
       "y": 582.1,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 일까지"
     },
     "noise_past2_years": {
       "kind": "text",
@@ -1106,7 +1210,8 @@
       "x": 400,
       "y": 592.1,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 합계 ( 년)"
     },
     "noise_past2_months": {
       "kind": "text",
@@ -1114,7 +1219,8 @@
       "x": 440,
       "y": 592.1,
       "size": 8,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 근무기간 합계 ( 월)"
     },
     "noise_past2_note": {
       "kind": "text",
@@ -1122,7 +1228,8 @@
       "x": 474,
       "y": 582.1,
       "size": 8,
-      "maxWidth": 55
+      "maxWidth": 55,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 2: 비고"
     },
     "noise_past3_employer": {
       "kind": "text",
@@ -1130,7 +1237,8 @@
       "x": 122,
       "y": 607.3,
       "size": 8,
-      "maxWidth": 154
+      "maxWidth": 154,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 사업장명"
     },
     "noise_past3_address": {
       "kind": "text",
@@ -1138,7 +1246,8 @@
       "x": 163,
       "y": 618.3,
       "size": 7,
-      "maxWidth": 73
+      "maxWidth": 73,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 사업장 주소( )"
     },
     "noise_past3_job": {
       "kind": "text",
@@ -1146,7 +1255,8 @@
       "x": 284,
       "y": 613.8,
       "size": 8,
-      "maxWidth": 60
+      "maxWidth": 60,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 직종명"
     },
     "noise_past3_from_year": {
       "kind": "text",
@@ -1154,7 +1264,8 @@
       "x": 363,
       "y": 603.8,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 년 (…부터)"
     },
     "noise_past3_from_month": {
       "kind": "text",
@@ -1162,7 +1273,8 @@
       "x": 404,
       "y": 603.8,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 월 (…부터)"
     },
     "noise_past3_from_day": {
       "kind": "text",
@@ -1170,7 +1282,8 @@
       "x": 433,
       "y": 603.8,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 일부터"
     },
     "noise_past3_to_year": {
       "kind": "text",
@@ -1178,7 +1291,8 @@
       "x": 363,
       "y": 613.8,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 년 (…까지)"
     },
     "noise_past3_to_month": {
       "kind": "text",
@@ -1186,7 +1300,8 @@
       "x": 404,
       "y": 613.8,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 월 (…까지)"
     },
     "noise_past3_to_day": {
       "kind": "text",
@@ -1194,7 +1309,8 @@
       "x": 433,
       "y": 613.8,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 일까지"
     },
     "noise_past3_years": {
       "kind": "text",
@@ -1202,7 +1318,8 @@
       "x": 400,
       "y": 623.8,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 합계 ( 년)"
     },
     "noise_past3_months": {
       "kind": "text",
@@ -1210,7 +1327,8 @@
       "x": 440,
       "y": 623.8,
       "size": 8,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 근무기간 합계 ( 월)"
     },
     "noise_past3_note": {
       "kind": "text",
@@ -1218,7 +1336,8 @@
       "x": 474,
       "y": 613.8,
       "size": 8,
-      "maxWidth": 55
+      "maxWidth": 55,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 3: 비고"
     },
     "noise_past4_employer": {
       "kind": "text",
@@ -1226,7 +1345,8 @@
       "x": 122,
       "y": 638.9,
       "size": 8,
-      "maxWidth": 154
+      "maxWidth": 154,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 사업장명"
     },
     "noise_past4_address": {
       "kind": "text",
@@ -1234,7 +1354,8 @@
       "x": 163,
       "y": 649.9,
       "size": 7,
-      "maxWidth": 73
+      "maxWidth": 73,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 사업장 주소( )"
     },
     "noise_past4_job": {
       "kind": "text",
@@ -1242,7 +1363,8 @@
       "x": 284,
       "y": 645.4,
       "size": 8,
-      "maxWidth": 60
+      "maxWidth": 60,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 직종명"
     },
     "noise_past4_from_year": {
       "kind": "text",
@@ -1250,7 +1372,8 @@
       "x": 363,
       "y": 635.4,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 년 (…부터)"
     },
     "noise_past4_from_month": {
       "kind": "text",
@@ -1258,7 +1381,8 @@
       "x": 404,
       "y": 635.4,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 월 (…부터)"
     },
     "noise_past4_from_day": {
       "kind": "text",
@@ -1266,7 +1390,8 @@
       "x": 433,
       "y": 635.4,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 일부터"
     },
     "noise_past4_to_year": {
       "kind": "text",
@@ -1274,7 +1399,8 @@
       "x": 363,
       "y": 645.4,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 년 (…까지)"
     },
     "noise_past4_to_month": {
       "kind": "text",
@@ -1282,7 +1408,8 @@
       "x": 404,
       "y": 645.4,
       "size": 8,
-      "maxWidth": 12
+      "maxWidth": 12,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 월 (…까지)"
     },
     "noise_past4_to_day": {
       "kind": "text",
@@ -1290,7 +1417,8 @@
       "x": 433,
       "y": 645.4,
       "size": 8,
-      "maxWidth": 11
+      "maxWidth": 11,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 일까지"
     },
     "noise_past4_years": {
       "kind": "text",
@@ -1298,7 +1426,8 @@
       "x": 400,
       "y": 655.4,
       "size": 8,
-      "maxWidth": 20
+      "maxWidth": 20,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 합계 ( 년)"
     },
     "noise_past4_months": {
       "kind": "text",
@@ -1306,7 +1435,8 @@
       "x": 440,
       "y": 655.4,
       "size": 8,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 근무기간 합계 ( 월)"
     },
     "noise_past4_note": {
       "kind": "text",
@@ -1314,28 +1444,32 @@
       "x": 474,
       "y": 645.4,
       "size": 8,
-      "maxWidth": 55
+      "maxWidth": 55,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 소음사업장 직력 · 과거 소음사업장 4: 비고"
     },
     "noise_year": {
       "kind": "text",
       "page": 2,
       "x": 212,
       "y": 703.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 확인일 년"
     },
     "noise_month": {
       "kind": "text",
       "page": 2,
       "x": 281,
       "y": 703.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 확인일 월"
     },
     "noise_day": {
       "kind": "text",
       "page": 2,
       "x": 332,
       "y": 703.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 확인일 일"
     },
     "noise_applicant_name": {
       "kind": "text",
@@ -1343,7 +1477,8 @@
       "x": 238,
       "y": 728.5,
       "size": 9.5,
-      "maxWidth": 63
+      "maxWidth": 63,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 청구인 성명"
     },
     "noise_applicant_phone": {
       "kind": "text",
@@ -1351,25 +1486,29 @@
       "x": 405,
       "y": 728.5,
       "size": 9,
-      "maxWidth": 128
+      "maxWidth": 128,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 청구인 ☎ 전화번호"
     },
     "choice_grade1_3": {
       "kind": "check",
       "page": 7,
       "x": 71.4,
-      "y": 449.4
+      "y": 449.4,
+      "label": "장해급여 일시금·연금 선택 확인서 · □ 장해등급 제1급부터 제3급까지에 해당하는 경우"
     },
     "choice_grade1_3_advance_yes": {
       "kind": "check",
       "page": 7,
       "x": 167.4,
-      "y": 486.9
+      "y": 486.9,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제1급~제3급 · 장해보상연금 선급여부: 예( )"
     },
     "choice_grade1_3_advance_no": {
       "kind": "check",
       "page": 7,
       "x": 225.5,
-      "y": 486.9
+      "y": 486.9,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제1급~제3급 · 장해보상연금 선급여부: 아니오( )"
     },
     "choice_grade1_3_advance_years": {
       "kind": "text",
@@ -1377,13 +1516,15 @@
       "x": 379.5,
       "y": 490.5,
       "size": 9,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제1급~제3급 · 선급하는 경우 그 기간 ( )년"
     },
     "choice_grade4_7": {
       "kind": "check",
       "page": 7,
       "x": 71.4,
-      "y": 511.4
+      "y": 511.4,
+      "label": "장해급여 일시금·연금 선택 확인서 · □ 장해등급 제4급부터 제7급까지에 해당하는 경우"
     },
     "choice_grade4_7_method": {
       "kind": "text",
@@ -1391,19 +1532,22 @@
       "x": 283.5,
       "y": 552.5,
       "size": 9,
-      "maxWidth": 44
+      "maxWidth": 44,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제4급~제7급 · 장해급여 수령방법: 일시금/연금 중 택일( )"
     },
     "choice_grade4_7_advance_yes": {
       "kind": "check",
       "page": 7,
       "x": 265.05,
-      "y": 569.0
+      "y": 569.0,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제4급~제7급 · 연금을 선택하는 경우 선급여부: 예( )"
     },
     "choice_grade4_7_advance_no": {
       "kind": "check",
       "page": 7,
       "x": 323.1,
-      "y": 569.0
+      "y": 569.0,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제4급~제7급 · 연금을 선택하는 경우 선급여부: 아니오( )"
     },
     "choice_grade4_7_advance_years": {
       "kind": "text",
@@ -1411,13 +1555,15 @@
       "x": 477,
       "y": 572.5,
       "size": 9,
-      "maxWidth": 16
+      "maxWidth": 16,
+      "label": "장해급여 일시금·연금 선택 확인서 · 제4급~제7급 · 선급하는 경우 그 기간 ( )년"
     },
     "choice_regrade": {
       "kind": "check",
       "page": 7,
       "x": 71.4,
-      "y": 596.35
+      "y": 596.35,
+      "label": "장해급여 일시금·연금 선택 확인서 · □ 장해일시금을 받고 재요양 이후 장해등급이 상향되면서 제1급부터 제7급까지에 해당하는 경우"
     },
     "choice_regrade_method": {
       "kind": "text",
@@ -1425,40 +1571,46 @@
       "x": 376,
       "y": 638.5,
       "size": 9,
-      "maxWidth": 43
+      "maxWidth": 43,
+      "label": "장해급여 일시금·연금 선택 확인서 · 상향 재판정 · 장해급여 수령방법(제4급부터 제7급까지): 일시금/연금 중 택일( )"
     },
     "choice_regrade_deduct_after": {
       "kind": "check",
       "page": 7,
       "x": 505.1,
-      "y": 653.05
+      "y": 653.05,
+      "label": "장해급여 일시금·연금 선택 확인서 · 상향 재판정 · 연금 선택 시 이미 지급한 장해일시금 지급일수에 해당하는 기간이 지난 후 수령( )"
     },
     "choice_regrade_deduct_half": {
       "kind": "check",
       "page": 7,
       "x": 480.95,
-      "y": 671.25
+      "y": 671.25,
+      "label": "장해급여 일시금·연금 선택 확인서 · 상향 재판정 · 연금 선택 시 이미 지급한 장해일시금 지급일수의 2배 기간 동안 장해연금의 1/2을 수령( )"
     },
     "choice_year": {
       "kind": "text",
       "page": 7,
       "x": 237,
       "y": 732.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "장해급여 일시금·연금 선택 확인서 · 확인일 년"
     },
     "choice_month": {
       "kind": "text",
       "page": 7,
       "x": 283,
       "y": 732.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "장해급여 일시금·연금 선택 확인서 · 확인일 월"
     },
     "choice_day": {
       "kind": "text",
       "page": 7,
       "x": 318,
       "y": 732.5,
-      "size": 9.5
+      "size": 9.5,
+      "label": "장해급여 일시금·연금 선택 확인서 · 확인일 일"
     },
     "choice_name": {
       "kind": "text",
@@ -1466,14 +1618,94 @@
       "x": 336,
       "y": 751.5,
       "size": 9.5,
-      "maxWidth": 100
+      "maxWidth": 100,
+      "label": "장해급여 일시금·연금 선택 확인서 · 확인자 성명"
+    },
+    "agent_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 300,
+      "y": 531.9,
+      "size": 9.5,
+      "maxWidth": 58,
+      "label": "대리인 성명"
+    },
+    "agent_phone": {
+      "kind": "text",
+      "page": 1,
+      "x": 452,
+      "y": 531.9,
+      "size": 9,
+      "maxWidth": 85,
+      "label": "대리인 ☎ 전화번호"
+    },
+    "delegate_clinic_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 366,
+      "y": 586.5,
+      "size": 9,
+      "maxWidth": 100,
+      "label": "의료기관 대행 제출 동의서 · 대행하는 의료기관 이름"
+    },
+    "branch_name": {
+      "kind": "text",
+      "page": 1,
+      "x": 247,
+      "y": 753,
+      "size": 9,
+      "maxWidth": 60,
+      "label": "근로복지공단 ○○지역본부(지사)장 귀하 — 지사 이름"
+    },
+    "noise_agent_name": {
+      "kind": "text",
+      "page": 2,
+      "x": 238,
+      "y": 740.6,
+      "size": 9.5,
+      "maxWidth": 63,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 대리인 성명"
+    },
+    "noise_agent_phone": {
+      "kind": "text",
+      "page": 2,
+      "x": 405,
+      "y": 740.6,
+      "size": 9,
+      "maxWidth": 128,
+      "label": "(뒷면) 소음작업 종사 사실 확인서 · 대리인 ☎ 전화번호"
     }
   },
   "stamps": {
-    "applicant": { "page": 1, "x": 388.4, "y": 514.7, "size": 42 },
-    "delegation": { "page": 1, "x": 243.0, "y": 583.2, "size": 42 },
-    "consent": { "page": 1, "x": 467.2, "y": 710.6, "size": 42 },
-    "noise_applicant": { "page": 2, "x": 336.4, "y": 724.2, "size": 42 },
-    "choice_confirmer": { "page": 7, "x": 476.4, "y": 746.7, "size": 42 }
+    "applicant": {
+      "page": 1,
+      "x": 388.4,
+      "y": 514.7,
+      "size": 42
+    },
+    "delegation": {
+      "page": 1,
+      "x": 243.0,
+      "y": 583.2,
+      "size": 42
+    },
+    "consent": {
+      "page": 1,
+      "x": 467.2,
+      "y": 710.6,
+      "size": 42
+    },
+    "noise_applicant": {
+      "page": 2,
+      "x": 336.4,
+      "y": 724.2,
+      "size": 42
+    },
+    "choice_confirmer": {
+      "page": 7,
+      "x": 476.4,
+      "y": 746.7,
+      "size": 42
+    }
   }
 }
