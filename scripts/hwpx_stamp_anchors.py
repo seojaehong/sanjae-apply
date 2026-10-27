@@ -46,16 +46,21 @@ def main() -> int:
         first_on_page = {}
         for k, pg in enumerate(page_of):
             first_on_page.setdefault(pg, k)
+        hx_map = json.load(open(hx_map_path, encoding="utf-8"))
+        # 한글 쪽 나눔이 동봉 PDF 와 다른 서식(장해급여: 한글 8쪽 · PDF 7쪽)은 「page」 를 한글 렌더 실측값으로 둔다.
+        # 앵커는 라벨 순서로 정하므로 쪽 번호와 무관하고, page 는 verify_hwpx_stamps.py 의 대조에만 쓰인다
+        keep_page = hx_map.get("expect_pages") not in (None, doc.page_count)
+        prev = hx_map.get("stamps") or {}
         out = {}
         for key, s in stamps.items():
             if s["page"] not in first_on_page:
                 print(f"✗ {fid}.{key}: {s['page']}쪽에 라벨이 없다")
                 bad += 1
                 continue
-            out[key] = {"anchor": first_on_page[s["page"]], "page": s["page"], "x": s["x"], "y": s["y"], "size": s["size"]}
+            page = prev[key]["page"] if keep_page and key in prev else s["page"]
+            out[key] = {"anchor": first_on_page[s["page"]], "page": page, "x": s["x"], "y": s["y"], "size": s["size"]}
         print(f"✓ {fid}: 라벨 {n_xml} 쪽별 {per_page} → " + ", ".join(f"{k}(p{stamps[k]['page']}→#{v['anchor']})" for k, v in out.items()))
         if write:
-            hx_map = json.load(open(hx_map_path, encoding="utf-8"))
             hx_map["stamps"] = out
             with open(hx_map_path, "w", encoding="utf-8", newline="\n") as fp:
                 json.dump(hx_map, fp, ensure_ascii=False, indent=2)

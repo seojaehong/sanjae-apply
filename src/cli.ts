@@ -11,7 +11,7 @@ import { buildPackage } from "./core/run.js";
 import { CLAIM_TYPES, TAGS, type ClaimInput, type ClaimType, type Tag, type Tri } from "./core/types.js";
 import { fillHwpx } from "./fill/hwpx.js";
 import { fillForm } from "./fill/overlay.js";
-import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "./fill/registry.js";
+import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap, unknownKeys } from "./fill/registry.js";
 import { pngInfo } from "./stamp/png.js";
 import { buildStamps, resolveStamp, type StampSpec } from "./stamp/resolve.js";
 import type { SealShape } from "./stamp/seal.js";
@@ -114,14 +114,14 @@ async function main(argv: string[]): Promise<void> {
       const { map, hwpx } = loadHwpxAssets(formId);
       const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFor(Object.keys(map.stamps ?? {})) });
       writeFileSync(opt["out"], bytes);
-      process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "hwpx", filled: report.filled.length, skipped: report.skipped, stamped: report.stamped, stamps_skipped: report.stamps_skipped }, null, 2) + "\n");
+      process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "hwpx", filled: report.filled.length, skipped: report.skipped, stamped: report.stamped, stamps_skipped: report.stamps_skipped, unknown_keys: unknownKeys(values, map.slots) }, null, 2) + "\n");
       return;
     }
     const { map, pdf, font } = loadAssets(formId);
     const stamps = stampsFor(Object.keys(map.stamps ?? {}), font);
     const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps });
     writeFileSync(opt["out"], bytes);
-    process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "pdf", written: report.written.length, skipped: report.skipped, shrunk: report.shrunk, stamped: report.stamped, stamps_skipped: report.stamps_skipped }, null, 2) + "\n");
+    process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "pdf", written: report.written.length, skipped: report.skipped, shrunk: report.shrunk, stamped: report.stamped, stamps_skipped: report.stamps_skipped, unknown_keys: unknownKeys(values, map.slots) }, null, 2) + "\n");
     return;
   }
   if (cmd === "seal") {

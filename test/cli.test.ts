@@ -1,6 +1,6 @@
 // CLI 4명령 — 빌드된 dist/src/cli.js 를 자식 프로세스로 실행한다(npm run build 선행).
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -48,6 +48,17 @@ describe.skipIf(!existsSync(CLI))("CLI", () => {
     expect(() => run("fill", "F_DEVICE_PRESCRIPTION", "test/samples/F_DEVICE_PRESCRIPTION.json", "--out", outPdf, "--stamp", "홍길동")).toThrow(/자리가 없다/);
     expect(() => run("seal", "--out", sealPng, "--name", "洪吉童")).toThrow(/없는 글자/);
     expect(() => run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", outPdf, "--stamp", "--stamp-spot", "consent")).toThrow(/값이 없다/);
+  });
+
+  it("fill: 서식에 없는 칸 이름은 버리지 않고 unknown_keys 로 알린다(PDF·한글)", () => {
+    const vals = join(tmpdir(), "sanjae-apply", "unknown_vals.json");
+    writeFileSync(vals, JSON.stringify({ name: "홍길동", birth: "1990-01-01", nmae: "오타" }));
+    const a = JSON.parse(run("fill", "F_YOYANG_APPLY", vals, "--out", join(tmpdir(), "sanjae-apply", "unknown.pdf")));
+    expect(a.unknown_keys).toEqual(["birth", "nmae"]);
+    const b = JSON.parse(run("fill", "F_YOYANG_APPLY", vals, "--out", join(tmpdir(), "sanjae-apply", "unknown.hwpx")));
+    expect(b.unknown_keys).toEqual(["birth", "nmae"]);
+    const ok = JSON.parse(run("fill", "F_YOYANG_APPLY", "test/samples/F_YOYANG_APPLY.json", "--out", join(tmpdir(), "sanjae-apply", "known.pdf")));
+    expect(ok.unknown_keys).toEqual([]);
   });
 
   it("fill: 지도 없는 서식은 오류로 끝난다", () => {

@@ -11,7 +11,7 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20http-7c3aed)](https://modelcontextprotocol.io)
-[![tests](https://img.shields.io/badge/tests-159%20passing-2ea44f)](test/)
+[![tests](https://img.shields.io/badge/tests-212%20passing-2ea44f)](test/)
 
 <img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서. 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
 
@@ -45,7 +45,7 @@
 
 ## 🚀 30초 설치 (내 PC, 토큰 없음)
 
-Node.js 20 이상만 있으면 됩니다.
+Node.js 20 이상만 있으면 됩니다. 단계별 따라 하기와 문제 해결은 [사용 매뉴얼](docs/사용_매뉴얼.md)에 있습니다.
 
 ### Claude Code
 
@@ -141,8 +141,8 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 |---|---|
 | `list_required_forms` | 급여·재해 분기 → 서식·첨부·조문·절차·남은 질문 |
 | `get_form_catalog` | 공단 정본 대장(파일명·개정일·sha256·게시글 URL)과 채울 수 있는 서식(`fillable` PDF · `fillable_hwpx` 한글)·칸 이름·도장 자리 이름(`stamps`) |
-| `fill_form` | `form_id` + 값 (+ `format: "pdf" | "hwpx"`, + `stamp: { name }` 또는 `{ png_base64 }`, `spot`) → 채운 파일(base64) |
-| `make_seal` | 이름 → 성명인(원·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(base64) |
+| `fill_form` | `form_id` + 값 (+ `format: "pdf" | "hwpx"`, + `stamp: { name }` 또는 `{ png_base64 }`, `spot`) → 채운 파일(base64). 로컬 설치면 `save_to`(절대 경로)로 파일에 바로 저장 |
+| `make_seal` | 이름 → 성명인(원·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(base64). 로컬 설치면 `save_to` 로 바로 저장 |
 | `fill_yoyang_apply` | v0.1 호환. `fill_form(form_id="F_YOYANG_APPLY")` 과 같습니다 |
 </details>
 
@@ -178,7 +178,7 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
   --header "Authorization: Bearer <발급받은 토큰>"
 ```
 
-같은 도구 4개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다.
+같은 도구 5개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다.
 
 <details>
 <summary>🏠 직접 호스팅하기(Vercel)</summary>
@@ -203,7 +203,7 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
 | PDF 채우기 | 12종 전부 글자 위치 + **픽셀 비교**(백지 출력 사고 방지) + 육안 | 약 590칸 |
 | 한글 채우기 | 11종 전부 zip 안 글자·체크 수·글자색 + **한글이 실제로 열어 PDF 로 그리는지**(COM) + 쪽수가 원본과 같은지 + 육안 | 약 650칸 |
 | MCP | http · stdio 양쪽 initialize / tools/list / tools/call | SDK 클라이언트 |
-| 운영 드라이런 | Vercel 운영 끝점에 공식 SDK 로 26건 | 전부 통과 |
+| 운영 드라이런 | Vercel 운영 끝점에 공식 SDK 로 31건 | 전부 통과 |
 
 전부 **합성 값**으로만 돌렸습니다. 실제 사건으로는 검증하지 않았습니다.
 
@@ -217,6 +217,8 @@ python scripts/verify_fill.py out.pdf forms/maps/F_YOYANG_APPLY.json test/sample
 # 채운 한글 파일을 검사 (한글이 있는 윈도우면 실제 렌더까지, 없으면 --no-render)
 python scripts/verify_hwpx_fill.py out.hwpx test/samples/F_YOYANG_APPLY.json forms/hwpx_maps/F_YOYANG_APPLY.json out.jpg
 ```
+
+설치부터 활용까지 따라 하는 사용 매뉴얼과 실측 기록은 [`docs/사용_매뉴얼.md`](docs/사용_매뉴얼.md) 에 있습니다.
 
 새 서식의 좌표 지도는 [`docs/좌표지도_작성법.md`](docs/좌표지도_작성법.md), 한글 지도는 [`docs/한글지도_작성법.md`](docs/한글지도_작성법.md), 배포·연결 전체는 [`docs/패키징_배포_연결_가이드.md`](docs/패키징_배포_연결_가이드.md).
 
@@ -234,7 +236,7 @@ src/laws     법제처 Open API 클라이언트
 api/mcp      Vercel 함수
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
-test/        vitest 205 (formal_rules.test.ts 전수 10,368건 포함)
+test/        vitest 212 (formal_rules.test.ts 전수 10,368건 포함)
 docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드
 ```
 

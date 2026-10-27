@@ -5,6 +5,6 @@ import { SERVER_INFO, registerTools } from "./server.js";
 
 export async function runStdio(): Promise<void> {
   const server = new McpServer(SERVER_INFO);
-  registerTools(server);
+  registerTools(server, { local: true });
   await server.connect(new StdioServerTransport());
 }

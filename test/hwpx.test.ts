@@ -10,6 +10,8 @@ import { makeSeal } from "../src/stamp/seal.js";
 
 process.env.SANJAE_ROOT = process.cwd(); // src/ 에서 import 하면 세 단계 위가 레포 밖이다
 const forms = fillableHwpxForms();
+/** 한글 쪽 나눔이 동봉 PDF 와 달라 도장 쪽이 PDF 지도와 다른 자리 — 한글 COM 렌더 실측(261027, scripts/verify_hwpx_stamps.py) */
+const HWPX_PAGE: Record<string, number> = { "F_JANGHAE_CLAIM.choice_confirmer": 8 };
 
 describe("hwpx 지도", () => {
   it("한글로 채울 수 있는 서식이 있다", () => {
@@ -92,7 +94,9 @@ describe("hwpx 도장", () => {
       const n = countStampLabels(sec);
       for (const [k, s] of Object.entries(spots)) {
         const p = pdfSpots[k]!;
-        expect([s.page, s.x, s.y, s.size], `${k} = PDF 지도`).toEqual([p.page, p.x, p.y, p.size]);
+        expect([s.x, s.y, s.size], `${k} 좌표 = PDF 지도`).toEqual([p.x, p.y, p.size]);
+        // 쪽은 한글 렌더 기준이다. 한글 쪽 나눔이 PDF 와 같은 서식은 PDF 쪽과 같고, 다른 서식은 HWPX_PAGE 에 실측값을 적는다
+        expect(s.page, `${k} 쪽(한글 렌더 실측)`).toBe(HWPX_PAGE[`${id}.${k}`] ?? p.page);
         expect(s.anchor, `${k}.anchor < 라벨 ${n}`).toBeLessThan(n);
       }
       // 같은 쪽 → 같은 anchor, 뒤 쪽 → 더 큰 anchor(한글은 앵커 문단의 쪽만 본다)

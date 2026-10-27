@@ -1,8 +1,8 @@
 """한글 날인 실측 — 지도에 도장 자리가 있는 서식 전부를 합성 값 + 모든 자리 도장으로 채워(dist CLI) 한글 COM 으로 PDF 렌더한 뒤,
-①쪽수 = expect_pages ②그림 수 − 원본 그림 수 = 자리 수 ③자리마다 같은 쪽의 가장 가까운 그림 중심이 지도 (x,y) 의 ±tol pt 안이고 자리끼리 그림을 공유하지 않는지 보고, 자리 주변 크롭을 한 장 JPEG 로 묶는다.
+①쪽수 = expect_pages ②그림 수 − 기준본(같은 값·도장 없음) 그림 수 = 자리 수 ③자리마다 같은 쪽의 가장 가까운 그림 중심이 지도 (x,y) 의 ±tol pt 안이고 자리끼리 그림을 공유하지 않는지 보고, 자리 주변 크롭을 한 장 JPEG 로 묶는다.
 
 한글(HWPFrame.HwpObject)이 있는 윈도우에서만 돈다. 다른 세션이 한글을 쓰고 있으면 hwp_guard 가 멈춘다.
-사용: python scripts/verify_hwpx_stamps.py <out_dir> [--tol 3] [--name 홍길동]
+사용: python scripts/verify_hwpx_stamps.py <out_dir> [--tol 3] [--name 홍길동] [--shape circle|square|ellipse | --png 도장.png] [--cli <cli.js>]
 """
 import io
 import json
@@ -26,6 +26,8 @@ def main() -> int:
     out_dir = os.path.abspath(sys.argv[1])
     tol = float(arg("--tol", "3"))
     name = arg("--name", "홍길동")
+    cli = arg("--cli", os.path.join(ROOT, "dist", "src", "cli.js"))  # 게시판 검증이면 npx 가 받은 패키지의 cli.js
+    stamp = ["--stamp-png", arg("--png", "")] if "--png" in sys.argv else ["--stamp", name, "--stamp-shape", arg("--shape", "circle")]
     os.makedirs(out_dir, exist_ok=True)
     jobs = []
     for f in sorted(os.listdir(os.path.join(ROOT, "forms", "hwpx_maps"))):
@@ -36,13 +38,20 @@ def main() -> int:
         out = os.path.join(out_dir, f"{fid}.hwpx")
         spots = ",".join(m["stamps"].keys())
         r = subprocess.run(
-            ["node", os.path.join(ROOT, "dist", "src", "cli.js"), "fill", fid, os.path.join(ROOT, "test", "samples", f), "--out", out, "--stamp", name, "--stamp-spot", spots],
+            ["node", cli, "fill", fid, os.path.join(ROOT, "test", "samples", f), "--out", out, *stamp, "--stamp-spot", spots],
             capture_output=True, text=True, encoding="utf-8",
         )
         if r.returncode != 0:
             print("✗ fill 실패", fid, r.stderr[-400:])
             return 1
         rep = json.loads(r.stdout)
+        # 기준본 = 같은 값으로 채우고 도장만 뺀 것. 한글은 채운 글자 일부를 PDF 에 그림으로도 내보내므로(출퇴근 5쪽 성명 칸)
+        # 빈 원본이나 동봉 PDF 를 기준으로 그림 수를 세면 도장 아닌 그림이 섞인다
+        base = out[:-5] + ".base.hwpx"
+        rb = subprocess.run(["node", cli, "fill", fid, os.path.join(ROOT, "test", "samples", f), "--out", base], capture_output=True, text=True, encoding="utf-8")
+        if rb.returncode != 0:
+            print("✗ 기준본 fill 실패", fid, rb.stderr[-400:])
+            return 1
         jobs.append((fid, m, out, rep))
         print(f"채움 {fid}: stamped {rep.get('stamped')} skipped {rep.get('stamps_skipped')}")
 
@@ -57,12 +66,14 @@ def main() -> int:
     hwp.XHwpWindows.Item(0).Visible = False
     try:
         for fid, m, out, rep in jobs:
-            pdf = out[:-5] + ".pdf"
-            ok = hwp.Open(out, "HWPX", "forceopen:true")
-            ok2 = hwp.SaveAs(pdf, "PDF", "") if ok else False
-            hwp.Clear(1)
-            if not (ok and ok2):
-                print("✗ 렌더 실패", fid, ok, ok2)
+            # 도장 찍은 것과 기준본(도장만 뺀 것) 둘 다 같은 한글로 그린다
+            # (동봉 PDF 는 다른 경로로 만든 파일이라 그림 수가 다르다 — 유족급여 동봉 PDF 4개 · 한글 원본 0개)
+            for src, pdf in ((out, out[:-5] + ".pdf"), (out[:-5] + ".base.hwpx", out[:-5] + ".orig.pdf")):
+                ok = hwp.Open(src, "HWPX", "forceopen:true")
+                ok2 = hwp.SaveAs(pdf, "PDF", "") if ok else False
+                hwp.Clear(1)
+                if not (ok and ok2):
+                    print("✗ 렌더 실패", fid, src, ok, ok2)
     finally:
         try:
             hwp.Quit()
@@ -89,7 +100,7 @@ def main() -> int:
             for inf in page.get_image_info():
                 b = inf["bbox"]
                 imgs.append((pno, (b[0] + b[2]) / 2, (b[1] + b[3]) / 2, b[2] - b[0]))
-        orig_pdf = os.path.join(ROOT, "forms", "bundled", f"{fid}.pdf")
+        orig_pdf = out[:-5] + ".orig.pdf"
         orig_imgs = sum(len(p.get_image_info()) for p in fitz.open(orig_pdf)) if os.path.exists(orig_pdf) else None
         spots = m["stamps"]
         if orig_imgs is not None and len(imgs) - orig_imgs != len(spots):

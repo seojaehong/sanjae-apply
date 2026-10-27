@@ -75,3 +75,8 @@ export function loadHwpxAssets(formId: string): { map: HwpxMap; hwpx: Uint8Array
   const map = loadHwpxMap(formId);
   return { map, hwpx: new Uint8Array(readFileSync(hwpxPath(formId))) };
 }
+
+/** 지도에 없는 칸 이름 — 값을 조용히 버리지 않고 결과에 알린다(오타·다른 서식 칸 이름) */
+export function unknownKeys(values: Record<string, unknown>, slots: Record<string, unknown>): string[] {
+  return Object.keys(values).filter((k) => !Object.prototype.hasOwnProperty.call(slots, k));
+}

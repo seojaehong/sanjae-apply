@@ -2,7 +2,8 @@
 // 네 도구 전부 무저장: 입력을 디스크·로그에 남기지 않고 결과만 돌려준다. 승인 가능성은 코어 필터가 막는다.
 // 원격 형태는 SafeClaw `app/api/mcp/[transport]/implementation.ts`(mcp-handler + withMcpAuth + env 토큰)를 그대로 따랐다.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { dirname, extname, isAbsolute } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
@@ -13,11 +14,11 @@ import { buildPackage } from "../core/run.js";
 import { ACCIDENT_KINDS, CLAIM_TYPES, TAGS, type ClaimInput } from "../core/types.js";
 import { fillHwpx } from "../fill/hwpx.js";
 import { fillForm } from "../fill/overlay.js";
-import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "../fill/registry.js";
+import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap, unknownKeys } from "../fill/registry.js";
 import { pngInfo } from "../stamp/png.js";
 import { buildStamps, resolveStamp } from "../stamp/resolve.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.2" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.3" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 
@@ -50,28 +51,48 @@ function stampsFrom(stamp: StampInput, available: string[], font?: Uint8Array): 
   return buildStamps(spec, stamp.spot, available, () => font ?? loadFont());
 }
 
-async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf", stamp?: StampInput) {
-  if (format === "hwpx") {
-    const { map, hwpx } = loadHwpxAssets(formId);
-    const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFrom(stamp, Object.keys(map.stamps ?? {})) });
-    return {
-      content: [
-        { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "hwpx", source_sha256: map.source_sha256, report }, null, 2) },
-        { type: "resource" as const, resource: { uri: `sanjae-apply://${map.form_id}/filled.hwpx`, mimeType: "application/vnd.hancom.hwpx", blob: Buffer.from(bytes).toString("base64") } },
-      ],
-    };
+/**
+ * 로컬 stdio 전용 — 받은 절대 경로에 직접 쓴다. base64 만 돌려주면 클라이언트(Claude Code)가 그것을 자기 설정 폴더에 두고
+ * 작업 폴더로 옮길 때마다 사람 승인이 필요했다(261027 실사용 시험). 덮어쓰지 않고, 확장자가 형식과 다르면 쓰지 않는다.
+ */
+function writeTo(path: string, ext: string, bytes: Uint8Array): void {
+  if (!isAbsolute(path)) throw new Error(`save_to 는 절대 경로여야 한다: ${path}`);
+  if (extname(path).toLowerCase() !== ext) throw new Error(`save_to 확장자가 ${ext} 가 아니다: ${path}`);
+  const dir = dirname(path);
+  if (!existsSync(dir) || !statSync(dir).isDirectory()) throw new Error(`save_to 폴더가 없다: ${dir}`);
+  if (existsSync(path)) throw new Error(`이미 있는 파일은 덮어쓰지 않는다: ${path}`);
+  writeFileSync(path, bytes, { flag: "wx" });
+}
+
+/** 결과 묶기 — save_to 가 있으면 파일로 쓰고 경로만, 없으면 base64 리소스를 붙인다 */
+function pack(meta: Record<string, unknown>, bytes: Uint8Array, file: { uri: string; mimeType: string; ext: string }, saveTo?: string | undefined) {
+  if (saveTo) {
+    writeTo(saveTo, file.ext, bytes);
+    return { content: [{ type: "text" as const, text: JSON.stringify({ ...meta, saved_to: saveTo, bytes: bytes.length }, null, 2) }] };
   }
-  const { map, pdf, font } = loadAssets(formId);
-  const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps: stampsFrom(stamp, Object.keys(map.stamps ?? {}), font) });
   return {
     content: [
-      { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "pdf", source_sha256: map.source_sha256, report }, null, 2) },
-      { type: "resource" as const, resource: { uri: `sanjae-apply://${map.form_id}/filled.pdf`, mimeType: "application/pdf", blob: Buffer.from(bytes).toString("base64") } },
+      { type: "text" as const, text: JSON.stringify(meta, null, 2) },
+      { type: "resource" as const, resource: { uri: file.uri, mimeType: file.mimeType, blob: Buffer.from(bytes).toString("base64") } },
     ],
   };
 }
 
-export function registerTools(server: McpServer): void {
+async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf", stamp?: StampInput, saveTo?: string | undefined) {
+  if (format === "hwpx") {
+    const { map, hwpx } = loadHwpxAssets(formId);
+    const { bytes, report } = await fillHwpx(hwpx, map, { values, stamps: stampsFrom(stamp, Object.keys(map.stamps ?? {})) });
+    return pack({ form_id: map.form_id, format: "hwpx", source_sha256: map.source_sha256, report, unknown_keys: unknownKeys(values, map.slots) }, bytes, { uri: `sanjae-apply://${map.form_id}/filled.hwpx`, mimeType: "application/vnd.hancom.hwpx", ext: ".hwpx" }, saveTo);
+  }
+  const { map, pdf, font } = loadAssets(formId);
+  const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps: stampsFrom(stamp, Object.keys(map.stamps ?? {}), font) });
+  return pack({ form_id: map.form_id, format: "pdf", source_sha256: map.source_sha256, report, unknown_keys: unknownKeys(values, map.slots) }, bytes, { uri: `sanjae-apply://${map.form_id}/filled.pdf`, mimeType: "application/pdf", ext: ".pdf" }, saveTo);
+}
+
+/** local = 로컬 stdio 서버(npx sanjae-apply mcp). 이때만 save_to(파일로 바로 저장)를 연다 */
+export function registerTools(server: McpServer, opts: { local?: boolean } = {}): void {
+  const saveTo = (ext: string) =>
+    opts.local ? { save_to: z.string().max(1000).optional().describe(`이 PC 에 바로 저장할 절대 경로(${ext}). 주면 base64 대신 저장 경로를 돌려준다. 이미 있는 파일은 덮어쓰지 않는다`) } : {};
   server.registerTool(
     "list_required_forms",
     {
@@ -122,9 +143,11 @@ export function registerTools(server: McpServer): void {
         values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("칸 이름 → 값"),
         format: z.enum(["pdf", "hwpx"]).optional().describe("pdf(기본) 또는 hwpx(한글)"),
         stamp: stampSchema,
+        ...saveTo(".pdf 또는 .hwpx — format 과 맞아야 한다"),
       },
     },
-    async ({ form_id, values, format, stamp }) => fillAndPack(form_id, values, format ?? "pdf", stamp),
+    async ({ form_id, values, format, stamp, save_to }: { form_id: string; values: Record<string, string | boolean>; format?: "pdf" | "hwpx" | undefined; stamp?: StampInput | undefined; save_to?: string | undefined }) =>
+      fillAndPack(form_id, values, format ?? "pdf", stamp, save_to),
   );
 
   server.registerTool(
@@ -140,17 +163,13 @@ export function registerTools(server: McpServer): void {
         center_text: z.string().max(20).optional().describe("중심 문자. 줄바꿈은 \\n"),
         bottom_text: z.string().max(40).optional().describe("원주 하단 부문자(사업자번호 등)"),
         inner_ring: z.number().min(0).max(20).optional().describe("이중선 두께 px"),
+        ...saveTo(".png"),
       },
     },
-    async (a) => {
+    async (a: { name?: string | undefined; shape?: "circle" | "square" | "ellipse" | undefined; arc_text?: string | undefined; center_text?: string | undefined; bottom_text?: string | undefined; inner_ring?: number | undefined; save_to?: string | undefined }) => {
       const png = resolveStamp({ name: a.name, shape: a.shape, arcText: a.arc_text, centerText: a.center_text?.replace(/\\n/g, "\n"), bottomText: a.bottom_text, innerRing: a.inner_ring }, loadFont());
       const { width, height } = pngInfo(png);
-      return {
-        content: [
-          { type: "text" as const, text: JSON.stringify({ bytes: png.length, width, height, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }) },
-          { type: "resource" as const, resource: { uri: "sanjae-apply://seal.png", mimeType: "image/png", blob: Buffer.from(png).toString("base64") } },
-        ],
-      };
+      return pack({ bytes: png.length, width, height, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }, png, { uri: "sanjae-apply://seal.png", mimeType: "image/png", ext: ".png" }, a.save_to);
     },
   );
 

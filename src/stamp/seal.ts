@@ -195,13 +195,22 @@ export function makeSeal(o: SealOptions): Uint8Array {
   } else {
     const txt = (o.centerText || o.name || "").trim();
     if (!txt) throw new Error("name 또는 centerText 가 필요하다(공백만은 안 된다)");
-    const lines = txt.includes("\n") ? txt.split("\n") : [...txt];
-    const n = lines.length;
-    const usable = inner * 0.8;
-    const k = ({ 1: 0.85, 2: 0.9, 3: 0.94, 4: 0.96 } as Record<number, number>)[n] ?? 0.94;
-    const fs = (usable / n) * k;
-    boldR = fs * 0.035;
-    polys.push(...stackPolys(font, txt, fs, cx, cy, usable));
+    if (shape === "ellipse" && !txt.includes("\n")) {
+      // 가로 타원은 세로 공간이 좁아 글자를 세로로 쌓으면 위아래로 테두리를 넘는다(v0.5.2 한글 렌더 실측). 한 줄 가로로 놓는다
+      const n = [...txt].length;
+      const innerH = by1 - by0 - 2 * ringW;
+      const fs = Math.min((inner * 0.7) / n, innerH * 0.5);
+      boldR = fs * 0.035;
+      polys.push(...linePolys(font, txt, fs, cx, cy));
+    } else {
+      const lines = txt.includes("\n") ? txt.split("\n") : [...txt];
+      const n = lines.length;
+      const usable = inner * 0.8;
+      const k = ({ 1: 0.85, 2: 0.9, 3: 0.94, 4: 0.96 } as Record<number, number>)[n] ?? 0.94;
+      const fs = (usable / n) * k;
+      boldR = fs * 0.035;
+      polys.push(...stackPolys(font, txt, fs, cx, cy, usable));
+    }
   }
   cv.fillBold(polys, boldR);
   const [r, g, b] = o.color ?? [230, 0, 18];

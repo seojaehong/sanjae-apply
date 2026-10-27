@@ -39,7 +39,38 @@ function innerOpaque(png: Uint8Array): number {
   return n;
 }
 
+/** 바깥 테두리 타원(seal.ts 의 box: 여백 W*0.085, 타원은 세로 여백에 ratio 를 곱한다) 밖에 있는 불투명 픽셀 수 — 글자가 테두리를 넘었는가 */
+function outsideOpaque(png: Uint8Array, ratio = 1): number {
+  const { w, h } = pngSize(png);
+  const dv = new DataView(png.buffer, png.byteOffset);
+  let pos = 8;
+  const idat: Uint8Array[] = [];
+  while (pos < png.length) {
+    const len = dv.getUint32(pos);
+    if (String.fromCharCode(...png.subarray(pos + 4, pos + 8)) === "IDAT") idat.push(png.subarray(pos + 8, pos + 8 + len));
+    pos += 12 + len;
+  }
+  const raw = inflateSync(Buffer.concat(idat.map((c) => Buffer.from(c))));
+  const m = w * 0.085;
+  const rx = w / 2 - m;
+  const ry = h / 2 - m * ratio;
+  let n = 0;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++)
+      if (raw[y * (w * 4 + 1) + 1 + x * 4 + 3]! > 128 && ((x - w / 2) / rx) ** 2 + ((y - h / 2) / ry) ** 2 > 1.03) n++;
+  return n;
+}
+
 describe("도장 생성", () => {
+  it("글자가 바깥 테두리를 넘지 않는다(원형·타원 성명인·법인형) — 타원 성명인은 v0.5.2 까지 세로로 쌓아 위아래로 튀어나왔다", () => {
+    for (const name of ["홍길동", "남궁민수", "이"]) {
+      expect(outsideOpaque(makeSeal({ name, fontBytes: FONT })), `원형 ${name}`).toBe(0);
+      const e = makeSeal({ name, shape: "ellipse", fontBytes: FONT });
+      expect(outsideOpaque(e, 0.72), `타원 ${name}`).toBe(0);
+      expect(innerOpaque(e), `타원 ${name} 글자가 그려졌다`).toBeGreaterThan(800);
+    }
+    expect(outsideOpaque(makeSeal({ shape: "ellipse", arcText: "노무법인 위너스", centerText: "직인", fontBytes: FONT }), 0.72)).toBe(0);
+  });
   it("성명인 원형 480px 투명 RGBA, 원 안에 글자가 실제로 그려진다", () => {
     const png = makeSeal({ name: "홍길동", fontBytes: FONT });
     expect(pngSize(png)).toEqual({ w: 480, h: 480, colorType: 6 });
