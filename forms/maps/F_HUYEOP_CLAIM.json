@@ -60,5 +60,9 @@
     "applicant_phone": { "kind": "text", "page": 1, "x": 401, "y": 598, "size": 9, "maxWidth": 135 },
     "agent_name": { "kind": "text", "page": 1, "x": 250, "y": 613.3, "size": 9.5, "maxWidth": 80 },
     "agent_phone": { "kind": "text", "page": 1, "x": 401, "y": 613.3, "size": 9, "maxWidth": 135 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 359.8, "y": 594.9, "size": 42 },
+    "delegation": { "page": 1, "x": 250.8, "y": 697.2, "size": 42 }
   }
 }

@@ -29,13 +29,13 @@ describe("MCP 출구", () => {
     expect((await rpc(INIT, "wrong")).status).toBe(401);
   });
 
-  it("initialize → tools/list 에 도구 4개", async () => {
+  it("initialize → tools/list 에 도구 5개", async () => {
     const init = await rpc(INIT);
     expect(init.status).toBe(200);
     expect(init.json.result.serverInfo.name).toBe("sanjae-apply");
     const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, TOKEN, init.sessionId);
     const names = list.json.result.tools.map((t: { name: string }) => t.name).sort();
-    expect(names).toEqual(["fill_form", "fill_yoyang_apply", "get_form_catalog", "list_required_forms"]);
+    expect(names).toEqual(["fill_form", "fill_yoyang_apply", "get_form_catalog", "list_required_forms", "make_seal"]);
   });
 
   it("fill_form: form_id 로 범용 채우기, 없는 id 는 isError", async () => {

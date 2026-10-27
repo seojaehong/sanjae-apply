@@ -13,9 +13,10 @@ import { buildPackage } from "../core/run.js";
 import { ACCIDENT_KINDS, CLAIM_TYPES, TAGS, type ClaimInput } from "../core/types.js";
 import { fillHwpx } from "../fill/hwpx.js";
 import { fillForm } from "../fill/overlay.js";
-import { catalogPath, fillableForms, fillableHwpxForms, loadAssets, loadHwpxAssets, loadMap } from "../fill/registry.js";
+import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "../fill/registry.js";
+import { resolveStamp, stampSpots } from "../stamp/resolve.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.4.0" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.0" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 
@@ -26,7 +27,25 @@ function text(obj: unknown) {
   return { content: [{ type: "text" as const, text: s }] };
 }
 
-async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf") {
+const stampSchema = z
+  .object({
+    name: z.string().optional().describe("성명인 이름(2~4자). 본인 또는 명의자 동의가 있는 이름만"),
+    shape: z.enum(["circle", "square", "ellipse"]).optional(),
+    png_base64: z.string().optional().describe("이미 있는 도장 PNG(투명 배경)"),
+    spot: z.string().optional().describe("찍을 자리(쉼표 구분). 기본 = 지도에 있는 신청인 자리 전부(applicant·delegation·consent). 자리 이름은 get_form_catalog(form_id).stamps"),
+  })
+  .optional()
+  .describe("도장. PDF 출력에서 신청인 서명란에 찍는다. 본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다(사용인감 성격)");
+
+type StampInput = z.infer<typeof stampSchema>;
+
+function stampsFrom(stamp: StampInput, font: Uint8Array, available: string[]): Record<string, Uint8Array> | undefined {
+  if (!stamp) return undefined;
+  const png = resolveStamp({ name: stamp.name, shape: stamp.shape, png: stamp.png_base64 ? new Uint8Array(Buffer.from(stamp.png_base64, "base64")) : undefined }, font);
+  return Object.fromEntries(stampSpots(available, stamp.spot).map((k) => [k, png]));
+}
+
+async function fillAndPack(formId: string, values: Record<string, string | boolean>, format: "pdf" | "hwpx" = "pdf", stamp?: StampInput) {
   if (format === "hwpx") {
     const { map, hwpx } = loadHwpxAssets(formId);
     const { bytes, report } = await fillHwpx(hwpx, map, { values });
@@ -38,7 +57,7 @@ async function fillAndPack(formId: string, values: Record<string, string | boole
     };
   }
   const { map, pdf, font } = loadAssets(formId);
-  const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values });
+  const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps: stampsFrom(stamp, font, Object.keys(map.stamps ?? {})) });
   return {
     content: [
       { type: "text" as const, text: JSON.stringify({ form_id: map.form_id, format: "pdf", source_sha256: map.source_sha256, report }, null, 2) },
@@ -71,7 +90,7 @@ export function registerTools(server: McpServer): void {
     {
       title: "공단 서식 정본 대장",
       description:
-        "근로복지공단 서식자료실에서 받은 서식 13종의 파일명·개정일·sha256·게시글 URL 과, 지금 채울 수 있는 서식(fillable)과 그 칸 이름(slots). form_id 를 주면 그 서식만.",
+        "근로복지공단 서식자료실에서 받은 서식 13종의 파일명·개정일·sha256·게시글 URL 과, 지금 채울 수 있는 서식(fillable)과 그 칸 이름(slots)·도장 자리 이름(stamps). form_id 를 주면 그 서식만.",
       inputSchema: { form_id: z.string().optional().describe("예: F_YOYANG_APPLY") },
     },
     async ({ form_id }) => {
@@ -80,8 +99,10 @@ export function registerTools(server: McpServer): void {
       const known = form_id ? (FORMS as Record<string, unknown>)[form_id] ?? null : undefined;
       const fillable = fillableForms();
       const fillable_hwpx = fillableHwpxForms();
-      const slots = form_id && fillable.includes(form_id) ? Object.keys(loadMap(form_id).slots) : undefined;
-      return text({ form: known, fillable, fillable_hwpx, slots, entries: forms });
+      const m = form_id && fillable.includes(form_id) ? loadMap(form_id) : undefined;
+      const slots = m ? Object.keys(m.slots) : undefined;
+      const stamps = m ? Object.keys(m.stamps ?? {}) : undefined;
+      return text({ form: known, fillable, fillable_hwpx, slots, stamps, entries: forms });
     },
   );
 
@@ -95,9 +116,36 @@ export function registerTools(server: McpServer): void {
         form_id: z.string().describe("예: F_YOYANG_APPLY, F_HUYEOP_CLAIM …"),
         values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("칸 이름 → 값"),
         format: z.enum(["pdf", "hwpx"]).optional().describe("pdf(기본) 또는 hwpx(한글)"),
+        stamp: stampSchema,
       },
     },
-    async ({ form_id, values, format }) => fillAndPack(form_id, values, format ?? "pdf"),
+    async ({ form_id, values, format, stamp }) => fillAndPack(form_id, values, format ?? "pdf", stamp),
+  );
+
+  server.registerTool(
+    "make_seal",
+    {
+      title: "도장(인영) PNG 만들기",
+      description:
+        "이름으로 성명인(원형·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(투명 배경)를 만들어 base64 로 돌려준다. 본인 또는 명의자 동의가 있는 이름만 쓴다. 등록 인감을 흉내 내는 용도가 아니다(사용인감 성격). fill_form 의 stamp.name 으로 바로 찍을 수도 있다.",
+      inputSchema: {
+        name: z.string().optional().describe("성명인 이름(2~4자)"),
+        shape: z.enum(["circle", "square", "ellipse"]).optional().describe("기본 circle"),
+        arc_text: z.string().optional().describe("원주 상단 법인명(있으면 법인형)"),
+        center_text: z.string().optional().describe("중심 문자. 줄바꿈은 \\n"),
+        bottom_text: z.string().optional().describe("원주 하단 부문자(사업자번호 등)"),
+        inner_ring: z.number().optional().describe("이중선 두께 px"),
+      },
+    },
+    async (a) => {
+      const png = resolveStamp({ name: a.name, shape: a.shape, arcText: a.arc_text, centerText: a.center_text?.replace(/\\n/g, "\n"), bottomText: a.bottom_text, innerRing: a.inner_ring }, new Uint8Array(readFileSync(fontPath())));
+      return {
+        content: [
+          { type: "text" as const, text: JSON.stringify({ bytes: png.length, width: 480, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }) },
+          { type: "resource" as const, resource: { uri: "sanjae-apply://seal.png", mimeType: "image/png", blob: Buffer.from(png).toString("base64") } },
+        ],
+      };
+    },
   );
 
   // 하위 호환(v0.1 클라이언트)

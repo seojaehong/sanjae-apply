@@ -119,5 +119,10 @@
     "contact_mobile": { "kind": "text", "page": 1, "x": 182, "y": 638, "size": 9, "maxWidth": 72 },
     "contact_phone": { "kind": "text", "page": 1, "x": 313, "y": 638, "size": 9, "maxWidth": 74 },
     "email": { "kind": "text", "page": 1, "x": 447, "y": 638, "size": 8.5, "maxWidth": 88 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 291.2, "y": 605.4, "size": 42 },
+    "delegation": { "page": 1, "x": 252.6, "y": 703.8, "size": 42 },
+    "consent": { "page": 1, "x": 418.1, "y": 537.1, "size": 42 }
   }
 }

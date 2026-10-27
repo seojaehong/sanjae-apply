@@ -11,7 +11,9 @@ import { buildPackage } from "./core/run.js";
 import { CLAIM_TYPES, TAGS, type ClaimInput, type ClaimType, type Tag, type Tri } from "./core/types.js";
 import { fillHwpx } from "./fill/hwpx.js";
 import { fillForm } from "./fill/overlay.js";
-import { catalogPath, fillableForms, fillableHwpxForms, loadAssets, loadHwpxAssets, loadMap } from "./fill/registry.js";
+import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap } from "./fill/registry.js";
+import { resolveStamp, stampSpots } from "./stamp/resolve.js";
+import type { SealShape } from "./stamp/seal.js";
 
 function tri(v: string | undefined): Tri {
   if (v === undefined) return "UNDECLARED";
@@ -91,7 +93,8 @@ async function main(argv: string[]): Promise<void> {
     const id = rest[0];
     const cat = JSON.parse(readFileSync(catalogPath(), "utf8")) as { forms: { ids: string[] }[] };
     const entries = id ? cat.forms.filter((f) => f.ids.includes(id)) : cat.forms;
-    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: id && fillableForms().includes(id) ? Object.keys(loadMap(id).slots) : undefined, entries };
+    const m = id && fillableForms().includes(id) ? loadMap(id) : undefined;
+    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: m ? Object.keys(m.slots) : undefined, stamps: m ? Object.keys(m.stamps ?? {}) : undefined, entries };
     process.stdout.write(JSON.stringify(out, null, 2) + "\n");
     return;
   }
@@ -109,9 +112,30 @@ async function main(argv: string[]): Promise<void> {
       return;
     }
     const { map, pdf, font } = loadAssets(formId);
-    const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values });
+    // 도장: --stamp 이름(성명인 생성) 또는 --stamp-png 파일. 자리는 지도의 신청인 자리 전부(applicant·delegation·consent), --stamp-spot a,b 로 바꿈
+    let stamps: Record<string, Uint8Array> | undefined;
+    if (opt["stamp"] || opt["stamp-png"]) {
+      const png = resolveStamp(
+        { name: opt["stamp"], shape: opt["stamp-shape"] as SealShape | undefined, png: opt["stamp-png"] ? new Uint8Array(readFileSync(opt["stamp-png"])) : undefined },
+        font,
+      );
+      stamps = Object.fromEntries(stampSpots(Object.keys(map.stamps ?? {}), opt["stamp-spot"]).map((k) => [k, png]));
+    }
+    const { bytes, report } = await fillForm(pdf, map, { fontBytes: font, values, stamps });
     writeFileSync(opt["out"], bytes);
-    process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "pdf", written: report.written.length, skipped: report.skipped, shrunk: report.shrunk }, null, 2) + "\n");
+    process.stdout.write(JSON.stringify({ out: opt["out"], form_id: map.form_id, format: "pdf", written: report.written.length, skipped: report.skipped, shrunk: report.shrunk, stamped: report.stamped, stamps_skipped: report.stamps_skipped }, null, 2) + "\n");
+    return;
+  }
+  if (cmd === "seal") {
+    // 도장 PNG 만 만든다. 사용: seal --out 도장.png --name 홍길동 [--shape circle|square|ellipse] [--arc 법인명 --center 대표자인 --bottom 사업자번호 --inner 2]
+    const { opt } = opts(rest);
+    if (!opt["out"] || !(opt["name"] || opt["center"] || opt["arc"])) throw new Error("사용: sanjae-apply seal --out <도장.png> --name <이름> [--shape circle|square|ellipse] [--arc <법인명> --center <중심문자> --bottom <부문자> --inner <두께>]");
+    const png = resolveStamp(
+      { name: opt["name"], shape: opt["shape"] as SealShape | undefined, arcText: opt["arc"], centerText: opt["center"]?.replace(/\\n/g, "\n"), bottomText: opt["bottom"], innerRing: opt["inner"] ? Number(opt["inner"]) : undefined },
+      new Uint8Array(readFileSync(fontPath())),
+    );
+    writeFileSync(opt["out"], png);
+    process.stdout.write(JSON.stringify({ out: opt["out"], bytes: png.length, note: "본인 또는 명의자 동의가 있는 이름만. 등록 인감 대용이 아니다." }, null, 2) + "\n");
     return;
   }
   const checkArgs = cmd === "check" ? rest : argv; // 구버전: 첫 인자가 급여 종류
@@ -121,6 +145,8 @@ async function main(argv: string[]): Promise<void> {
         "sanjae-apply — 산재 신청 도우미",
         "  check <급여> [--accident WORK_ACCIDENT|COMMUTE|DISEASE] [--third-party yes|no] [--ended yes|no] [--tags A,B] [--have X,Y] [--json]",
         "  fill <FORM_ID> <values.json> --out <파일.pdf | 파일.hwpx>   (확장자로 PDF/한글 결정)",
+        "       [--stamp <이름> | --stamp-png <도장.png>] [--stamp-spot applicant,consent]   (PDF 날인. 기본 = 신청인 자리 전부)",
+        "  seal --out <도장.png> --name <이름> [--shape circle|square|ellipse] [--arc <법인명> --center <중심문자> --bottom <부문자>]",
         "  catalog [FORM_ID]",
         "  mcp   (stdio MCP 서버)",
         `급여: ${CLAIM_TYPES.join(" ")}`,

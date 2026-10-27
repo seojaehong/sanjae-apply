@@ -85,5 +85,8 @@
     "applicant_phone": { "kind": "text", "page": 1, "x": 474, "y": 716.5, "size": 9, "maxWidth": 69 },
     "agent_name": { "kind": "text", "page": 1, "x": 306, "y": 728, "size": 9.5, "maxWidth": 85 },
     "agent_phone": { "kind": "text", "page": 1, "x": 474, "y": 728, "size": 9, "maxWidth": 69 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 426.8, "y": 712.9, "size": 42 }
   }
 }

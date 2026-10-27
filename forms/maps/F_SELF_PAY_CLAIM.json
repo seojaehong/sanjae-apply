@@ -124,5 +124,11 @@
     "applicant_mobile": { "kind": "text", "page": 1, "x": 182, "y": 640, "size": 9, "maxWidth": 71 },
     "applicant_phone": { "kind": "text", "page": 1, "x": 313, "y": 640, "size": 9, "maxWidth": 72 },
     "email": { "kind": "text", "page": 1, "x": 448, "y": 640, "size": 9, "maxWidth": 90 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 291.2, "y": 606.0, "size": 42 },
+    "delegation": { "page": 1, "x": 255.2, "y": 700.7, "size": 42 },
+    "consent": { "page": 1, "x": 377.0, "y": 549.0, "size": 42 },
+    "substitute_applicant": { "page": 2, "x": 263.6, "y": 347.5, "size": 42 }
   }
 }

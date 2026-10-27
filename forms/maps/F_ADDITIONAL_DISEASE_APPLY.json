@@ -53,5 +53,10 @@
     "applicant_name": { "kind": "text", "page": 1, "x": 126, "y": 478, "size": 9.5, "maxWidth": 92 },
     "phone": { "kind": "text", "page": 1, "x": 325, "y": 478, "size": 9, "maxWidth": 81 },
     "mobile": { "kind": "text", "page": 1, "x": 452, "y": 478, "size": 9, "maxWidth": 97 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 245.2, "y": 474.6, "size": 42 },
+    "delegation": { "page": 1, "x": 242.7, "y": 554.5, "size": 42 },
+    "consent": { "page": 1, "x": 451.1, "y": 711.7, "size": 42 }
   }
 }

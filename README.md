@@ -88,7 +88,7 @@ claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp
 > [!TIP]
 > npm 에 올라가기 전에는 `sanjae-apply` 자리에 릴리스 파일 주소를 씁니다.
 > ```bash
-> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.4.0/sanjae-apply-0.4.0.tgz mcp
+> claude mcp add --scope user sanjae-apply -- npx -y https://github.com/seojaehong/sanjae-apply/releases/download/v0.5.0/sanjae-apply-0.5.0.tgz mcp
 > ```
 
 붙이고 나서 AI 에게 이렇게 말해 보세요.
@@ -113,9 +113,24 @@ npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.pdf
 
 # 같은 값을 한글 문서(.hwpx)로. 확장자만 바꾸면 됩니다
 npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx
+
+# PDF 에 도장까지. 이름만 주면 성명인을 만들어 신청인 서명란 전부에 찍습니다
+npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.pdf --stamp 홍길동
+npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.pdf --stamp-png 내도장.png --stamp-spot applicant
+
+# 도장 PNG 만 따로 (성명인 · 사각 · 타원 · 법인형)
+npx -y sanjae-apply seal --out 도장.png --name 홍길동
+npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 가나다" --center 대표이사 --bottom 123-45-67890
 ```
 
 `values.json` 의 칸 이름은 `catalog <FORM_ID>` 결과의 `slots` 에 나옵니다. PDF 와 한글은 칸 이름이 같습니다. 서식이 갱신되면 `npx -y sanjae-apply@latest` 로 받습니다.
+
+### 🔏 도장(날인)은 어떻게 되나
+
+- `--stamp 이름` 이면 성명인(원형 기본, `--stamp-shape square|ellipse`)을 만들어 찍고 `--stamp-png` 면 가진 도장 PNG(투명 배경)를 그대로 찍습니다. 인주색 적색, 지름 42pt(약 1.5cm).
+- 자리는 서식마다 지도에 정해져 있고 `catalog <FORM_ID>` 의 `stamps` 에 이름이 나옵니다. 비우면 **신청인 본인 자리 전부**(`applicant` 본문 · `delegation` 위임장 · `consent` 개인정보 동의)에 찍고 `--stamp-spot a,b` 로 고릅니다. 타인 서명란(`confirm` 확인자 · `commute_reporter` 신고인 · `choice_confirmer` 등)은 이름을 적어 줄 때만 찍습니다. 지도에 없는 자리는 건너뛰고 결과의 `stamps_skipped` 에 적습니다.
+- 지금은 **PDF 출력에만** 찍힙니다. 한글(hwpx) 출력은 한글에서 열어 그림을 넣어 주세요.
+- 도장은 명의자의 인격 표지입니다. **본인 또는 명의자 동의가 있는 이름만** 넣어 주세요. 등록 인감을 흉내 내는 용도가 아닙니다(사용인감 성격).
 
 ### 🖨️ 한글(hwpx) 출력은 어떻게 되나
 
@@ -126,13 +141,14 @@ npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx
 - 새 서식을 한글로 채우게 만드는 법은 [`docs/한글지도_작성법.md`](docs/한글지도_작성법.md) 에 있습니다.
 
 <details>
-<summary>🔧 MCP 도구 4개</summary>
+<summary>🔧 MCP 도구 5개</summary>
 
 | 도구 | 하는 일 |
 |---|---|
 | `list_required_forms` | 급여·재해 분기 → 서식·첨부·조문·절차·남은 질문 |
-| `get_form_catalog` | 공단 정본 대장(파일명·개정일·sha256·게시글 URL)과 채울 수 있는 서식(`fillable` PDF · `fillable_hwpx` 한글)·칸 이름 |
-| `fill_form` | `form_id` + 값 (+ `format: "pdf" | "hwpx"`) → 채운 파일(base64) |
+| `get_form_catalog` | 공단 정본 대장(파일명·개정일·sha256·게시글 URL)과 채울 수 있는 서식(`fillable` PDF · `fillable_hwpx` 한글)·칸 이름·도장 자리 이름(`stamps`) |
+| `fill_form` | `form_id` + 값 (+ `format: "pdf" | "hwpx"`, + `stamp: { name }` 또는 `{ png_base64 }`, `spot`) → 채운 파일(base64) |
+| `make_seal` | 이름 → 성명인(원·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(base64) |
 | `fill_yoyang_apply` | v0.1 호환. `fill_form(form_id="F_YOYANG_APPLY")` 과 같습니다 |
 </details>
 
@@ -140,20 +156,20 @@ npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx
 
 ## 📄 채울 수 있는 서식 12종
 
-| 서식 | 칸 수 | PDF | 한글 |
-|---|---:|:-:|:-:|
-| 요양급여신청서 (별지 제2호, 2026.7.7 개정) | 35 | ✅ | ✅ |
-| 출퇴근 재해 합본 (신청서 + 발생신고서) | 79 | ✅ | ✅ |
-| 제3자 재해 신고서 + 확인서 | 48 | ✅ | ✅ |
-| 유족급여 청구서 | 75 | ✅ | ✅ |
-| 본인부담 치료비 청구서 | 42 | ✅ | ✅ |
-| 휴업급여 청구서 | 37 | ✅ | ✅ |
-| 간병료·이송비·보조기 청구서 | 44 | ✅ | ✅ |
-| 재활보조기구 처방전 (기타) | 12 | ✅ | 공단이 PDF 만 배포 |
-| 미지급 보험급여 청구서 | 62 | ✅ | ✅ |
-| 장해급여 묶음 (청구서 + 소음작업 확인서 + 선택 확인서) | 153 | ✅ | ✅ |
-| 추가상병 신청서 | 25 | ✅ | ✅ |
-| 재요양 신청서 | 39 | ✅ | ✅ |
+| 서식 | 칸 수 | PDF | 한글 | 도장 자리(PDF) |
+|---|---:|:-:|:-:|:-:|
+| 요양급여신청서 (별지 제2호, 2026.7.7 개정) | 35 | ✅ | ✅ | 3 |
+| 출퇴근 재해 합본 (신청서 + 발생신고서) | 79 | ✅ | ✅ | 4 |
+| 제3자 재해 신고서 + 확인서 | 48 | ✅ | ✅ | 2 |
+| 유족급여 청구서 | 75 | ✅ | ✅ | 2 |
+| 본인부담 치료비 청구서 | 42 | ✅ | ✅ | 4 |
+| 휴업급여 청구서 | 37 | ✅ | ✅ | 2 |
+| 간병료·이송비·보조기 청구서 | 44 | ✅ | ✅ | 3 |
+| 재활보조기구 처방전 (기타) | 12 | ✅ | 공단이 PDF 만 배포 | 의료기관 작성 |
+| 미지급 보험급여 청구서 | 62 | ✅ | ✅ | 1 |
+| 장해급여 묶음 (청구서 + 소음작업 확인서 + 선택 확인서) | 153 | ✅ | ✅ | 5 |
+| 추가상병 신청서 | 25 | ✅ | ✅ | 3 |
+| 재요양 신청서 | 39 | ✅ | ✅ | 3 |
 
 - 정본은 **근로복지공단 서식자료실** 파일만 씁니다. 좌표 지도는 정본의 `sha256` 에 묶여 있어 공단이 서식을 바꾸면 시험이 먼저 깨집니다.
 - 공단이 HWP 만 주는 서식은 한글에서 PDF 로 바꿔 동봉했습니다.

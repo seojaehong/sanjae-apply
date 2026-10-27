@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { PDFDocument } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import { fillForm, type FormMap } from "../src/fill/overlay.js";
 
@@ -32,6 +33,23 @@ describe("forms/maps 공통", () => {
           const ys = s.kind === "boxes" ? s.boxes.flatMap((b) => [b.y0, b.y1]) : s.kind === "multiline" ? [s.y0, s.y1] : [s.y];
           for (const x of xs) expect(x, `${k}.x`).toBeGreaterThan(0), expect(x, `${k}.x`).toBeLessThan(map.page_size.width);
           for (const y of ys) expect(y, `${k}.y`).toBeGreaterThan(0), expect(y, `${k}.y`).toBeLessThan(map.page_size.height);
+        }
+      });
+
+      it("도장 자리(stamps)가 쪽 안에 있고 지름이 양수다 — 의료기관 작성 서식(처방전)만 자리 없음", async () => {
+        const stamps = map.stamps ?? {};
+        if (map.form_id === "F_DEVICE_PRESCRIPTION") {
+          expect(Object.keys(stamps)).toEqual([]);
+          return;
+        }
+        expect(Object.keys(stamps), "applicant 자리").toContain("applicant");
+        const pages = (await PDFDocument.load(readFileSync(pdfPath))).getPageCount();
+        for (const [k, s] of Object.entries(stamps)) {
+          expect(s.page, `${k}.page`).toBeGreaterThanOrEqual(1);
+          expect(s.page, `${k}.page ≤ 쪽수`).toBeLessThanOrEqual(pages);
+          expect(s.x, `${k}.x`).toBeGreaterThan(0), expect(s.x, `${k}.x`).toBeLessThan(map.page_size.width);
+          expect(s.y, `${k}.y`).toBeGreaterThan(0), expect(s.y, `${k}.y`).toBeLessThan(map.page_size.height);
+          expect(s.size, `${k}.size`).toBeGreaterThan(0);
         }
       });
 

@@ -90,5 +90,13 @@ const fhBlob = fh.content[1]?.resource?.blob ?? "";
 ok(fhr && fhr.format === "hwpx" && fhr.report.filled.length === 30 && fhBlob.startsWith("UEsDB") && Buffer.from(fhBlob, "base64").subarray(30, 38).toString() === "mimetype", `fill_form F_YOYANG_APPLY format=hwpx 30칸 (mimetype 첫 항목)`);
 
 await client.close();
-console.log(`\n실패 ${fails} / 검사 ${cases.length + 11}`);
+// 6) make_seal — 도장 PNG
+const ms = await client.callTool({ name: "make_seal", arguments: { name: "홍길동" } });
+const msBlob = ms.content[1]?.resource?.blob ?? "";
+ok(ms.content[1]?.resource?.mimeType === "image/png" && msBlob.startsWith("iVBORw0KGgo"), `make_seal 홍길동 PNG`);
+// 7) fill_form + stamp — 요양급여신청서는 신청인 자리 3곳(applicant·delegation·consent)에 찍혀야 한다
+const fs2 = await client.callTool({ name: "fill_form", arguments: { form_id: "F_YOYANG_APPLY", values, stamp: { name: "홍길동" } } });
+const fs2r = parse(fs2);
+ok(fs2r && JSON.stringify(fs2r.report.stamped) === JSON.stringify(["applicant", "delegation", "consent"]) && fs2r.report.stamps_skipped.length === 0, `fill_form stamp 3곳 (stamped=${JSON.stringify(fs2r?.report?.stamped)} skipped=${JSON.stringify(fs2r?.report?.stamps_skipped)})`);
+console.log(`\n실패 ${fails} / 검사 ${cases.length + 13}`);
 process.exit(fails ? 1 : 0);

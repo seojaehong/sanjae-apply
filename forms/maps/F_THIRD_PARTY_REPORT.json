@@ -89,5 +89,9 @@
     "confirm_address": { "kind": "text", "page": 2, "x": 298, "y": 721, "size": 8.5, "maxWidth": 153 },
     "confirm_phone": { "kind": "text", "page": 2, "x": 469, "y": 721, "size": 8.5, "maxWidth": 65 },
     "confirm_name": { "kind": "text", "page": 2, "x": 298, "y": 739, "size": 9.5, "maxWidth": 136 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 460.4, "y": 639.4, "size": 42 },
+    "confirm": { "page": 2, "x": 475.6, "y": 734.7, "size": 42 }
   }
 }

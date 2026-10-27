@@ -43,6 +43,14 @@ export interface MultilineSlot {
 }
 export type Slot = TextSlot | BoxesSlot | CheckSlot | MultilineSlot;
 
+/** 도장 자리 — 「(서명 또는 인)」 글자 상자 중심(왼쪽 위 원점 pt)과 지름 */
+export interface StampSpot {
+  page: number;
+  x: number;
+  y: number;
+  size: number;
+}
+
 export interface FormMap {
   form_id: string;
   /** forms/catalog.json 의 파일명과 sha256 — 좌표가 어느 판본의 것인지 */
@@ -50,6 +58,8 @@ export interface FormMap {
   source_sha256: string;
   page_size: { width: number; height: number };
   slots: Record<string, Slot>;
+  /** applicant = 신청인 본인 서명란. 그 밖(consent·delegation 등)은 서식마다 */
+  stamps?: Record<string, StampSpot>;
 }
 
 export interface FillOptions {
@@ -58,6 +68,8 @@ export interface FillOptions {
   subset?: boolean;
   /** 값. 키는 map.slots 의 키. check 는 true 일 때만 찍는다 */
   values: Record<string, string | boolean | undefined>;
+  /** 도장 PNG(투명 배경). 키는 map.stamps 의 키(applicant 등). 지도에 자리가 없으면 건너뛰고 report.stamps_skipped 에 적는다 */
+  stamps?: Record<string, Uint8Array> | undefined;
 }
 
 export interface FillReport {
@@ -65,6 +77,9 @@ export interface FillReport {
   skipped: string[];
   /** maxWidth 에 맞추려고 글자 크기를 줄인 칸 */
   shrunk: string[];
+  /** 찍은 도장 자리 */
+  stamped?: string[];
+  stamps_skipped?: string[];
 }
 
 function flipY(page: PDFPage, yTop: number): number {
@@ -140,6 +155,24 @@ export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOpti
       page.drawText(text, { x: slot.x, y: flipY(page, slot.y), size, font, color: black });
     }
     report.written.push(key);
+  }
+  if (opt.stamps) {
+    report.stamped = [];
+    report.stamps_skipped = [];
+    for (const [key, png] of Object.entries(opt.stamps)) {
+      const spot = map.stamps?.[key];
+      if (!spot) {
+        report.stamps_skipped.push(key);
+        continue;
+      }
+      const page = pages[spot.page - 1];
+      if (!page) throw new Error(`도장 자리 ${key}: 쪽 ${spot.page} 없음`);
+      const img = await doc.embedPng(png);
+      const w = spot.size;
+      const h = (spot.size * img.height) / img.width;
+      page.drawImage(img, { x: spot.x - w / 2, y: flipY(page, spot.y) - h / 2, width: w, height: h });
+      report.stamped.push(key);
+    }
   }
   return { bytes: await doc.save(), report };
 }

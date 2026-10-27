@@ -124,5 +124,11 @@
     "commute_apply_month": { "kind": "text", "page": 5, "x": 445, "y": 757, "size": 9.5 },
     "commute_apply_day": { "kind": "text", "page": 5, "x": 484, "y": 757, "size": 9.5 },
     "commute_applicant_name": { "kind": "text", "page": 5, "x": 300, "y": 779, "size": 9.5, "maxWidth": 88 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 457.8, "y": 763.5, "size": 42 },
+    "delegation": { "page": 1, "x": 251.4, "y": 702.7, "size": 42 },
+    "consent": { "page": 2, "x": 491.2, "y": 760.4, "size": 42 },
+    "commute_reporter": { "page": 5, "x": 429.7, "y": 774.7, "size": 42 }
   }
 }

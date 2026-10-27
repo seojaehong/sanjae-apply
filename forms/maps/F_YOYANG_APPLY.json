@@ -79,5 +79,10 @@
     "apply_month": { "kind": "text", "page": 1, "x": 281, "y": 752, "size": 9.5 },
     "apply_day": { "kind": "text", "page": 1, "x": 323, "y": 752, "size": 9.5 },
     "applicant_name": { "kind": "text", "page": 1, "x": 330, "y": 768, "size": 9.5, "maxWidth": 90 }
+  },
+  "stamps": {
+    "applicant": { "page": 1, "x": 457.8, "y": 763.5, "size": 42 },
+    "delegation": { "page": 1, "x": 251.4, "y": 702.7, "size": 42 },
+    "consent": { "page": 2, "x": 491.2, "y": 760.4, "size": 42 }
   }
 }
