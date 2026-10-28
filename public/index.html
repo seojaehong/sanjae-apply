@@ -353,7 +353,7 @@
         </div>
         <div class="hero-actions">
           <a class="btn btn-main" href="#manual-install">설치 방법 보기</a>
-          <a class="btn btn-sub" href="#try">브라우저에서 필요 서식 확인하기</a>
+          <a class="btn btn-sub" href="#try">설치 없이 필요 서식 확인하기</a>
         </div>
         <ul class="hero-facts">
           <li>Node.js 20 이상이면 설치 끝</li>
@@ -440,7 +440,8 @@
 
     <section id="try" class="sec" aria-labelledby="try-h">
       <h2 id="try-h">설치 전에 여기서 먼저 확인해 보세요</h2>
-      <p class="sec-lead">AI 도구에 연결했을 때 처음 하는 일과 같은 확인입니다. 급여 종류와 재해 상황을 고르면 내야 할 서식, 챙길 첨부, 근거 조문이 바로 나옵니다.</p>
+      <p class="sec-lead">설치하지 않아도 되고, 휴대폰 브라우저에서도 됩니다. 급여 종류와 재해 상황을 고르면 내야 할 서식, 챙길 첨부, 근거 조문이 바로 나옵니다. 고른 값은 이 기기 밖으로 나가지 않습니다. AI 도구에 연결했을 때 처음 하는 확인과 같은 내용입니다.</p>
+      <p class="sec-lead">서식을 채워 PDF·한글 파일로 받는 일은 지금은 PC 에 설치해야 합니다. 설치 방법은 <a href="#manual-install">매뉴얼</a>에 있습니다.</p>
 
       <div class="sheet-wrap">
         <div class="sheet-title">신청 전 확인표 <small>모르는 칸은 「아직 모름」으로 두세요</small></div>
@@ -764,6 +765,7 @@ npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx --stamp
     <section id="faq" class="sec" aria-labelledby="faq-h">
       <h2 id="faq-h">자주 묻는 질문</h2>
       <div class="faq">
+        <details><summary>휴대폰에서도 쓸 수 있나요?</summary><p>필요한 서식 확인은 됩니다. 이 페이지의 확인표는 설치 없이 휴대폰 브라우저에서 돌고, 고른 값은 그 기기 밖으로 나가지 않습니다. 서식을 채워 PDF·한글 파일로 받는 일은 지금은 PC 에 설치해야 합니다(Node.js 20 이상). 이 페이지에서 바로 채우는 기능을 만들고 있습니다.</p></details>
         <details><summary>쓰는 데 비용이 드나요?</summary><p>MIT 라이선스로 공개한 npm 패키지라 내 PC 에 설치해 쓰는 데 비용이 없고, 계정이나 토큰도 필요 없습니다. 원격 연결만 운영자가 발급한 토큰이 있어야 합니다.</p></details>
         <details><summary>입력한 개인정보는 어디로 가나요?</summary><p>내 PC 에 설치하면 값은 그 PC 안에서만 처리하고 어디에도 저장하거나 보내지 않습니다. 원격 연결은 서버에 저장하지 않지만 네트워크를 거칩니다. 이 페이지의 확인표는 브라우저 안에서만 돕니다. 주민등록번호 칸은 비워 두고 출력한 뒤 손으로 적어도 됩니다.</p></details>
         <details><summary>「제출할 수 있는 상태」가 나오면 승인되나요?</summary><p>아닙니다. 서식과 첨부가 갖춰졌다는 표시일 뿐입니다. 산재 승인 여부는 근로복지공단이 심사해 정하고, 이 도구는 그 결과를 다루지 않습니다.</p></details>
