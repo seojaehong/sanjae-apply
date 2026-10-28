@@ -234,6 +234,7 @@ src/stamp    seal.ts 도장 PNG 생성(글리프 윤곽 래스터) · resolve.ts
 src/mcp      도구 5개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
 src/laws     법제처 Open API 클라이언트
 api/mcp      Vercel 함수
+web/         안내 페이지 스크립트(engine.ts = src/core 브라우저 번들 · main.ts = 화면). npm run build:web → public/app · public/data
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
 test/        vitest 212 (formal_rules.test.ts 전수 10,368건 포함)
