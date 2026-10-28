@@ -63,6 +63,7 @@ function render(pkg: Package, input: ClaimInput) {
   const ready = pkg.status === "READY_TO_SUBMIT";
   const seal = $("#seal")!;
   seal.dataset.state = ready ? "ready" : "open";
+  seal.setAttribute("aria-label", ready ? "확인 상태: 제출할 수 있는 상태" : "확인 상태: 확인할 것이 남음");
   seal.innerHTML = ready ? "<span>제출할 수 있는</span><span>상태</span>" : "<span>확인할 것이</span><span>남음</span>";
   seal.classList.remove("stamp");
   void (seal as HTMLElement).offsetWidth; // 다시 찍는 움직임
