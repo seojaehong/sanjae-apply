@@ -65,23 +65,29 @@ const none = parse(await client.callTool({ name: "get_form_catalog", arguments: 
 ok(none.entries.length === 0 && none.form === null, `get_form_catalog 없는 id → 빈 목록`);
 
 // 3) fill_yoyang_apply — 합성 값 전체
-const values = JSON.parse(readFileSync(new URL("../test/samples/F_YOYANG_APPLY.json", import.meta.url), "utf8"));
+// 기대 칸 수는 견본 값과 지도에서 센다(0.5.4 에서 35→74칸으로 늘며 고정 숫자가 깨졌다)
+const readJson = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), "utf8"));
+const filledCount = (v) => Object.values(v).filter((x) => x !== "" && x !== false).length;
+const values = readJson("../test/samples/F_YOYANG_APPLY.json");
+const ySlots = Object.keys(readJson("../forms/maps/F_YOYANG_APPLY.json").slots).length;
+const yWant = filledCount(values);
 const f = await client.callTool({ name: "fill_yoyang_apply", arguments: { values } });
 const rep = parse(f);
 const blob = f.content[1]?.resource?.blob;
 const pdf = blob ? Buffer.from(blob, "base64") : null;
-ok(rep.report?.written?.length === 30 && rep.report.skipped.length === 5 && rep.report.shrunk.length === 0, `fill_yoyang_apply 30칸 기록·5칸 건너뜀·축소 0`);
+ok(rep.report?.written?.length === yWant && rep.report.skipped.length === ySlots - yWant && rep.report.shrunk.length === 0, `fill_yoyang_apply ${rep.report?.written?.length}/${yWant}칸 기록·${rep.report?.skipped?.length}/${ySlots - yWant}칸 건너뜀·축소 ${rep.report?.shrunk?.length}`);
 // 원본 523KB 를 pdf-lib 가 다시 저장하면 객체 스트림 압축으로 더 작아진다(운영 실측 491KB). 하한은 100KB.
 ok(pdf && pdf.subarray(0, 5).toString() === "%PDF-" && pdf.length > 100000, `fill_yoyang_apply PDF ${pdf?.length ?? 0} B`);
 if (pdf) writeFileSync(OUT, pdf);
 const empty = parse(await client.callTool({ name: "fill_yoyang_apply", arguments: { values: {} } }));
-ok(empty.report.written.length === 0 && empty.report.skipped.length === 35, `fill_yoyang_apply 빈 값 → 전부 건너뜀`);
+ok(empty.report.written.length === 0 && empty.report.skipped.length === ySlots, `fill_yoyang_apply 빈 값 → 전부 건너뜀 (${empty.report.skipped.length}/${ySlots})`);
 
 // 4) fill_form — 범용 채우기(요양급여 외 서식)
-const hy = JSON.parse(readFileSync(new URL("../test/samples/F_HUYEOP_CLAIM.json", import.meta.url), "utf8"));
+const hy = readJson("../test/samples/F_HUYEOP_CLAIM.json");
+const hWant = filledCount(hy);
 const ff = await client.callTool({ name: "fill_form", arguments: { form_id: "F_HUYEOP_CLAIM", values: hy } });
 const ffr = ff.isError ? null : parse(ff);
-ok(ffr && ffr.report.written.length === 30 && ff.content[1]?.resource?.blob?.startsWith("JVBERi"), `fill_form F_HUYEOP_CLAIM 30칸 PDF`);
+ok(ffr && ffr.report.written.length === hWant && ff.content[1]?.resource?.blob?.startsWith("JVBERi"), `fill_form F_HUYEOP_CLAIM ${ffr?.report.written.length}/${hWant}칸 PDF`);
 const cat2 = parse(await client.callTool({ name: "get_form_catalog", arguments: {} }));
 ok(Array.isArray(cat2.fillable) && cat2.fillable.length === 12, `get_form_catalog fillable 12종 (${cat2.fillable?.length})`);
 ok(Array.isArray(cat2.fillable_hwpx) && cat2.fillable_hwpx.includes("F_YOYANG_APPLY"), `get_form_catalog fillable_hwpx 에 요양급여 (${cat2.fillable_hwpx?.length})`);
@@ -90,7 +96,7 @@ const yv = values;
 const fh = await client.callTool({ name: "fill_form", arguments: { form_id: "F_YOYANG_APPLY", values: yv, format: "hwpx" } });
 const fhr = parse(fh);
 const fhBlob = fh.content[1]?.resource?.blob ?? "";
-ok(fhr && fhr.format === "hwpx" && fhr.report.filled.length === 30 && fhBlob.startsWith("UEsDB") && Buffer.from(fhBlob, "base64").subarray(30, 38).toString() === "mimetype", `fill_form F_YOYANG_APPLY format=hwpx 30칸 (mimetype 첫 항목)`);
+ok(fhr && fhr.format === "hwpx" && fhr.report.filled.length === yWant && fhBlob.startsWith("UEsDB") && Buffer.from(fhBlob, "base64").subarray(30, 38).toString() === "mimetype", `fill_form F_YOYANG_APPLY format=hwpx ${fhr?.report.filled.length}/${yWant}칸 (mimetype 첫 항목)`);
 
 // 6) make_seal — 도장 PNG
 const ms = await client.callTool({ name: "make_seal", arguments: { name: "홍길동" } });

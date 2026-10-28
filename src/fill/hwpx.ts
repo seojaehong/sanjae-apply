@@ -10,7 +10,8 @@ import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { pngInfo, type PngInfo } from "../stamp/png.js";
 
 export type HwpxOp =
-  | { kind: "cell"; t: number; r: number; c: number; p?: number; s?: number }
+  /** size: 글자 크기(1pt = 100). 원본 빈 문단보다 클 때만 키운다 */
+  | { kind: "cell"; t: number; r: number; c: number; p?: number; s?: number; size?: number }
   | { kind: "after"; t: number; r: number; c: number; label: string; s?: number }
   | { kind: "check"; t: number; r: number; c: number; n?: number; s?: number }
   /** take: 값이 상자보다 길면 앞 take 자만(재해발생일시 12자 → YYYYMMDD 8상자). digitsOnly: 숫자 아닌 글자(-, 공백)는 버린다 */
@@ -280,8 +281,10 @@ class CharPrFixer {
    * 값이 칸 폭을 넘으면 글자를 줄인 사본(검정 정체)을 만든다 — PDF 오버레이의 자동 축소와 같은 역할.
    * 하한 6pt. 그래도 넘치면 줄이 바뀐다(표가 커져 뒤가 밀릴 수 있다 — 렌더 쪽수로 본다).
    */
-  fit(id: string, text: string, cellWidth: number, cellHeight = 0, maxLines = 0): string {
-    const base = this.black(id);
+  fit(id: string, text: string, cellWidth: number, cellHeight = 0, maxLines = 0, size = 0): string {
+    const black = this.black(id);
+    // size: 지도가 정한 글자 크기. 원본 빈 문단이 작게 잡힌 칸(요양급여 성명 8pt)을 이웃 칸 크기로 맞춘다
+    const base = size > this.height(black) ? this.sized(black, size) : black;
     if (!cellWidth) return base;
     const h = this.height(base);
     const lines = text.split(/\r?\n/);
@@ -298,6 +301,11 @@ class CharPrFixer {
     let target = h;
     while (target > 600 && !fits(target)) target -= 50;
     if (target >= h) return base;
+    return this.sized(base, target);
+  }
+
+  /** base 를 글자 크기 target(1pt = 100)으로 바꾼 사본의 id */
+  sized(base: string, target: number): string {
     const key = `${base}@${target}`;
     if (this.cache.has(key)) return this.cache.get(key)!;
     const re = new RegExp(`<hh:charPr id="${base}"([^>]*)>(.*?)</hh:charPr>`, "s");
@@ -368,7 +376,7 @@ function fitToOriginalWidth(filled: string, original: string): string {
 }
 
 /** 문단의 글자를 value 로 바꾼다. 첫 run 의 charPr(검정 정체로 교정)을 쓰고 나머지 run 글자는 비운다. 줄바꿈은 문단 복제. */
-function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0, cellHeight = 0, maxLines = 0): string {
+function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth = 0, cellHeight = 0, maxLines = 0, size = 0): string {
   const lines = value.split(/\r?\n/);
   const one = (line: string): string => {
     let out = stripLineseg(pxml);
@@ -378,7 +386,7 @@ function setParagraph(pxml: string, value: string, fixer: CharPrFixer, cellWidth
       const keep = (body ?? "").replace(/<hp:t(?:\s[^>]*)?>.*?<\/hp:t>/gs, "");
       if (first) {
         first = false;
-        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, value, cellWidth, cellHeight, maxLines)}"`);
+        const fixed = attrs.replace(/charPrIDRef="(\d+)"/, (_s, id: string) => `charPrIDRef="${fixer.fit(id, value, cellWidth, cellHeight, maxLines, size)}"`);
         return `<hp:run${fixed}>${keep}<hp:t>${esc(line)}</hp:t></hp:run>`;
       }
       return keep.trim() ? `<hp:run${attrs}>${keep}</hp:run>` : "";
@@ -442,7 +450,7 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
     const xml = xmls[s];
     if (!xml) throw new Error(`섹션 없음 s${s}`);
     if (isTemplate || (op as HwpxOp).kind === "cell") {
-      const o = op as HwpxTemplate & { p?: number };
+      const o = op as HwpxTemplate & { p?: number; size?: number };
       const cell = cellOf(s, o.t, o.r, o.c);
       const para = pickPara(xml, cell, o.p);
       if (isTemplate) {
@@ -456,7 +464,7 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       // 값 칸: 여러 줄로 감기는 글은 칸 높이 안에 들어가게 줄이고, 감긴 줄 수만큼 뒤따르는 빈 문단을 지워 표가 커지지 않게 한다
       // (상황도·경위 칸은 빈 문단 10여 개로 높이를 잡아 둔 서식이 많다 — 261027 출퇴근 발생신고서가 한 쪽 밀린 원인)
       const text = String(value);
-      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), text, fixer, cell.width, cell.height) });
+      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), text, fixer, cell.width, cell.height, 0, o.size ?? 0) });
       if (cell.width > 0) {
         const h = fixer.height(fixer.black(/charPrIDRef="(\d+)"/.exec(xml.slice(para.start, para.end))?.[1] ?? "0"));
         const wrapped = text.split(/\r?\n/).reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, h) / cell.width)), 0);
