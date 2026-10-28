@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => JSON.parse(readFileSync(path.join(root, p), "utf8"));
 const { FORMS } = await import(new URL("../dist/src/core/catalog.js", import.meta.url).href);
+const { describeForm } = await import(new URL("../dist/src/fill/describe.js", import.meta.url).href);
 
 const pkg = read("package.json");
 const catalog = read("forms/catalog.json");
@@ -22,6 +23,7 @@ const forms = readdirSync(path.join(root, "forms/maps"))
     const hwpxMap = `forms/hwpx_maps/${id}.json`;
     const hwpx = existsSync(path.join(root, hwpxMap)) && existsSync(path.join(root, "forms/hwpx", `${id}.hwpx`));
     const src = revisedOf(id);
+    const d = describeForm(map);
     return {
       id,
       title: FORMS[id]?.title ?? id,
@@ -29,8 +31,8 @@ const forms = readdirSync(path.join(root, "forms/maps"))
       source_url: src?.view_url ?? null,
       pdf: true,
       hwpx,
-      stamps: Object.keys(map.stamps ?? {}),
-      slots: Object.entries(map.slots).map(([key, s]) => ({ key, kind: s.kind, label: s.label ?? "", page: s.page ?? null })),
+      stamps: d.stamps,
+      slots: d.slot_details, // key·kind·label·page + boxes(자리 수)·group(체크 라벨 앞말, 하나만 고르는 묶음이라는 뜻은 아니다)
     };
   })
   .sort((a, b) => b.slots.length - a.slots.length);

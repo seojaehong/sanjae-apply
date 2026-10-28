@@ -45,7 +45,8 @@
     "prepare": "npm run build",
     "build:web": "node scripts/build_web_data.mjs && esbuild web/engine.ts --bundle --format=esm --target=es2020 --outfile=public/app/engine.js && esbuild web/main.ts --bundle --format=esm --target=es2020 --external:./engine.js --outfile=public/app/main.js",
     "lint:web": "tsc -p web/tsconfig.json",
-    "test:web": "npm run lint:web && npm run build:web && node scripts/verify_web_engine.mjs"
+    "probe:web": "esbuild web/fill-probe.ts --bundle --format=esm --platform=browser --target=es2020 --log-level=warning --outfile=dist/web-probe/fill.js",
+    "test:web": "npm run lint:web && npm run build:web && npm run probe:web && node scripts/verify_web_engine.mjs"
   },
   "devDependencies": {
     "@types/node": "24.0.4",

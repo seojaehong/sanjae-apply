@@ -5,7 +5,7 @@
 // 주소 체계 = (표 번호 t, rowAddr r, colAddr c, 문단 순번 p) — 표 번호는 섹션 안 <hp:tbl> 등장 순서(안쪽 표 포함, scripts/probe_hwpx.py 와 같다).
 // 지도 JSON 은 forms/hwpx_maps/F_*.json, 칸 이름은 PDF 지도(forms/maps)와 똑같이 쓴다.
 
-import { createHash } from "node:crypto";
+import { md5Base64 } from "./md5.js";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { pngInfo, type PngInfo } from "../stamp/png.js";
 
@@ -709,7 +709,7 @@ function applyStamps(files: Record<string, Uint8Array>, sectionName: string, ori
       continue;
     }
     const info = pngInfo(png);
-    const hashkey = createHash("md5").update(png).digest("base64");
+    const hashkey = md5Base64(png);
     let binId = binIds.get(hashkey);
     if (!binId) {
       binId = `seal${binIds.size + 1}`;

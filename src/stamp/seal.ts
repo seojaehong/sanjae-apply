@@ -134,7 +134,7 @@ export function missingGlyphs(font: Font, texts: (string | undefined)[]): string
 }
 
 export function makeSeal(o: SealOptions): Uint8Array {
-  const font = fontkit.create(Buffer.from(o.fontBytes)) as Font;
+  const font = fontkit.create(o.fontBytes) as Font;
   const missing = missingGlyphs(font, [o.name, o.arcText, o.bottomText, o.centerText]);
   if (missing.length) throw new Error(`도장: 동봉 글꼴(나눔고딕)에 없는 글자 ${missing.map((c) => `「${c}」`).join(" ")} — 한글·영문·숫자만 쓰거나 --stamp-png 로 가진 도장을 넣는다`);
   const shape = o.shape ?? "circle";

@@ -1,5 +1,5 @@
-// 최소 PNG 인코더 — 8비트 RGBA, 필터 0, zlib(node:zlib). 의존성 없이 투명 도장 PNG 를 만든다.
-import { deflateSync } from "node:zlib";
+// 최소 PNG 인코더 — 8비트 RGBA, 필터 0, zlib(fflate, 브라우저에서도 돈다). 의존성 없이 투명 도장 PNG 를 만든다.
+import { zlibSync } from "fflate";
 
 const CRC_TABLE = (() => {
   const t = new Uint32Array(256);
@@ -66,7 +66,7 @@ export function encodePng(width: number, height: number, rgba: Uint8Array): Uint
     raw[y * (width * 4 + 1)] = 0; // filter none
     raw.set(rgba.subarray(y * width * 4, (y + 1) * width * 4), y * (width * 4 + 1) + 1);
   }
-  const idat = new Uint8Array(deflateSync(raw, { level: 9 }));
+  const idat = zlibSync(raw, { level: 9 });
   const sig = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
   const parts = [sig, chunk("IHDR", ihdr), chunk("IDAT", idat), chunk("IEND", new Uint8Array(0))];
   const total = parts.reduce((a, p) => a + p.length, 0);

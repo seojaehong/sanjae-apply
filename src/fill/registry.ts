@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { FormAssets } from "./assets.js";
 import type { HwpxMap } from "./hwpx.js";
 import type { FormMap } from "./overlay.js";
 
@@ -75,6 +76,15 @@ export function loadHwpxAssets(formId: string): { map: HwpxMap; hwpx: Uint8Array
   const map = loadHwpxMap(formId);
   return { map, hwpx: new Uint8Array(readFileSync(hwpxPath(formId))) };
 }
+
+/** FormAssets 의 파일 구현 — 위 함수들을 그대로 감싼다 */
+export const nodeAssets: FormAssets = {
+  map: async (id) => loadMap(id),
+  pdf: async (id) => loadAssets(id).pdf,
+  hwpxMap: async (id) => loadHwpxMap(id),
+  hwpx: async (id) => loadHwpxAssets(id).hwpx,
+  font: async () => new Uint8Array(readFileSync(fontPath())),
+};
 
 /** 지도에 없는 칸 이름 — 값을 조용히 버리지 않고 결과에 알린다(오타·다른 서식 칸 이름) */
 export function unknownKeys(values: Record<string, unknown>, slots: Record<string, unknown>): string[] {

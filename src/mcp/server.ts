@@ -14,6 +14,7 @@ import { buildPackage } from "../core/run.js";
 import { ACCIDENT_KINDS, CLAIM_TYPES, TAGS, type ClaimInput } from "../core/types.js";
 import { fillHwpx } from "../fill/hwpx.js";
 import { fillForm } from "../fill/overlay.js";
+import { describeForm } from "../fill/describe.js";
 import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap, unknownKeys } from "../fill/registry.js";
 import { pngInfo } from "../stamp/png.js";
 import { buildStamps, resolveStamp } from "../stamp/resolve.js";
@@ -126,10 +127,8 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
       const fillable = fillableForms();
       const fillable_hwpx = fillableHwpxForms();
       const m = form_id && fillable.includes(form_id) ? loadMap(form_id) : undefined;
-      const slots = m ? Object.keys(m.slots) : undefined;
-      const slot_labels = m ? Object.fromEntries(Object.entries(m.slots).map(([k, s]) => [k, `${s.label ?? ""}${s.kind === "check" ? " (체크: true)" : ""}`])) : undefined;
-      const stamps = m ? Object.keys(m.stamps ?? {}) : undefined;
-      return text({ form: known, fillable, fillable_hwpx, slots, slot_labels, stamps, entries: forms });
+      const d = m ? describeForm(m, { checkHint: true }) : undefined;
+      return text({ form: known, fillable, fillable_hwpx, slots: d?.slots, slot_labels: d?.slot_labels, stamps: d?.stamps, entries: forms });
     },
   );
 

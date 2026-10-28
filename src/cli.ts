@@ -12,6 +12,7 @@ import { normalizeInput } from "./core/input.js";
 import { CLAIM_TYPES, type ClaimInput } from "./core/types.js";
 import { fillHwpx } from "./fill/hwpx.js";
 import { fillForm } from "./fill/overlay.js";
+import { describeForm } from "./fill/describe.js";
 import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap, unknownKeys } from "./fill/registry.js";
 import { pngInfo } from "./stamp/png.js";
 import { buildStamps, resolveStamp, type StampSpec } from "./stamp/resolve.js";
@@ -82,8 +83,8 @@ async function main(argv: string[]): Promise<void> {
     const cat = JSON.parse(readFileSync(catalogPath(), "utf8")) as { forms: { ids: string[] }[] };
     const entries = id ? cat.forms.filter((f) => f.ids.includes(id)) : cat.forms;
     const m = id && fillableForms().includes(id) ? loadMap(id) : undefined;
-    const slot_labels = m ? Object.fromEntries(Object.entries(m.slots).map(([k, s]) => [k, s.label ?? ""])) : undefined;
-    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: m ? Object.keys(m.slots) : undefined, slot_labels, stamps: m ? Object.keys(m.stamps ?? {}) : undefined, entries };
+    const d = m ? describeForm(m) : undefined;
+    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: d?.slots, slot_labels: d?.slot_labels, stamps: d?.stamps, entries };
     process.stdout.write(JSON.stringify(out, null, 2) + "\n");
     return;
   }
