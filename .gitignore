@@ -21,3 +21,4 @@ __pycache__/
 # 안내 페이지 빌드 산출물(npm run build:web 이 만든다)
 public/app/
 public/data/
+public/assets/

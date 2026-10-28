@@ -1,7 +1,7 @@
 // 안내 페이지가 읽는 서식 데이터 → public/data/forms.json
 // 숫자를 HTML 에 손으로 적지 않으려고 만든다. 나중 웹 편집기도 이 파일(칸 이름·종류·설명)을 입력 모델로 쓴다.
 // 사용: npm run build 뒤 node scripts/build_web_data.mjs  (dist/src/core/catalog.js 의 서식 제목을 쓴다)
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -72,3 +72,18 @@ const fillable = Object.fromEntries(forms.map((f) => [f.id, { hwpx: f.hwpx }]));
 bake(/(<script type="application\/json" id="fillable-data">)[\s\S]*?(<\/script>)/, `$1${JSON.stringify(fillable)}$2`, "fillable-data");
 writeFileSync(htmlPath, html);
 console.log(`public/index.html — 숫자·서식 표 반영`);
+
+// 브라우저 채우기(web/fill.ts)가 받는 정적 자산 → public/assets/. 공단 서식 PDF 는 npm 패키지에 든 것과 같은 공개 자료다.
+// 글꼴은 SIL OFL 1.1 이라 재배포할 때 라이선스 전문을 같이 둔다. 서브셋·수정본은 「Nanum」 이름을 못 쓴다(Reserved Font Name) — 전체 그대로 낸다.
+const assetDir = path.join(root, "public/assets");
+const copy = (from, to) => {
+  mkdirSync(path.dirname(path.join(assetDir, to)), { recursive: true });
+  copyFileSync(path.join(root, from), path.join(assetDir, to));
+};
+for (const f of forms) {
+  copy(`forms/maps/${f.id}.json`, `forms/maps/${f.id}.json`);
+  copy(`forms/bundled/${f.id}.pdf`, `forms/bundled/${f.id}.pdf`);
+}
+copy("fonts/NanumGothic-Regular.ttf", "fonts/NanumGothic-Regular.ttf");
+copy("fonts/OFL.txt", "fonts/OFL.txt");
+console.log(`public/assets — 서식 ${forms.length}종 지도·PDF + 나눔고딕(OFL)`);
