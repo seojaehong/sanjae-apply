@@ -1,12 +1,7 @@
-// 안내 페이지 동작: 신청 전 확인표 → 엔진 → 결과, 연결 탭, 서식 표.
-// 선택지의 문구는 index.html 에 있다(고치기 쉽게). 여기는 읽고 그리는 일만 한다.
-import { buildPackage, type ClaimInput, type Package } from "./engine.js";
-
-type FormsData = {
-  version: string;
-  total_slots: number;
-  forms: { id: string; title: string; revised: string | null; source_url: string | null; pdf: boolean; hwpx: boolean; stamps: string[]; slots: { key: string; kind: string; label: string }[] }[];
-};
+// 안내 페이지 동작: 신청 전 확인표 → 엔진 → 결과, 연결 탭, 복사 버튼.
+// 선택지의 문구는 index.html 에 있다(고치기 쉽게). 숫자·서식 표는 빌드 때 index.html 에 구워져 있다(scripts/build_web_data.mjs).
+import { buildPackage, normalizeInput, toCheckArgs, type ClaimInput, type Package } from "./engine.js";
+import { lawUrl } from "./law.js";
 
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector(sel) as T | null;
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -14,70 +9,62 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&
 const FORM_STATUS = { REQUIRED: "필수", CONDITIONAL: "해당하면", NOT_APPLICABLE: "해당 없음" } as const;
 const ATT_STATUS = { PROVIDED: "준비함", MISSING: "필요", SUBSTITUTABLE: "다른 서류로 갈음" } as const;
 
-let fillable = new Map<string, FormsData["forms"][number]>();
+/** 서식 id → 한글 출력 가능 여부. 빌드가 index.html 의 #fillable-data 에 넣는다 */
+function readFillable(): Map<string, { hwpx: boolean }> {
+  try {
+    return new Map(Object.entries(JSON.parse($("#fillable-data")?.textContent ?? "{}") as Record<string, { hwpx: boolean }>));
+  } catch (e) {
+    console.error("fillable-data", e);
+    return new Map();
+  }
+}
+const fillable = readFillable();
 const have = new Set<string>();
-
-// 「산업재해보상보험법 시행규칙 제20조」 → 국가법령정보센터 조문 주소
-function lawLink(cite: string): string {
-  const m = cite.match(/^(.+?)\s(제\d+조(?:의\d+)?)/);
-  if (!m) return "https://www.law.go.kr/";
-  return `https://www.law.go.kr/법령/${encodeURIComponent(m[1]!.replace(/\s/g, ""))}/${encodeURIComponent(m[2]!)}`;
-}
-
-function tri(v: FormDataEntryValue | null): boolean | "UNDECLARED" {
-  return v === "yes" ? true : v === "no" ? false : "UNDECLARED";
-}
 
 function readInput(form: HTMLFormElement): ClaimInput {
   const fd = new FormData(form);
-  const accident = fd.get("accidentKind");
-  const input: ClaimInput = {
-    claim: (fd.get("claim") as ClaimInput["claim"]) ?? "YOYANG",
-    accidentKind: accident === "WORK_ACCIDENT" || accident === "COMMUTE" || accident === "DISEASE" ? accident : "UNDECLARED",
-    thirdParty: tri(fd.get("thirdParty")),
-    treatmentEnded: tri(fd.get("treatmentEnded")),
-  };
-  const tags = fd.getAll("tags") as NonNullable<ClaimInput["tags"]>;
-  if (tags.length) input.tags = tags;
-  if (have.size) input.have = [...have];
-  return input;
-}
-
-// 같은 확인을 명령줄로 — 연결한 뒤 그대로 붙여 넣을 수 있게
-function cliOf(i: ClaimInput): string {
-  const parts = ["npx -y sanjae-apply check", i.claim];
-  if (i.accidentKind !== "UNDECLARED") parts.push(`--accident ${i.accidentKind}`);
-  if (i.thirdParty !== "UNDECLARED") parts.push(`--third-party ${i.thirdParty ? "yes" : "no"}`);
-  if (i.treatmentEnded !== "UNDECLARED") parts.push(`--ended ${i.treatmentEnded ? "yes" : "no"}`);
-  if (i.tags?.length) parts.push(`--tags ${i.tags.join(",")}`);
-  if (i.have?.length) parts.push(`--have ${i.have.join(",")}`);
-  return parts.join(" ");
+  const str = (k: string) => (fd.get(k) as string | null) ?? undefined;
+  return normalizeInput({
+    claim: str("claim"),
+    accident: str("accidentKind"),
+    thirdParty: str("thirdParty"),
+    ended: str("treatmentEnded"),
+    tags: fd.getAll("tags") as string[],
+    have: [...have],
+  });
 }
 
 function basisHtml(basis: Package["forms"][number]["basis"]): string {
-  return basis.map((b) => `<a href="${lawLink(b.cite)}" target="_blank" rel="noopener">${esc(b.cite)}</a> <span class="law-title">${esc(b.title)}</span>`).join("<br>");
+  return basis.map((b) => {
+    const url = lawUrl(b.cite);
+    const cite = url ? `<a href="${url}" target="_blank" rel="noopener">${esc(b.cite)}</a>` : esc(b.cite);
+    return `${cite} <span class="law-title">${esc(b.title)}</span>`;
+  }).join("<br>");
 }
 
-function render(pkg: Package, input: ClaimInput) {
-  const out = $("#result")!;
+function render(pkg: Package, input: ClaimInput, animate: boolean) {
   const ready = pkg.status === "READY_TO_SUBMIT";
   const seal = $("#seal")!;
   seal.dataset.state = ready ? "ready" : "open";
-  seal.setAttribute("aria-label", ready ? "확인 상태: 제출할 수 있는 상태" : "확인 상태: 확인할 것이 남음");
   seal.innerHTML = ready ? "<span>제출할 수 있는</span><span>상태</span>" : "<span>확인할 것이</span><span>남음</span>";
-  seal.classList.remove("stamp");
-  void (seal as HTMLElement).offsetWidth; // 다시 찍는 움직임
-  seal.classList.add("stamp");
+  if (animate) {
+    seal.classList.remove("stamp");
+    void seal.offsetWidth; // 다시 찍는 움직임
+    seal.classList.add("stamp");
+  }
 
   const forms = pkg.forms.filter((f) => f.status !== "NOT_APPLICABLE");
   const skipped = pkg.forms.filter((f) => f.status === "NOT_APPLICABLE");
   const needed = pkg.attachments.filter((a) => a.status !== "PROVIDED").length;
+  const q = pkg.open_confirmations.length;
 
   $("#result-summary")!.innerHTML = [
     ["서식", forms.length],
     ["준비할 첨부", needed],
-    ["남은 질문", pkg.open_confirmations.length],
+    ["남은 질문", q],
   ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  // 화면 낭독기에는 이 한 줄만 읽힌다(결과 전체를 다시 읽지 않게)
+  $("#result-status")!.textContent = `${ready ? "제출할 수 있는 상태" : "확인할 것이 남음"}. 서식 ${forms.length}개, 준비할 첨부 ${needed}개, 남은 질문 ${q}개.`;
 
   const formRows = forms.map((f) => {
     const fill = fillable.get(f.id);
@@ -91,45 +78,57 @@ function render(pkg: Package, input: ClaimInput) {
 
   const attRows = pkg.attachments.map((a) => `<li class="r-row">
       <div class="r-head"><span class="r-title">${esc(a.title)}</span>
-        <button type="button" class="have" data-id="${a.id}" aria-pressed="${have.has(a.id)}">${have.has(a.id) ? "준비함" : "준비했으면 누르기"}</button></div>
+        <button type="button" class="have" data-id="${a.id}" aria-pressed="${have.has(a.id)}">준비함</button></div>
       ${a.status === "SUBSTITUTABLE" && a.substitute ? `<p class="r-cond">갈음: ${esc(a.substitute)}</p>` : ""}
       <p class="r-status">${ATT_STATUS[a.status]}</p>
     </li>`).join("");
 
-  const qRows = pkg.open_confirmations.map((q) => `<li>${esc(q.question)}</li>`).join("");
+  const qRows = pkg.open_confirmations.map((c) => `<li>${esc(c.question)}</li>`).join("");
   const notes = pkg.notes.map((n) => `<li>${esc(n)}</li>`).join("");
 
-  out.innerHTML = `
-    <h3 class="r-h">서식</h3><ul class="r-list">${formRows}</ul>
+  $("#result")!.innerHTML = `
+    <h4 class="r-h">서식</h4><ul class="r-list">${formRows}</ul>
     ${skipped.length ? `<p class="r-skip">해당 없음: ${skipped.map((f) => esc(f.title)).join(", ")}</p>` : ""}
-    ${attRows ? `<h3 class="r-h">첨부</h3><ul class="r-list">${attRows}</ul>` : ""}
-    ${qRows ? `<h3 class="r-h">아직 답하지 않은 것</h3><ul class="r-q">${qRows}</ul>` : ""}
-    ${notes ? `<h3 class="r-h">절차 메모</h3><ul class="r-notes">${notes}</ul>` : ""}`;
+    ${attRows ? `<h4 class="r-h">첨부</h4><ul class="r-list">${attRows}</ul>` : ""}
+    ${qRows ? `<h4 class="r-h">아직 답하지 않은 것</h4><ul class="r-q">${qRows}</ul>` : ""}
+    ${notes ? `<h4 class="r-h">절차 메모</h4><ul class="r-notes">${notes}</ul>` : ""}`;
 
-  $("#cli-line")!.textContent = cliOf(input);
+  $("#cli-line")!.textContent = ["npx -y sanjae-apply check", ...toCheckArgs(input)].join(" ");
 }
 
-function run() {
+function run(animate = true) {
   const form = $<HTMLFormElement>("#sheet")!;
-  const input = readInput(form);
-  render(buildPackage(input), input);
+  try {
+    let input = readInput(form);
+    let pkg = buildPackage(input);
+    // 지금 목록에 없는 첨부의 「준비함」은 덜어 낸다 — 명령줄 한 줄의 --have 도 같이 정리된다
+    const ids = new Set(pkg.attachments.map((a) => a.id));
+    if ([...have].some((id) => !ids.has(id))) {
+      for (const id of have) if (!ids.has(id)) have.delete(id);
+      input = readInput(form);
+      pkg = buildPackage(input);
+    }
+    render(pkg, input, animate);
+  } catch (e) {
+    console.error("확인표", e);
+    $("#result")!.innerHTML = `<p class="r-skip">확인표 값을 읽지 못했습니다. 새로고침해 주세요. 계속되면 GitHub 이슈로 알려 주세요.</p>`;
+  }
 }
 
 function initSheet() {
   const form = $<HTMLFormElement>("#sheet");
   if (!form) return;
-  form.addEventListener("change", () => {
-    have.clear(); // 급여가 바뀌면 첨부 목록도 바뀐다
-    run();
-  });
+  form.addEventListener("submit", (e) => e.preventDefault()); // 고른 값을 주소에 붙여 보내지 않는다
+  form.addEventListener("change", () => run());
   $("#result")!.addEventListener("click", (e) => {
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button.have");
     if (!b) return;
     const id = b.dataset.id!;
     have.has(id) ? have.delete(id) : have.add(id);
     run();
+    $<HTMLButtonElement>(`button.have[data-id="${id}"]`)?.focus(); // 다시 그린 뒤 같은 버튼으로
   });
-  run();
+  run(false);
 }
 
 function initTabs() {
@@ -140,7 +139,8 @@ function initTabs() {
         const on = x === t;
         x.setAttribute("aria-selected", String(on));
         x.tabIndex = on ? 0 : -1;
-        document.getElementById(x.getAttribute("aria-controls")!)!.hidden = !on;
+        const panel = document.getElementById(x.getAttribute("aria-controls") ?? "");
+        if (panel) panel.hidden = !on;
       });
     };
     tabs.forEach((t, i) => {
@@ -160,7 +160,7 @@ function initCopy() {
   document.addEventListener("click", async (e) => {
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button.copy");
     if (!b) return;
-    const src = document.getElementById(b.dataset.for!);
+    const src = document.getElementById(b.dataset.for ?? "");
     if (!src) return;
     try {
       await navigator.clipboard.writeText(src.textContent ?? "");
@@ -172,32 +172,11 @@ function initCopy() {
   });
 }
 
-async function initForms() {
-  const body = $("#forms-body");
+// 하나가 실패해도 나머지는 돈다
+for (const [name, init] of [["확인표", initSheet], ["탭", initTabs], ["복사", initCopy]] as const) {
   try {
-    const data = (await (await fetch("data/forms.json")).json()) as FormsData;
-    fillable = new Map(data.forms.map((f) => [f.id, f]));
-    document.querySelectorAll("[data-version]").forEach((el) => (el.textContent = data.version));
-    document.querySelectorAll("[data-total-slots]").forEach((el) => (el.textContent = data.total_slots.toLocaleString("ko-KR")));
-    document.querySelectorAll("[data-form-count]").forEach((el) => (el.textContent = String(data.forms.length)));
-    if (body) {
-      body.innerHTML = data.forms.map((f) => `<tr id="form-${f.id}">
-        <td><details><summary>${esc(f.title)}</summary>
-          <ol class="slot-list">${f.slots.map((s) => `<li>${esc(s.label || s.key)}</li>`).join("")}</ol></details></td>
-        <td class="num">${f.slots.length}</td>
-        <td class="mark">${f.pdf ? "가능" : ""}</td>
-        <td class="mark">${f.hwpx ? "가능" : "PDF만 배포"}</td>
-        <td class="num">${f.stamps.length || "의료기관 작성"}</td>
-        <td class="num">${f.revised ? f.revised.replaceAll("-", ".") : "표기 없음"}</td>
-      </tr>`).join("");
-    }
-    run(); // 결과 쪽 「채울 수 있음」 표시를 붙인다
-  } catch {
-    if (body) body.innerHTML = `<tr><td colspan="6">서식 목록을 불러오지 못했습니다. 새로고침하거나 GitHub 안내서의 표를 보세요.</td></tr>`;
+    init();
+  } catch (e) {
+    console.error(name, e);
   }
 }
-
-initSheet();
-initTabs();
-initCopy();
-void initForms();

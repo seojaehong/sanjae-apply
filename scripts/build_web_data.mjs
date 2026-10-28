@@ -44,3 +44,29 @@ const out = {
 mkdirSync(path.join(root, "public/data"), { recursive: true });
 writeFileSync(path.join(root, "public/data/forms.json"), JSON.stringify(out, null, 1) + "\n");
 console.log(`public/data/forms.json — 서식 ${forms.length}종 · 칸 ${out.total_slots} · v${pkg.version}`);
+
+// public/index.html 에 숫자·서식 표를 굽는다. 페이지가 데이터를 받아 오지 않아도 처음부터 맞는 값이 보이게.
+// 몇 번을 돌려도 결과가 같다(자리 표시 안의 내용만 바꾼다).
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const htmlPath = path.join(root, "public/index.html");
+let html = readFileSync(htmlPath, "utf8");
+const NL = html.includes("\r\n") ? "\r\n" : "\n";
+const bake = (re, to, what) => {
+  if (!re.test(html)) throw new Error(`index.html 에 ${what} 자리가 없습니다`);
+  html = html.replace(re, to);
+};
+const span = (attr, v) => bake(new RegExp(`(<span ${attr}>)[^<]*(</span>)`, "g"), `$1${v}$2`, attr);
+span("data-version", pkg.version);
+span("data-form-count", forms.length);
+span("data-total-slots", out.total_slots.toLocaleString("ko-KR"));
+span("data-stamp-forms", forms.filter((f) => f.stamps.length).length);
+bake(/(<meta name="description" content="[^"]*정본 서식 )\d+(종)/, `$1${forms.length}$2`, "meta description");
+const rows = forms.map((f) => `<tr id="form-${f.id}">` +
+  `<td><details><summary>${esc(f.title)}</summary><ol class="slot-list">${f.slots.map((s) => `<li>${esc(s.label || s.key)}</li>`).join("")}</ol></details></td>` +
+  `<td class="num">${f.slots.length}</td><td class="mark">${f.pdf ? "가능" : ""}</td><td class="mark">${f.hwpx ? "가능" : "PDF만 배포"}</td>` +
+  `<td class="num">${f.stamps.length || "의료기관 작성"}</td><td class="num">${f.revised ? f.revised.replace(/-/g, ".") : "표기 없음"}</td></tr>`).join(NL);
+bake(/(<tbody id="forms-body">)[\s\S]*?(<\/tbody>)/, `$1${NL}${rows}${NL}$2`, "서식 표");
+const fillable = Object.fromEntries(forms.map((f) => [f.id, { hwpx: f.hwpx }]));
+bake(/(<script type="application\/json" id="fillable-data">)[\s\S]*?(<\/script>)/, `$1${JSON.stringify(fillable)}$2`, "fillable-data");
+writeFileSync(htmlPath, html);
+console.log(`public/index.html — 숫자·서식 표 반영`);

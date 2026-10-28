@@ -8,20 +8,14 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { buildPackage } from "./core/run.js";
-import { CLAIM_TYPES, TAGS, type ClaimInput, type ClaimType, type Tag, type Tri } from "./core/types.js";
+import { normalizeInput } from "./core/input.js";
+import { CLAIM_TYPES, type ClaimInput } from "./core/types.js";
 import { fillHwpx } from "./fill/hwpx.js";
 import { fillForm } from "./fill/overlay.js";
 import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, loadHwpxAssets, loadMap, unknownKeys } from "./fill/registry.js";
 import { pngInfo } from "./stamp/png.js";
 import { buildStamps, resolveStamp, type StampSpec } from "./stamp/resolve.js";
 import type { SealShape } from "./stamp/seal.js";
-
-function tri(v: string | undefined): Tri {
-  if (v === undefined) return "UNDECLARED";
-  if (/^(y|yes|true|1)$/i.test(v)) return true;
-  if (/^(n|no|false|0)$/i.test(v)) return false;
-  return "UNDECLARED";
-}
 
 function opts(rest: string[]): { opt: Record<string, string>; flags: Set<string> } {
   const opt: Record<string, string> = {};
@@ -38,22 +32,15 @@ function opts(rest: string[]): { opt: Record<string, string>; flags: Set<string>
 
 export function parseCheck(argv: string[]): { input: ClaimInput; json: boolean } {
   const [claimArg, ...rest] = argv;
-  if (!claimArg || !(CLAIM_TYPES as readonly string[]).includes(claimArg)) {
-    throw new Error(`급여 종류를 주십시오: ${CLAIM_TYPES.join(" | ")}`);
-  }
   const { opt, flags } = opts(rest);
-  const accident = opt["accident"];
-  const input: ClaimInput = {
-    claim: claimArg as ClaimType,
-    accidentKind: accident === "WORK_ACCIDENT" || accident === "COMMUTE" || accident === "DISEASE" ? accident : "UNDECLARED",
-    thirdParty: tri(opt["third-party"]),
-    treatmentEnded: tri(opt["ended"]),
-  };
-  if (opt["have"]) input.have = opt["have"].split(",").map((s) => s.trim()).filter(Boolean);
-  if (opt["tags"]) {
-    const tags = opt["tags"].split(",").map((s) => s.trim()).filter((t): t is Tag => (TAGS as readonly string[]).includes(t));
-    if (tags.length) input.tags = tags;
-  }
+  const input = normalizeInput({
+    claim: claimArg,
+    accident: opt["accident"],
+    thirdParty: opt["third-party"],
+    ended: opt["ended"],
+    tags: opt["tags"]?.split(","),
+    have: opt["have"]?.split(","),
+  });
   return { input, json: flags.has("json") };
 }
 
