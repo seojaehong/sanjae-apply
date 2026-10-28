@@ -11,7 +11,7 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20http-7c3aed)](https://modelcontextprotocol.io)
-[![tests](https://img.shields.io/badge/tests-212%20passing-2ea44f)](test/)
+[![tests](https://img.shields.io/badge/tests-227%20passing-2ea44f)](test/)
 
 <img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서. 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
 
@@ -237,7 +237,7 @@ api/mcp      Vercel 함수
 web/         안내 페이지 스크립트(engine.ts = src/core 브라우저 번들 · main.ts = 화면). npm run build:web → public/app · public/data
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
-test/        vitest 212 (formal_rules.test.ts 전수 10,368건 포함)
+test/        vitest 227 (formal_rules.test.ts 전수 10,368건 포함)
 docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드
 ```
 
