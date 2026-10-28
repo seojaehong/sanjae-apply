@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && npm run build:web",
   "outputDirectory": "public",
   "functions": {
     "api/mcp/[transport].ts": {

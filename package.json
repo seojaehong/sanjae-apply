@@ -42,10 +42,13 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "audit:coverage": "python scripts/audit_coverage.py && python scripts/audit_pdf_checks.py",
     "prepack": "npm run build",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "build:web": "node scripts/build_web_data.mjs && esbuild web/engine.ts --bundle --format=esm --target=es2020 --outfile=public/app/engine.js && esbuild web/main.ts --bundle --format=esm --target=es2020 --external:./engine.js --outfile=public/app/main.js",
+    "lint:web": "tsc -p web/tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "24.0.4",
+    "esbuild": "0.28.2",
     "typescript": "5.9.3",
     "vitest": "3.2.4"
   },

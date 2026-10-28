@@ -5,97 +5,421 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>산재 신청 도우미</title>
-<meta name="description" content="급여 종류·재해 상황을 받아 필요한 서식·첨부·근거 조문을 돌려주고, 근로복지공단 정본 서식 12종을 PDF·한글(hwpx)로 채우는 MCP 서버와 CLI.">
+<meta name="description" content="급여 종류와 재해 상황을 고르면 필요한 서식·첨부·근거 조문을 바로 확인하고, 근로복지공단 정본 서식 12종을 PDF·한글로 채우는 MCP 서버와 명령줄 도구.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-  :root { --fg:#1a1a1a; --bg:#fff; --muted:#666; --line:#e5e5e5; --accent:#2563eb; --soft:#f5f7fb; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fg:#eee; --bg:#111; --muted:#aaa; --line:#333; --accent:#7aa2ff; --soft:#1a1d24; } }
-  :root[data-theme="dark"] { --fg:#eee; --bg:#111; --muted:#aaa; --line:#333; --accent:#7aa2ff; --soft:#1a1d24; }
-  * { box-sizing:border-box; }
-  body { margin:0; padding:40px 16px 64px; background:var(--bg); color:var(--fg); font:16px/1.65 system-ui, "Malgun Gothic", sans-serif; }
-  main { max-width:760px; margin-inline:auto; }
-  h1 { font-size:1.9rem; margin:0 0 4px; }
-  h2 { font-size:1.2rem; margin:40px 0 12px; padding-top:20px; border-top:1px solid var(--line); }
-  .lead { color:var(--muted); margin:0 0 20px; }
-  code { background:rgba(127,127,127,.15); padding:2px 6px; border-radius:4px; font-size:.92em; }
-  pre { background:var(--soft); border:1px solid var(--line); border-radius:8px; padding:12px 14px; overflow-x:auto; font-size:.9em; line-height:1.5; }
-  pre code { background:none; padding:0; }
-  table { border-collapse:collapse; width:100%; font-size:.95em; }
-  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
-  th { color:var(--muted); font-weight:600; }
-  .num { text-align:right; white-space:nowrap; }
-  .note { background:var(--soft); border-left:4px solid var(--accent); padding:10px 14px; border-radius:0 8px 8px 0; margin:14px 0; }
-  .muted { color:var(--muted); }
-  ol li, ul li { margin:6px 0; }
-  a { color:var(--accent); }
-  .steps li { margin:10px 0; }
+  /* 토큰 — docs/안내페이지_디자인.md 「토큰」 표와 같게 유지한다 */
+  :root {
+    --paper: #ffffff; --head: #eef1ec; --rule: #a3aaa2; --ink: #15191d; --ink-2: #596057;
+    --pen: #2541a6; --seal: #c23a2a;
+    --serif: "Noto Serif KR", "Batang", serif;
+    --sans: "Pretendard Variable", Pretendard, "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, "D2Coding", monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #14171a; --head: #1e2327; --rule: #4a524d; --ink: #e8ece7; --ink-2: #a9b1a8;
+      --pen: #93a9ff; --seal: #ee6e5a; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14171a; --head: #1e2327; --rule: #4a524d; --ink: #e8ece7; --ink-2: #a9b1a8;
+    --pen: #93a9ff; --seal: #ee6e5a; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 400 16px/1.7 var(--sans); word-break: keep-all; overflow-wrap: anywhere;
+  }
+  a { color: var(--pen); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
+  .wrap { max-width: 1120px; margin-inline: auto; padding-inline: 24px; }
+  @media (max-width: 640px) { .wrap { padding-inline: 16px; } }
+
+  /* 머리줄 */
+  .top { border-bottom: 1px solid var(--rule); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
+  .brand { font: 600 17px/1.3 var(--serif); color: var(--ink); text-decoration: none; }
+  .top nav { display: flex; gap: 20px; font-size: 15px; }
+  .top nav a { color: var(--ink-2); text-decoration: none; }
+  .top nav a:hover { color: var(--ink); text-decoration: underline; }
+  @media (max-width: 640px) { .top nav .opt { display: none; } }
+
+  /* 첫 화면 */
+  .intro { padding: 48px 0 28px; max-width: 46em; }
+  h1 { font: 600 40px/1.3 var(--serif); letter-spacing: -0.01em; margin: 0 0 14px; }
+  .lead { font-size: 17px; color: var(--ink-2); margin: 0; }
+  @media (max-width: 640px) { h1 { font-size: 28px; } .intro { padding: 32px 0 20px; } }
+
+  /* 신청 전 확인표 — 서식 용지 */
+  .sheet-wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 6fr); border: 2px solid var(--ink); }
+  @media (max-width: 900px) { .sheet-wrap { grid-template-columns: 1fr; } }
+  .sheet-title {
+    grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 10px 16px; border-bottom: 2px solid var(--ink); font: 600 19px/1.3 var(--serif);
+  }
+  .sheet-title small { font: 400 13px/1.5 var(--sans); color: var(--ink-2); }
+  form#sheet { border-right: 1px solid var(--rule); }
+  @media (max-width: 900px) { form#sheet { border-right: 0; border-bottom: 2px solid var(--ink); } }
+  .row { display: grid; grid-template-columns: 7.5em 1fr; border-bottom: 1px solid var(--rule); min-width: 0; }
+  .row:last-child { border-bottom: 0; }
+  .label {
+    background: var(--head); border-right: 1px solid var(--rule); padding: 12px 12px;
+    font-size: 15px; font-weight: 600; line-height: 1.45;
+  }
+  .label small { display: block; font-weight: 400; color: var(--ink-2); font-size: 13px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 4px 4px; padding: 8px 10px; align-content: center; }
+  @media (max-width: 520px) { .row { grid-template-columns: 1fr; } .label { border-right: 0; border-bottom: 1px solid var(--rule); padding: 8px 12px; } }
+
+  /* 서식 칸 — □ 를 고르면 볼펜으로 ■ */
+  .opt-box { position: relative; }
+  .opt-box input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .opt-box span {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 8px;
+    font-size: 15px; color: var(--ink); cursor: pointer;
+  }
+  .opt-box span::before {
+    content: ""; width: 14px; height: 14px; flex: none; border: 1.5px solid var(--ink); background: var(--paper);
+  }
+  .opt-box input[type=radio] + span::before { border-radius: 50%; }
+  .opt-box input:checked + span { color: var(--pen); font-weight: 600; }
+  .opt-box input:checked + span::before { background: var(--pen); border-color: var(--pen); box-shadow: inset 0 0 0 2.5px var(--paper); }
+  .opt-box input:focus-visible + span { outline: 2px solid var(--pen); outline-offset: 0; }
+
+  /* 확인 결과 */
+  .result-side { position: relative; padding: 16px 18px 20px; min-width: 0; }
+  .result-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .result-side h2 { font: 600 19px/1.3 var(--serif); margin: 0 0 10px; border: 0; padding: 0; }
+  dl#result-summary { display: flex; gap: 0; margin: 0; border: 1px solid var(--rule); }
+  dl#result-summary div { padding: 6px 12px; border-right: 1px solid var(--rule); }
+  dl#result-summary div:last-child { border-right: 0; }
+  dl#result-summary dt { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+  @media (max-width: 420px) { dl#result-summary div { padding: 6px 9px; } #seal { width: 96px; height: 96px; font-size: 13px; } }
+  dl#result-summary dd { margin: 0; font-size: 21px; font-weight: 600; color: var(--pen); font-variant-numeric: tabular-nums; }
+
+  /* 인주 도장 — 이 페이지에서 유일하게 큰 소리를 내는 요소 */
+  #seal {
+    flex: none; width: 112px; height: 112px; border-radius: 50%;
+    border: 3px solid var(--seal); box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4.5px var(--seal);
+    color: var(--seal); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font: 600 14px/1.3 var(--serif); text-align: center; transform: rotate(-8deg); opacity: .92;
+  }
+  #seal span { white-space: nowrap; }
+  #seal[data-state="ready"] { transform: rotate(6deg); }
+  #seal.stamp { animation: stamp 200ms ease-out; }
+  @keyframes stamp { from { transform: scale(1.25) rotate(-14deg); opacity: 0; } to { opacity: .92; } }
+  @media (prefers-reduced-motion: reduce) { #seal.stamp { animation: none; } }
+
+  .r-h { font-size: 15px; font-weight: 700; margin: 20px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); }
+  .r-list { list-style: none; margin: 0; padding: 0; }
+  .r-row { padding: 9px 0; border-bottom: 1px solid var(--rule); }
+  .r-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .r-title { color: var(--pen); font-weight: 600; font-size: 15px; line-height: 1.5; }
+  .tag { flex: none; font-size: 13px; padding: 1px 8px; border: 1px solid currentColor; line-height: 1.6; }
+  .tag-REQUIRED { color: var(--ink); }
+  .tag-CONDITIONAL { color: var(--ink-2); border-style: dashed; }
+  .r-cond, .r-basis, .r-status, .r-skip { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+  .r-basis a { color: var(--ink); }
+  .law-title { color: var(--ink-2); }
+  .fill-note { display: inline-block; margin-top: 4px; font-size: 13.5px; }
+  .r-skip { margin-top: 8px; }
+  .r-q, .r-notes { margin: 0; padding-left: 1.2em; font-size: 14.5px; }
+  .r-q li { color: var(--pen); }
+  .r-notes { color: var(--ink-2); }
+  button.have {
+    flex: none; font: 500 13px/1.4 var(--sans); padding: 5px 10px; min-height: 32px; cursor: pointer;
+    background: var(--paper); color: var(--ink); border: 1px solid var(--rule);
+  }
+  button.have[aria-pressed="true"] { background: var(--pen); color: var(--paper); border-color: var(--pen); }
+
+  .sheet-foot {
+    grid-column: 1 / -1; border-top: 1px solid var(--rule); background: var(--head);
+    padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 14px;
+  }
+  .sheet-foot code { font: 13px/1.5 var(--mono); color: var(--ink); overflow-wrap: anywhere; flex: 1 1 320px; }
+  .privacy { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+
+  /* 구간 */
+  section { padding: 64px 0 0; }
+  h2 { font: 600 28px/1.3 var(--serif); letter-spacing: -0.01em; margin: 0 0 8px; }
+  .sec-lead { margin: 0 0 22px; color: var(--ink-2); max-width: 44em; }
+  @media (max-width: 640px) { h2 { font-size: 23px; } section { padding-top: 48px; } }
+
+  /* 탭 */
+  [role=tablist] { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--rule); }
+  [role=tab] {
+    font: 500 15px/1.4 var(--sans); background: none; border: 0; border-bottom: 2px solid transparent;
+    padding: 12px 16px; min-height: 48px; color: var(--ink-2); cursor: pointer; margin-bottom: -1px;
+  }
+  [role=tab][aria-selected="true"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--ink); }
+  [role=tabpanel] { padding: 20px 0 0; max-width: 52em; }
+  ol.steps { margin: 0; padding-left: 1.4em; }
+  ol.steps > li { margin: 0 0 16px; padding-left: 4px; }
+  .code { position: relative; margin: 8px 0 0; }
+  .code pre {
+    margin: 0; padding: 14px 16px; padding-right: 76px; background: var(--head); border: 1px solid var(--rule);
+    font: 13.5px/1.6 var(--mono); overflow-x: auto; white-space: pre; word-break: normal; overflow-wrap: normal;
+  }
+  button.copy {
+    position: absolute; top: 8px; right: 8px; font: 500 13px/1.3 var(--sans); padding: 5px 10px; cursor: pointer;
+    background: var(--paper); color: var(--ink); border: 1px solid var(--rule);
+  }
+  .sheet-foot button.copy { position: static; }
+  .say { margin: 12px 0 0; padding: 12px 16px; border-left: 3px solid var(--pen); background: var(--head); }
+  .say p { margin: 0; color: var(--pen); }
+  .say p + p { margin-top: 6px; }
+  .aside { font-size: 14.5px; color: var(--ink-2); }
+  details.win summary { cursor: pointer; color: var(--ink); }
+
+  /* 서식 대장 */
+  .tbl-scroll { overflow-x: auto; border: 2px solid var(--ink); }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: var(--head); font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--ink); }
+  td + td, th + th { border-left: 1px solid var(--rule); }
+  tr:last-child td { border-bottom: 0; }
+  .num, .mark { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .num { text-align: right; }
+  th.num { text-align: right; }
+  .mark { color: var(--ink-2); }
+  td details summary { cursor: pointer; font-weight: 500; }
+  ol.slot-list { columns: 2 16em; column-gap: 24px; margin: 10px 0 2px; padding-left: 1.6em; font-size: 13.5px; color: var(--ink-2); }
+  tr:target td { background: var(--head); }
+
+  /* 검증·경계 */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--ink); }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+  .grid-2 > div { padding: 16px 20px 16px 0; border-bottom: 1px solid var(--rule); }
+  .grid-2 h3 { font-size: 16px; margin: 0 0 4px; }
+  .grid-2 p { margin: 0; font-size: 15px; color: var(--ink-2); }
+  .not-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); max-width: 52em; }
+  .not-list li { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .not-list strong { display: block; font-size: 16px; }
+  .not-list span { color: var(--ink-2); font-size: 15px; }
+  .next { margin-top: 28px; padding: 18px 20px; border: 1px dashed var(--rule); max-width: 52em; }
+  .next h3 { margin: 0 0 4px; font-size: 16px; }
+  .next p { margin: 0; color: var(--ink-2); font-size: 15px; }
+
+  footer { margin-top: 80px; border-top: 2px solid var(--ink); padding: 20px 0 40px; font-size: 14px; color: var(--ink-2); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+  footer nav { display: flex; gap: 18px; }
 </style>
 </head>
 <body>
-<main>
-<h1>🩹 산재 신청 도우미</h1>
-<p class="lead">급여 종류와 재해 상황을 말하면 필요한 서식·첨부·근거 조문을 알려 주고, 근로복지공단 정본 서식 12종을 PDF 또는 한글(hwpx)로 채워 줍니다. MCP 서버와 명령줄 도구입니다.</p>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#">산재 신청 도우미</a>
+    <nav aria-label="페이지 안">
+      <a href="#connect">연결하기</a>
+      <a class="opt" href="#forms">서식 12종</a>
+      <a class="opt" href="#limits">하지 않는 일</a>
+      <a href="https://github.com/seojaehong/sanjae-apply">GitHub</a>
+    </nav>
+  </div>
+</header>
 
-<div class="note">
-<strong>이 페이지는 운영 끝점 안내입니다.</strong> 끝점 <code>/api/mcp/mcp</code> (Streamable HTTP) 는 <code>Authorization: Bearer …</code> 토큰이 있어야 응답합니다.
-설치 없이 내 PC 에서 쓰는 방법은 <a href="https://github.com/seojaehong/sanjae-apply">GitHub 안내서</a>에 있습니다.
-</div>
+<main class="wrap">
+  <div class="intro">
+    <h1>산재 신청에 무엇이 필요한지 먼저 확인하세요</h1>
+    <p class="lead">급여 종류와 재해 상황을 고르면 내야 할 서식, 챙길 첨부, 근거 조문이 바로 나옵니다. 근로복지공단 정본 서식 12종은 PDF나 한글 파일로 채워 줍니다.</p>
+  </div>
 
-<h2>1. 무엇을 해 주나</h2>
-<table>
-<tr><th style="width:9em">하는 일</th><th>설명</th></tr>
-<tr><td>필요 서식 확인</td><td>급여 9종(요양·휴업·장해·유족·간병료 등) × 사고/출퇴근/질병 × 제3자 유무 → 서식마다 <code>REQUIRED</code> / <code>CONDITIONAL</code> / <code>NOT_APPLICABLE</code></td></tr>
-<tr><td>첨부 점검</td><td>이미 가진 것 <code>PROVIDED</code>, 없는 것 <code>MISSING</code>, 다른 서류로 갈음되는 것 <code>SUBSTITUTABLE</code></td></tr>
-<tr><td>근거 조문</td><td>산재보험법·시행령·시행규칙 조문 번호와 제목(법제처 국가법령정보 Open API)</td></tr>
-<tr><td>남은 질문</td><td>아직 답이 없는 분기는 <code>open_confirmations</code> 로 되돌려 줍니다. 모르는 것을 지어내지 않습니다</td></tr>
-<tr><td>서식 채우기</td><td>공단 정본 PDF 위에 값을 얹거나(PDF), 공단 HWP 를 변환한 한글 문서에 값을 넣어(hwpx) 돌려줍니다. 신청인 칸만 채우고 의사·사업주·공단 칸은 비웁니다</td></tr>
-</table>
+  <div class="sheet-wrap">
+    <div class="sheet-title">신청 전 확인표 <small>모르는 칸은 「아직 모름」으로 두세요</small></div>
 
-<h2>2. 연결하는 법</h2>
-<ol class="steps">
-<li>운영자에게 토큰을 받습니다.</li>
-<li>Claude Code 에서 한 줄:
-<pre><code>claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.vercel.app/api/mcp/mcp \
-  --header "Authorization: Bearer &lt;발급받은 토큰&gt;"</code></pre></li>
-<li>AI 에게 말합니다. 「출퇴근 중 교통사고인데 상대 운전자가 있어요. 요양급여 신청하려면 뭐가 필요해요?」 「이 값으로 요양급여신청서를 한글 파일로 채워 줘.」</li>
-</ol>
-<p class="muted">Claude Desktop·Cursor 등은 같은 URL 과 헤더를 MCP 설정에 넣습니다. claude.ai 웹 커넥터는 토큰 헤더를 넣을 수 없어 아직 연결되지 않습니다.</p>
+    <form id="sheet" aria-label="신청 전 확인표">
+      <div class="row" role="group" aria-labelledby="q1">
+        <div class="label" id="q1">급여 종류</div>
+        <div class="opts">
+          <label class="opt-box"><input type="radio" name="claim" value="YOYANG" checked><span>요양급여</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="HUYEOP"><span>휴업급여·상병보상연금</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="JANGHAE"><span>장해급여</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="YUJOK"><span>유족급여·장례비</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="CARE_TRANSPORT_DEVICE"><span>간병료·이송비·보조기</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="SELF_PAY"><span>본인부담 치료비</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="ADDITIONAL_DISEASE"><span>추가상병</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="RE_YOYANG"><span>재요양</span></label>
+          <label class="opt-box"><input type="radio" name="claim" value="UNPAID"><span>미지급 보험급여</span></label>
+        </div>
+      </div>
+      <div class="row" role="group" aria-labelledby="q2">
+        <div class="label" id="q2">재해 유형</div>
+        <div class="opts">
+          <label class="opt-box"><input type="radio" name="accidentKind" value="WORK_ACCIDENT"><span>업무상 사고</span></label>
+          <label class="opt-box"><input type="radio" name="accidentKind" value="COMMUTE" checked><span>출퇴근 중 사고</span></label>
+          <label class="opt-box"><input type="radio" name="accidentKind" value="DISEASE"><span>업무상 질병</span></label>
+          <label class="opt-box"><input type="radio" name="accidentKind" value="UNDECLARED"><span>아직 모름</span></label>
+        </div>
+      </div>
+      <div class="row" role="group" aria-labelledby="q3">
+        <div class="label" id="q3">가해자<small>다른 사람 때문에 다쳤나</small></div>
+        <div class="opts">
+          <label class="opt-box"><input type="radio" name="thirdParty" value="yes" checked><span>있음</span></label>
+          <label class="opt-box"><input type="radio" name="thirdParty" value="no"><span>없음</span></label>
+          <label class="opt-box"><input type="radio" name="thirdParty" value="UNDECLARED"><span>아직 모름</span></label>
+        </div>
+      </div>
+      <div class="row" role="group" aria-labelledby="q4">
+        <div class="label" id="q4">치료 종결<small>그 상병의 치료가 끝났나</small></div>
+        <div class="opts">
+          <label class="opt-box"><input type="radio" name="treatmentEnded" value="yes"><span>끝남</span></label>
+          <label class="opt-box"><input type="radio" name="treatmentEnded" value="no"><span>치료 중</span></label>
+          <label class="opt-box"><input type="radio" name="treatmentEnded" value="UNDECLARED" checked><span>아직 모름</span></label>
+        </div>
+      </div>
+      <div class="row" role="group" aria-labelledby="q5">
+        <div class="label" id="q5">해당하는 것<small>있으면 고르기</small></div>
+        <div class="opts">
+          <label class="opt-box"><input type="checkbox" name="tags" value="NOISE_HEARING_LOSS"><span>소음성 난청</span></label>
+          <label class="opt-box"><input type="checkbox" name="tags" value="SPINE_OR_NERVE"><span>척추·신경 장해</span></label>
+          <label class="opt-box"><input type="checkbox" name="tags" value="JOINT"><span>관절 기능장해</span></label>
+          <label class="opt-box"><input type="checkbox" name="tags" value="DEVICE"><span>보조기 청구</span></label>
+        </div>
+      </div>
+    </form>
 
-<h2>3. 도구 4개</h2>
-<table>
-<tr><th style="width:13em">도구</th><th>하는 일</th></tr>
-<tr><td><code>list_required_forms</code></td><td>급여·재해 분기 → 서식·첨부·조문·절차·남은 질문</td></tr>
-<tr><td><code>get_form_catalog</code></td><td>공단 정본 대장(파일명·개정일·sha256·게시글 URL), 채울 수 있는 서식(<code>fillable</code> PDF · <code>fillable_hwpx</code> 한글)과 칸 이름(<code>slots</code>)</td></tr>
-<tr><td><code>fill_form</code></td><td><code>form_id</code> + 값 (+ <code>format</code> pdf·hwpx) → 채운 파일(base64)</td></tr>
-<tr><td><code>fill_yoyang_apply</code></td><td>v0.1 호환. <code>fill_form(form_id="F_YOYANG_APPLY")</code> 과 같음</td></tr>
-</table>
+    <div class="result-side" aria-live="polite">
+      <div class="result-top">
+        <div>
+          <h2>확인 결과</h2>
+          <dl id="result-summary"></dl>
+        </div>
+        <div id="seal" role="img" aria-label="확인 상태"></div>
+      </div>
+      <div id="result"><p class="r-skip">확인표를 고르면 여기에 결과가 나옵니다. 화면이 비어 있으면 자바스크립트가 꺼져 있는지 확인하세요.</p></div>
+    </div>
 
-<h2>4. 채울 수 있는 서식</h2>
-<table>
-<tr><th>서식</th><th class="num">칸</th><th>PDF</th><th>한글</th></tr>
-<tr><td>요양급여신청서 (별지 제2호, 2026.7.7 개정)</td><td class="num">35</td><td>✓</td><td>✓</td></tr>
-<tr><td>출퇴근 재해 합본 (신청서 + 발생신고서)</td><td class="num">79</td><td>✓</td><td>✓</td></tr>
-<tr><td>제3자 재해 신고서 + 확인서</td><td class="num">48</td><td>✓</td><td>✓</td></tr>
-<tr><td>유족급여 청구서</td><td class="num">75</td><td>✓</td><td>✓</td></tr>
-<tr><td>본인부담 치료비 청구서</td><td class="num">42</td><td>✓</td><td>✓</td></tr>
-<tr><td>휴업급여 청구서</td><td class="num">37</td><td>✓</td><td>✓</td></tr>
-<tr><td>간병료·이송비·보조기 청구서</td><td class="num">44</td><td>✓</td><td>✓</td></tr>
-<tr><td>재활보조기구 처방전 (기타)</td><td class="num">12</td><td>✓</td><td class="muted">공단이 PDF 만 제공</td></tr>
-<tr><td>미지급 보험급여 청구서</td><td class="num">62</td><td>✓</td><td>✓</td></tr>
-<tr><td>장해급여 묶음 (청구서 + 소음작업 확인서 + 선택 확인서)</td><td class="num">153</td><td>✓</td><td>✓</td></tr>
-<tr><td>추가상병 신청서</td><td class="num">25</td><td>✓</td><td>✓</td></tr>
-<tr><td>재요양 신청서</td><td class="num">39</td><td>✓</td><td>✓</td></tr>
-</table>
-<p class="muted">정본은 근로복지공단 서식자료실 파일만 씁니다. 공단이 서식을 바꾸면 정본 해시 대조 시험이 먼저 깨집니다. 한글 출력은 .hwpx 로 나오며 한글 2014 이상에서 열어 고칠 수 있습니다.</p>
+    <div class="sheet-foot">
+      <span>같은 확인을 명령줄로</span>
+      <code id="cli-line">npx -y sanjae-apply check YOYANG --accident COMMUTE --third-party yes</code>
+      <button type="button" class="copy" data-for="cli-line">복사</button>
+    </div>
+  </div>
+  <p class="privacy">이 확인은 브라우저 안에서만 돕니다. 고른 값은 어디에도 보내거나 저장하지 않습니다. 「제출할 수 있는 상태」가 나와도 승인 여부는 근로복지공단이 따로 정합니다.</p>
 
-<h2>5. 지키는 것</h2>
-<ul>
-<li><strong>승인 여부는 다루지 않습니다.</strong> 결과의 <code>READY_TO_SUBMIT</code> 은 「제출할 수 있는 상태」이지 승인이 아닙니다. 결과를 점치는 표현은 코드 필터가 출력 단계에서 막습니다.</li>
-<li><strong>입력값을 저장하지 않습니다.</strong> 결과만 돌려주고 로그에 값이 남지 않습니다. 주민등록번호 같은 칸은 비워 두고 출력한 뒤 손으로 적어도 됩니다.</li>
-<li><strong>공인노무사법 제27조</strong>에 따라 청구의 대행·대리와 서류의 작성·확인은 공인노무사의 직무입니다. 이 도구는 그 일을 돕는 도구이지 대신하지 않습니다. 출력물은 담당 노무사가 확인한 뒤 쓰십시오.</li>
-<li>온라인 접수(토탈서비스)는 범위 밖입니다. 채운 출력물을 만드는 것까지입니다.</li>
-</ul>
+  <section id="connect" aria-labelledby="connect-h">
+    <h2 id="connect-h">내 도구에 연결하기</h2>
+    <p class="sec-lead">AI 도구에 붙이면 대화로 서식을 확인하고 채운 파일을 받습니다. Node.js 20 이상만 있으면 되고, 내 PC 에서 돌기 때문에 토큰이 필요 없습니다.</p>
 
-<p class="muted" style="margin-top:40px">출처 <a href="https://github.com/seojaehong/sanjae-apply">github.com/seojaehong/sanjae-apply</a> · MIT</p>
+    <div role="tablist" aria-label="연결 방법">
+      <button role="tab" id="t-code" aria-controls="p-code" aria-selected="true">Claude Code</button>
+      <button role="tab" id="t-desk" aria-controls="p-desk" aria-selected="false" tabindex="-1">Claude Desktop</button>
+      <button role="tab" id="t-cli" aria-controls="p-cli" aria-selected="false" tabindex="-1">명령줄</button>
+      <button role="tab" id="t-remote" aria-controls="p-remote" aria-selected="false" tabindex="-1">원격 연결</button>
+    </div>
+
+    <div role="tabpanel" id="p-code" aria-labelledby="t-code">
+      <ol class="steps">
+        <li>터미널에서 한 줄을 실행합니다.
+          <div class="code"><pre id="c-code">claude mcp add --scope user sanjae-apply -- npx -y sanjae-apply mcp</pre><button type="button" class="copy" data-for="c-code">복사</button></div>
+        </li>
+        <li>Claude Code 를 다시 열고 이렇게 물어봅니다.
+          <div class="say"><p>출퇴근 중 교통사고인데 상대 운전자가 있어요. 요양급여 신청하려면 뭐가 필요해요?</p><p>요양급여신청서에 이 값으로 채워서 한글 파일로 줘.</p></div>
+        </li>
+      </ol>
+    </div>
+
+    <div role="tabpanel" id="p-desk" aria-labelledby="t-desk" hidden>
+      <ol class="steps">
+        <li>설정 파일 <code>claude_desktop_config.json</code> 에 아래를 넣습니다. 윈도우 Microsoft Store 판은 <code>%APPDATA%\Claude\</code> 에 있습니다.
+          <div class="code"><pre id="c-desk">{
+  "mcpServers": {
+    "sanjae-apply": { "command": "npx", "args": ["-y", "sanjae-apply", "mcp"] }
+  }
+}</pre><button type="button" class="copy" data-for="c-desk">복사</button></div>
+        </li>
+        <li>Claude Desktop 을 작업 표시줄 아이콘까지 종료한 뒤 다시 켭니다. 처음 도구를 부를 때 「허용」을 누릅니다.
+          <details class="win"><summary>윈도우에서 npx 를 못 찾는다고 나오면</summary>
+            <div class="code"><pre id="c-desk-win">{
+  "mcpServers": {
+    "sanjae-apply": { "command": "cmd", "args": ["/c", "npx", "-y", "sanjae-apply", "mcp"] }
+  }
+}</pre><button type="button" class="copy" data-for="c-desk-win">복사</button></div>
+          </details>
+        </li>
+      </ol>
+      <p class="aside">Cursor·Windsurf 같은 다른 MCP 도구도 같은 <code>command</code>·<code>args</code> 를 넣으면 됩니다.</p>
+    </div>
+
+    <div role="tabpanel" id="p-cli" aria-labelledby="t-cli" hidden>
+      <ol class="steps">
+        <li>필요한 서식·첨부·근거 조문을 봅니다. 위 확인표의 「같은 확인을 명령줄로」와 같은 명령입니다.
+          <div class="code"><pre id="c-cli1">npx -y sanjae-apply check YOYANG --accident COMMUTE --third-party yes</pre><button type="button" class="copy" data-for="c-cli1">복사</button></div>
+        </li>
+        <li>채울 서식의 칸 이름을 봅니다. 결과의 <code>slots</code> 가 값 파일의 열쇠입니다.
+          <div class="code"><pre id="c-cli2">npx -y sanjae-apply catalog F_YOYANG_APPLY</pre><button type="button" class="copy" data-for="c-cli2">복사</button></div>
+        </li>
+        <li>값 파일로 채웁니다. 확장자를 <code>.hwpx</code> 로 주면 한글 파일이 나옵니다. <code>--stamp 이름</code> 을 붙이면 성명인을 찍습니다.
+          <div class="code"><pre id="c-cli3">npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.pdf
+npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx --stamp 홍길동</pre><button type="button" class="copy" data-for="c-cli3">복사</button></div>
+        </li>
+      </ol>
+      <p class="aside">도장은 본인이거나 명의자가 동의한 이름만 넣으세요. 등록 인감을 대신하는 용도가 아닙니다.</p>
+    </div>
+
+    <div role="tabpanel" id="p-remote" aria-labelledby="t-remote" hidden>
+      <p>운영자에게 토큰을 받은 경우에만 씁니다. 끝점 <code>https://sanjae-apply.vercel.app/api/mcp/mcp</code> 는 <code>Authorization: Bearer</code> 토큰이 없으면 응답하지 않습니다. 같은 도구 5개가 돌고, 입력은 저장하지 않지만 네트워크를 거칩니다.</p>
+      <div class="code"><pre id="c-remote">claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.vercel.app/api/mcp/mcp \
+  --header "Authorization: Bearer &lt;발급받은 토큰&gt;"</pre><button type="button" class="copy" data-for="c-remote">복사</button></div>
+    </div>
+  </section>
+
+  <section id="forms" aria-labelledby="forms-h">
+    <h2 id="forms-h">채울 수 있는 서식 <span data-form-count>12</span>종</h2>
+    <p class="sec-lead">근로복지공단 서식자료실의 정본 파일 위에 값을 얹습니다. 신청인이 쓰는 칸만 채우고 의사·사업주·공단 칸은 비워 둡니다. 모두 <span data-total-slots>836</span>칸이고, 서식 이름을 누르면 채우는 칸 목록이 열립니다.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th scope="col">서식</th><th scope="col" class="num">칸</th><th scope="col">PDF</th><th scope="col">한글</th><th scope="col" class="num">도장 자리</th><th scope="col" class="num">개정일</th></tr></thead>
+        <tbody id="forms-body"><tr><td colspan="6">서식 목록을 불러오는 중입니다.</td></tr></tbody>
+      </table>
+    </div>
+    <p class="aside">공단은 서식을 예고 없이 고칩니다. 칸 위치는 정본 파일의 해시에 묶여 있어, 서식이 바뀌면 시험이 먼저 깨지고 고친 판을 다시 냅니다.</p>
+  </section>
+
+  <section id="checks" aria-labelledby="checks-h">
+    <h2 id="checks-h">어디까지 확인했나</h2>
+    <p class="sec-lead">전부 합성 값으로 시험했습니다. 실제 사건 값으로는 아직 검증하지 않았습니다.</p>
+    <div class="grid-2">
+      <div><h3>규칙</h3><p>급여 9종의 분기 조합을 전부 돌려 봅니다. 승인 여부를 점치는 말은 출력 단계에서 코드가 막습니다.</p></div>
+      <div><h3>근거 조문</h3><p>코드에 적은 조문 번호와 제목을 법제처 국가법령정보에서 받은 조문과 대조합니다.</p></div>
+      <div><h3>PDF 채우기</h3><p>12종 전부 글자 위치와 픽셀을 비교해 빈 출력이 나가지 않는지 봅니다.</p></div>
+      <div><h3>한글 채우기</h3><p>11종 전부 한글에서 실제로 열어 그려 보고, 쪽수가 원본과 같은지 확인합니다.</p></div>
+      <div><h3>이 페이지</h3><p>확인표는 npm 패키지와 같은 규칙 코드를 씁니다. 648가지 조합에서 명령줄 결과와 같습니다.</p></div>
+      <div><h3>연결</h3><p>내 PC 연결과 원격 연결 양쪽에서 도구 목록과 호출을 공식 SDK 로 시험합니다.</p></div>
+    </div>
+  </section>
+
+  <section id="limits" aria-labelledby="limits-h">
+    <h2 id="limits-h">이 도구가 하지 않는 일</h2>
+    <ul class="not-list">
+      <li><strong>승인 여부를 다루지 않습니다.</strong><span>서류가 갖춰졌는지만 봅니다. 산재 인정 여부는 근로복지공단이 정합니다.</span></li>
+      <li><strong>신청을 대신 내지 않습니다.</strong><span>채운 파일을 만드는 데까지입니다. 온라인 접수는 범위 밖입니다.</span></li>
+      <li><strong>서류 작성과 확인을 대신하지 않습니다.</strong><span>청구 대리와 서류 작성·확인은 공인노무사법 제27조에 따른 공인노무사의 직무입니다. 이 도구는 그 일을 돕습니다. 출력물은 담당 공인노무사가 확인한 뒤 쓰세요.</span></li>
+      <li><strong>입력값을 저장하지 않습니다.</strong><span>내 PC 에 설치하면 밖으로 아무것도 보내지 않습니다. 주민등록번호 칸은 비워 두고 출력한 뒤 손으로 적어도 됩니다.</span></li>
+    </ul>
+    <div class="next">
+      <h3>이 페이지에서 바로 채우기</h3>
+      <p>지금은 설치해서 써야 합니다. 다음 단계로 이 페이지 안에서 서식을 채우고 고쳐 내려받는 기능을 만들고 있습니다. 그때도 채우는 일은 브라우저 안에서만 하고, 값은 밖으로 나가지 않습니다.</p>
+    </div>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <span>sanjae-apply <span data-version>0.5.4</span>, MIT 라이선스</span>
+    <nav aria-label="바깥 링크">
+      <a href="https://github.com/seojaehong/sanjae-apply">GitHub</a>
+      <a href="https://www.npmjs.com/package/sanjae-apply">npm</a>
+      <a href="https://github.com/seojaehong/sanjae-apply/blob/master/docs/%EC%82%AC%EC%9A%A9_%EB%A7%A4%EB%89%B4%EC%96%BC.md">사용 매뉴얼</a>
+    </nav>
+  </div>
+</footer>
+<script type="module" src="app/main.js"></script>
 </body>
 </html>
