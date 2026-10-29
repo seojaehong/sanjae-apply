@@ -10,6 +10,9 @@ export interface SlotDetail {
   boxes?: number;
   /** 체크 칸 라벨의 「:」 앞 — 화면에서 묶어 보이는 용도일 뿐, 하나만 고르는 묶음인지는 뜻하지 않는다 */
   group?: string;
+  /** Stable source-form group id, only present for explicitly reviewed groups. */
+  selection_group?: string;
+  exclusive?: boolean;
 }
 
 export interface FormDescription {
@@ -22,6 +25,20 @@ export interface FormDescription {
 
 export function describeForm(map: FormMap, opt: { checkHint?: boolean } = {}): FormDescription {
   const entries = Object.entries(map.slots);
+  const groups = new Map<string, NonNullable<FormMap["check_groups"]>[number]>();
+  const ids = new Set<string>();
+  for (const group of map.check_groups ?? []) {
+    if (!group.id || ids.has(group.id) || group.keys.length < 2) throw new Error(`Invalid check group: ${group.id}`);
+    ids.add(group.id);
+    const pages = new Set<number>();
+    for (const key of group.keys) {
+      const slot = map.slots[key];
+      if (!slot || slot.kind !== "check" || groups.has(key)) throw new Error(`Invalid check group member: ${key}`);
+      pages.add(slot.page);
+      groups.set(key, group);
+    }
+    if (pages.size !== 1) throw new Error(`Check group spans pages: ${group.id}`);
+  }
   return {
     slots: entries.map(([k]) => k),
     slot_labels: Object.fromEntries(entries.map(([k, s]) => [k, `${s.label ?? ""}${opt.checkHint && s.kind === "check" ? " (체크: true)" : ""}`])),
@@ -30,6 +47,12 @@ export function describeForm(map: FormMap, opt: { checkHint?: boolean } = {}): F
       const d: SlotDetail = { key, kind: s.kind, label: s.label ?? "", page: s.page };
       if (s.kind === "boxes") d.boxes = s.boxes.length;
       if (s.kind === "check" && s.label?.includes(":")) d.group = s.label.slice(0, s.label.indexOf(":")).trim();
+      const group = groups.get(key);
+      if (group) {
+        d.group = group.label;
+        d.selection_group = group.id;
+        d.exclusive = group.exclusive;
+      }
       return d;
     }),
   };

@@ -3,6 +3,15 @@
   "framework": null,
   "buildCommand": "npm run build && npm run test:web",
   "outputDirectory": "public",
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Content-Security-Policy-Report-Only", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    }
+  ],
   "functions": {
     "api/mcp/[transport].ts": {
       "maxDuration": 60,

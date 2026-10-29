@@ -84,7 +84,7 @@ async function main(argv: string[]): Promise<void> {
     const entries = id ? cat.forms.filter((f) => f.ids.includes(id)) : cat.forms;
     const m = id && fillableForms().includes(id) ? loadMap(id) : undefined;
     const d = m ? describeForm(m) : undefined;
-    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: d?.slots, slot_labels: d?.slot_labels, stamps: d?.stamps, entries };
+    const out = { fillable: fillableForms(), fillable_hwpx: fillableHwpxForms(), slots: d?.slots, slot_labels: d?.slot_labels, slot_details: d?.slot_details, stamps: d?.stamps, entries };
     process.stdout.write(JSON.stringify(out, null, 2) + "\n");
     return;
   }

@@ -1,7 +1,7 @@
 // 안내 페이지가 읽는 서식 데이터 → public/data/forms.json
 // 숫자를 HTML 에 손으로 적지 않으려고 만든다. 나중 웹 편집기도 이 파일(칸 이름·종류·설명)을 입력 모델로 쓴다.
 // 사용: npm run build 뒤 node scripts/build_web_data.mjs  (dist/src/core/catalog.js 의 서식 제목을 쓴다)
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -87,3 +87,23 @@ for (const f of forms) {
 copy("fonts/NanumGothic-Regular.ttf", "fonts/NanumGothic-Regular.ttf");
 copy("fonts/OFL.txt", "fonts/OFL.txt");
 console.log(`public/assets — 서식 ${forms.length}종 지도·PDF + 나눔고딕(OFL)`);
+
+// Self-host the existing UI typefaces. Versions and integrity are pinned in package-lock.json.
+const uiDir = path.join(root, "public/fonts/ui");
+mkdirSync(path.join(uiDir, "files"), { recursive: true });
+const notoRoot = path.join(root, "node_modules/@fontsource-variable/noto-serif-kr");
+const notoCss = readFileSync(path.join(notoRoot, "wght.css"), "utf8");
+writeFileSync(path.join(uiDir, "noto-serif-kr.css"), notoCss);
+for (const [, file] of notoCss.matchAll(/url\(\.\/files\/([^)]*)\)/g)) {
+  copyFileSync(path.join(notoRoot, "files", file), path.join(uiDir, "files", file));
+}
+copyFileSync(path.join(notoRoot, "LICENSE"), path.join(uiDir, "NotoSerifKR-LICENSE.txt"));
+copyFileSync(path.join(root, "node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2"), path.join(uiDir, "PretendardVariable.woff2"));
+copyFileSync(path.join(root, "fonts/Pretendard-OFL.txt"), path.join(uiDir, "Pretendard-LICENSE.txt"));
+writeFileSync(path.join(uiDir, "pretendard.css"), '@font-face{font-family:"Pretendard Variable";font-style:normal;font-weight:45 920;font-display:swap;src:url(./PretendardVariable.woff2) format("woff2-variations")}\n');
+// PDF rendering and its CJK fallback resources must not contact an external CDN.
+for (const dir of ["cmaps", "standard_fonts"]) cpSync(path.join(root, "node_modules/pdfjs-dist", dir), path.join(assetDir, "pdfjs", dir), { recursive: true });
+copyFileSync(path.join(root, "node_modules/pdfjs-dist/LICENSE"), path.join(assetDir, "pdfjs/LICENSE.txt"));
+mkdirSync(path.join(root, "public/app"), { recursive: true });
+copyFileSync(path.join(root, "node_modules/pdfjs-dist/build/pdf.worker.min.mjs"), path.join(root, "public/app/pdf.worker.min.mjs"));
+console.log("public/fonts/ui · public/app/pdf.worker.min.mjs — same-origin UI fonts and PDF.js resources");

@@ -68,7 +68,7 @@ function render(pkg: Package, input: ClaimInput, animate: boolean) {
 
   const formRows = forms.map((f) => {
     const fill = fillable.get(f.id);
-    const fillNote = fill ? `<a class="fill-note" href="#form-${f.id}">${fill.hwpx ? "PDF·한글로 채울 수 있음" : "PDF로 채울 수 있음"}</a>` : "";
+    const fillNote = f.id === "F_YOYANG_APPLY" ? `<button type="button" class="fill-note editor-link" data-open-editor>여기서 요양급여 PDF 채우기</button>` : fill ? `<a class="fill-note" href="#form-${f.id}">${fill.hwpx ? "PDF·한글로 채울 수 있음" : "PDF로 채울 수 있음"}</a>` : "";
     return `<li class="r-row">
       <div class="r-head"><span class="r-title">${esc(f.title)}</span><span class="tag tag-${f.status}">${FORM_STATUS[f.status]}</span></div>
       ${f.condition ? `<p class="r-cond">${esc(f.condition)}</p>` : ""}
@@ -172,8 +172,24 @@ function initCopy() {
   });
 }
 
+function initEditor() {
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>("[data-open-editor]");
+    if (!button) return;
+    button.disabled = true;
+    try {
+      const { openEditor } = await import("./editor.js");
+      await openEditor();
+    } catch {
+      console.error("PDF editor could not start");
+      const error = document.getElementById("editor-start-error");
+      if (error) error.textContent = "편집기를 열지 못했습니다. 새로고침한 뒤 다시 시도하세요.";
+    } finally { button.disabled = false; }
+  });
+}
+
 // 하나가 실패해도 나머지는 돈다
-for (const [name, init] of [["확인표", initSheet], ["탭", initTabs], ["복사", initCopy]] as const) {
+for (const [name, init] of [["확인표", initSheet], ["탭", initTabs], ["복사", initCopy], ["편집기", initEditor]] as const) {
   try {
     init();
   } catch (e) {

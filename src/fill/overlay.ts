@@ -60,6 +60,8 @@ export interface FormMap {
   source_sha256: string;
   page_size: { width: number; height: number };
   slots: Record<string, Slot>;
+  /** Explicitly reviewed source-form choices; label prefixes never imply exclusivity. */
+  check_groups?: { id: string; label: string; exclusive: boolean; keys: string[] }[];
   /** applicant = 신청인 본인 서명란. 그 밖(consent·delegation 등)은 서식마다 */
   stamps?: Record<string, StampSpot>;
 }
