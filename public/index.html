@@ -444,7 +444,7 @@
       <h2 id="try-h">설치 전에 여기서 먼저 확인해 보세요</h2>
       <p class="sec-lead">설치하지 않아도 되고, 휴대폰 브라우저에서도 됩니다. 급여 종류와 재해 상황을 고르면 내야 할 서식, 챙길 첨부, 근거 조문이 바로 나옵니다. 고른 값은 이 기기 밖으로 나가지 않습니다. AI 도구에 연결했을 때 처음 하는 확인과 같은 내용입니다.</p>
       <p class="sec-lead">요양급여신청서와 미지급 보험급여 청구서는 여기서 바로 채우고 PDF로 내려받을 수 있습니다. 미지급 보험급여 청구서는 아래 확인표에서 급여 종류를 고르면 결과에 채우기 버튼이 나옵니다. 나머지 서식과 한글 출력은 PC 연결을 이용하세요. <a href="#manual-install">설치 방법</a></p>
-      <button type="button" class="btn btn-sub" data-open-editor="F_YOYANG_APPLY">요양급여 PDF 채우기</button>
+      <button type="button" class="btn btn-sub" data-open-editor="F_YOYANG_APPLY">요양급여신청서 PDF 채우기</button>
       <p id="editor-start-error" role="status"></p>
 
       <div class="sheet-wrap">
@@ -783,7 +783,7 @@ npx -y sanjae-apply fill F_YOYANG_APPLY values.json --out 신청서.hwpx --stamp
     <section id="faq" class="sec" aria-labelledby="faq-h">
       <h2 id="faq-h">자주 묻는 질문</h2>
       <div class="faq">
-        <details><summary>휴대폰에서도 쓸 수 있나요?</summary><p>확인표와 요양급여신청서 PDF 채우기는 설치 없이 브라우저에서 됩니다. 입력값은 기기 밖으로 보내거나 저장하지 않습니다. 나머지 서식, 한글 출력과 도장 추가는 PC 연결을 이용하세요(Node.js 20 이상).</p></details>
+        <details><summary>휴대폰에서도 쓸 수 있나요?</summary><p>확인표와 요양급여신청서·미지급 보험급여 청구서 PDF 채우기는 설치 없이 브라우저에서 됩니다. 입력값은 기기 밖으로 보내거나 저장하지 않습니다. 나머지 서식, 한글 출력과 도장 추가는 PC 연결을 이용하세요(Node.js 20 이상).</p></details>
         <details><summary>쓰는 데 비용이 드나요?</summary><p>MIT 라이선스로 공개한 npm 패키지라 내 PC 에 설치해 쓰는 데 비용이 없고, 계정이나 토큰도 필요 없습니다. 원격 연결만 운영자가 발급한 토큰이 있어야 합니다.</p></details>
         <details><summary>입력한 개인정보는 어디로 가나요?</summary><p>이 페이지의 확인표와 서식 PDF 편집기(요양급여신청서·미지급 보험급여 청구서)는 브라우저 안에서만 처리합니다. 편집기를 닫거나 새로고침하면 입력값이 사라집니다. 내려받은 PDF에는 입력값이 남으니 직접 보관해 주세요. 원격 MCP 연결은 서버에 저장하지 않지만 네트워크를 거칩니다. 주민등록번호는 비워 두고 출력한 뒤 손으로 적어도 됩니다.</p></details>
         <details><summary>「제출할 수 있는 상태」가 나오면 승인되나요?</summary><p>아닙니다. 서식과 첨부가 갖춰졌다는 표시일 뿐입니다. 산재 승인 여부는 근로복지공단이 심사해 정하고, 이 도구는 그 결과를 다루지 않습니다.</p></details>

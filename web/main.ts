@@ -2,6 +2,7 @@
 // 선택지의 문구는 index.html 에 있다(고치기 쉽게). 숫자·서식 표는 빌드 때 index.html 에 구워져 있다(scripts/build_web_data.mjs).
 import { buildPackage, normalizeInput, toCheckArgs, type ClaimInput, type Package } from "./engine.js";
 import { lawUrl } from "./law.js";
+import { editorForm } from "./editor-forms.js";
 
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector(sel) as T | null;
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -19,8 +20,6 @@ function readFillable(): Map<string, { hwpx: boolean }> {
   }
 }
 const fillable = readFillable();
-/** 이 페이지의 칸 입력 화면(editor.ts)이 받는 서식 → 버튼 이름 */
-const EDITOR_FORMS = new Map([["F_YOYANG_APPLY", "요양급여"], ["F_UNPAID_CLAIM", "미지급 보험급여 청구서"]]);
 const have = new Set<string>();
 
 function readInput(form: HTMLFormElement): ClaimInput {
@@ -70,7 +69,8 @@ function render(pkg: Package, input: ClaimInput, animate: boolean) {
 
   const formRows = forms.map((f) => {
     const fill = fillable.get(f.id);
-    const fillNote = EDITOR_FORMS.has(f.id) ? `<button type="button" class="fill-note editor-link" data-open-editor="${f.id}">여기서 ${EDITOR_FORMS.get(f.id)} PDF 채우기</button>` : fill ? `<a class="fill-note" href="#form-${f.id}">${fill.hwpx ? "PDF·한글로 채울 수 있음" : "PDF로 채울 수 있음"}</a>` : "";
+    const editable = editorForm(f.id);
+    const fillNote = editable ? `<button type="button" class="fill-note editor-link" data-open-editor="${f.id}">여기서 ${esc(editable.title)} PDF 채우기</button>` : fill ? `<a class="fill-note" href="#form-${f.id}">${fill.hwpx ? "PDF·한글로 채울 수 있음" : "PDF로 채울 수 있음"}</a>` : "";
     return `<li class="r-row">
       <div class="r-head"><span class="r-title">${esc(f.title)}</span><span class="tag tag-${f.status}">${FORM_STATUS[f.status]}</span></div>
       ${f.condition ? `<p class="r-cond">${esc(f.condition)}</p>` : ""}

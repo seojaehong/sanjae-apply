@@ -14,6 +14,7 @@ if (!cli || !outDir) {
   process.exit(2);
 }
 mkdirSync(outDir, { recursive: true });
+// 금지어는 우리 서비스를 부르는 이름·설명에 건다. 공단 서식 원문 칸 이름(예 「대리인 : 성명」)은 예외다(261031 재홍님 추천안 승인).
 const FORBIDDEN = /승인\s*가능|확률|적중|승소|노무사가\s*대신/;
 const results = [];
 const rec = (area, name, ok, detail) => {
