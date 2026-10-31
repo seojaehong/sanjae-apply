@@ -128,7 +128,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
       const fillable_hwpx = fillableHwpxForms();
       const m = form_id && fillable.includes(form_id) ? loadMap(form_id) : undefined;
       const d = m ? describeForm(m, { checkHint: true }) : undefined;
-      return text({ form: known, fillable, fillable_hwpx, slots: d?.slots, slot_labels: d?.slot_labels, stamps: d?.stamps, entries: forms });
+      return text({ form: known, fillable, fillable_hwpx, slots: d?.slots, slot_labels: d?.slot_labels, slot_details: d?.slot_details, stamps: d?.stamps, entries: forms });
     },
   );
 

@@ -1,0 +1,49 @@
+/* The editor extends the existing source-form paper, ink, and pen tokens. */
+.editor-link { border: 0; padding: 0; background: none; font: inherit; color: var(--pen); text-decoration: underline; cursor: pointer; text-align: left; }
+#editor { width: min(1460px, 98vw); max-width: none; height: 94dvh; max-height: 98dvh; padding: 0; border: 2px solid var(--ink); color: var(--ink); background: var(--paper); }
+#editor[open] { display: flex; flex-direction: column; overflow: hidden; }
+.editor-head, .editor-actions, .editor-mobile-tabs { flex-shrink: 0; }
+#editor::backdrop { background: rgb(15 25 20 / .65); }
+.editor-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 24px; background: var(--head); border-bottom: 1px solid var(--rule); }
+.editor-head h2 { font: 700 25px/1.4 var(--serif); margin: 0; }
+.editor-head p { font-size: 14px; margin: 4px 0 0; }
+#editor button { min-height: 44px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); padding: 8px 14px; font: 600 14px/1.4 var(--sans); cursor: pointer; }
+#editor button:hover { border-color: var(--pen); color: var(--pen); }
+#editor button:disabled { opacity: .5; cursor: default; }
+#editor #editor-download { color: var(--paper); background: var(--pen); border-color: var(--pen); }
+.editor-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--rule); }
+.editor-actions p { margin: 0; flex: 1 1 260px; font-size: 14px; }
+.editor-body { display: grid; grid-template-columns: minmax(320px, 5fr) minmax(360px, 6fr); align-items: stretch; flex: 1; min-height: 0; overflow: hidden; }
+.editor-mobile-tabs { display: none; }
+.editor-inputs { padding: 16px 24px 40px; min-width: 0; min-height: 0; overflow: auto; }
+#editor-fields h3 { padding-block: 18px 8px; border-bottom: 2px solid var(--ink); font: 600 20px/1.5 var(--serif); margin: 0 0 16px; }
+#editor-fields fieldset { border: 1px solid var(--rule); margin: 18px 0; padding: 10px 14px; min-width: 0; }
+#editor-fields legend { font-weight: 600; padding-inline: 5px; }
+.editor-hint { color: var(--ink-2); font-size: 13px; margin: 4px 0 10px; }
+.editor-field { display: block; margin-block: 14px; }
+.editor-field span { display: block; font-size: 14px; margin-bottom: 4px; }
+.editor-field input, .editor-field textarea { display: block; width: 100%; border: 1px solid var(--rule); border-radius: 0; background: var(--paper); color: var(--ink); padding: 9px 10px; min-height: 44px; font: 400 16px/1.5 var(--sans); }
+.editor-field textarea { resize: vertical; }
+.editor-field [aria-invalid=true] { border: 2px solid var(--seal); }
+.editor-choice { display: flex; align-items: flex-start; gap: 9px; padding-block: 7px; font-size: 14px; cursor: pointer; }
+.editor-choice input { flex: none; width: 20px; height: 20px; accent-color: var(--pen); margin-top: 3px; }
+#editor .editor-clear { font-size: 12px; padding: 5px 8px; margin-top: 8px; }
+.editor-output { padding: 16px; background: var(--desk); border-left: 1px solid var(--rule); min-width: 0; min-height: 0; overflow: auto; }
+.editor-pages { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.editor-output p { font-size: 13px; text-align: center; margin: 8px 0; }
+#editor-preview { min-height: 200px; padding: 12px; }
+#editor-preview[aria-busy=true] { opacity: .55; }
+#editor-preview canvas { display: block; background: white; box-shadow: 0 2px 5px rgb(0 0 0 / .12); }
+@media (max-width: 800px) {
+  #editor { width: 100%; height: 100dvh; max-height: 100dvh; margin: 0; border: 0; }
+  .editor-head, .editor-actions { padding: 12px 16px; }
+  .editor-head h2 { font-size: 21px; }
+  .editor-body { display: block; overflow: auto; }
+  .editor-mobile-tabs { display: flex; gap: 8px; padding: 8px 16px; }
+  #editor .editor-mobile-tabs [aria-pressed=true] { border-color: var(--pen); color: var(--pen); }
+  #editor[data-view=inputs] .editor-output, #editor[data-view=preview] .editor-inputs { display: none; }
+  .editor-inputs { width: 100%; padding: 12px 16px 24px; overflow: visible; }
+  .editor-output { width: 100%; border-left: 0; border-top: 1px solid var(--rule); padding: 8px; overflow: visible; }
+  #editor-close { flex: none; white-space: nowrap; }
+  .editor-actions p { flex-basis: 100%; }
+}

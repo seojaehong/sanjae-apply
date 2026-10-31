@@ -7,6 +7,12 @@
     "height": 841.0
   },
   "_about": "좌표 단위 pt, 원점 쪽 왼쪽 위(PyMuPDF). 1쪽만. 격자선·녹색 상자·괄호는 probe_form.py 261026 실측. 생년월일·재해발생일 상자는 get_drawings 가로선 x 구간(녹색 스캔은 「년」「월」 라벨 자리를 한 상자로 합쳐 잡았다). 체크 x 는 「[」 x1 과 「]」 x0 의 중간, 「( )」 는 괄호 사이 중간. 사망한 수급권자·청구인 행의 월·일 칸은 라벨 사이 9pt 뿐이라 size 7. accident_datetime 은 12자리를 받아도 앞 8자리만 들어간다. 청구인은 3행(claimant1~3). (0.5.4) 신청 쪽 칸 전수: 지사 이름(branch_name, T0 r25 c0 group). 처리란·간격 줄은 forms/coverage_exempt/F_UNPAID_CLAIM.json.",
+  "check_groups": [
+    { "id": "account_type", "label": "수령계좌", "exclusive": true, "keys": ["account_type_normal", "account_type_protected"] },
+    { "id": "unpaid_benefits", "label": "미지급 보험급여 종류", "exclusive": false, "keys": ["unpaid_yoyang", "unpaid_huyeop", "unpaid_janghae", "unpaid_ganbyeong", "unpaid_yujok", "unpaid_jangrye", "unpaid_sangbyeong", "unpaid_jaehwal", "unpaid_jinpye_bosang", "unpaid_jinpye_yujok"] },
+    { "id": "compensation", "label": "다른 법령에 따른 배상 또는 보상 수령 사실", "exclusive": true, "keys": ["compensation_yes", "compensation_no"] },
+    { "id": "info_consent", "label": "행정정보 공동이용 동의", "exclusive": true, "keys": ["info_consent_yes", "info_consent_no"] }
+  ],
   "slots": {
     "name": {
       "kind": "text",
