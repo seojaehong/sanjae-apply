@@ -4,7 +4,15 @@ import type { SlotDetail } from "../src/fill/describe.js";
 
 GlobalWorkerOptions.workerSrc = new URL("app/pdf.worker.min.mjs", document.baseURI).href;
 
-const ID = "F_YOYANG_APPLY";
+/** Forms the browser editor supports. Page titles fall back to "N쪽"; `sourceFrom` marks pages kept as the original. */
+const FORMS: Record<string, { title: string; pages?: Record<number, string>; sourceFrom?: { page: number; note: string } }> = {
+  F_YOYANG_APPLY: {
+    title: "요양급여신청서",
+    pages: { 1: "1쪽 · 재해자와 재해 내용", 2: "2쪽 · 다른 보상과 개인정보 동의" },
+    sourceFrom: { page: 3, note: "이 쪽은 의료기관이 작성하는 소견서입니다. 원본 그대로 포함됩니다." },
+  },
+  F_UNPAID_CLAIM: { title: "미지급 보험급여 청구서" },
+};
 const el = <T extends HTMLElement>(id: string): T => {
   const node = document.getElementById(id);
   if (!node) throw new Error(`Missing editor element: ${id}`);
@@ -12,8 +20,9 @@ const el = <T extends HTMLElement>(id: string): T => {
 };
 
 /** Only this dialog session holds claimant values. Closing it discards all values and PDF bytes. */
-export async function openEditor(): Promise<void> {
-  const dialog = el<HTMLDialogElement>("editor");
+export async function openEditor(ID: string): Promise<void> {
+  const info = FORMS[ID];
+  if (!info) throw new Error("Unsupported editor form");  const dialog = el<HTMLDialogElement>("editor");
   if (dialog.open) return;
   const form = el<HTMLFormElement>("editor-fields");
   const status = el<HTMLParagraphElement>("editor-status");
@@ -69,13 +78,13 @@ export async function openEditor(): Promise<void> {
     canvas.style.width = "100%";
     canvas.style.height = "auto";
     canvas.setAttribute("role", "img");
-    canvas.setAttribute("aria-label", `채운 요양급여신청서 ${pageNumber}쪽 미리보기`);
+    canvas.setAttribute("aria-label", `채운 ${info.title} ${pageNumber}쪽 미리보기`);
     await page.render({ canvas, viewport, transform: [scale, 0, 0, scale, 0, 0] }).promise;
     if (closed || revision !== version) return;
     preview.replaceChildren(canvas);
     preview.setAttribute("aria-busy", "false");
     el("editor-page").textContent = `${pageNumber} / ${current.numPages}쪽`;
-    el("editor-page-note").textContent = pageNumber > 2 ? "이 쪽은 의료기관이 작성하는 소견서입니다. 원본 그대로 포함됩니다." : "입력한 내용과 서식의 칸을 대조해 주세요.";
+    el("editor-page-note").textContent = info.sourceFrom && pageNumber >= info.sourceFrom.page ? info.sourceFrom.note : "입력한 내용과 서식의 칸을 대조해 주세요.";
     prev.disabled = pageNumber === 1;
     next.disabled = pageNumber === current.numPages;
   };
@@ -170,7 +179,7 @@ export async function openEditor(): Promise<void> {
     // Public-asset promises may be rejected; discard only that cache, keeping claimant values.
     map = undefined; originalPdf = undefined; font = undefined;
     assets = fetchAssets();
-    if (!form.childElementCount) { close(); void openEditor().catch(() => console.error("PDF editor retry failed")); }
+    if (!form.childElementCount) { close(); void openEditor(ID).catch(() => console.error("PDF editor retry failed")); }
     else schedule(true);
   }, listen);
   for (const [button, delta] of [[prev, -1], [next, 1]] as const) {
@@ -190,7 +199,7 @@ export async function openEditor(): Promise<void> {
     if (!bytes || download.disabled) return;
     const url = URL.createObjectURL(new Blob([bytes.slice().buffer], { type: "application/pdf" }));
     const a = document.createElement("a");
-    a.href = url; a.download = "요양급여신청서.pdf";
+    a.href = url; a.download = `${info.title}.pdf`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }, listen);
@@ -208,6 +217,8 @@ export async function openEditor(): Promise<void> {
   }
   download.disabled = true; prev.disabled = true; next.disabled = true; retry.hidden = true;
   el("editor-page").textContent = "준비 중";
+  el("editor-title").textContent = `${info.title} 채우기`;
+  form.setAttribute("aria-label", `${info.title} 입력`);
   status.textContent = "서식의 칸과 원본 PDF를 준비하고 있습니다.";
   dialog.showModal();
   try {
@@ -215,18 +226,20 @@ export async function openEditor(): Promise<void> {
     if (!response.ok) throw new Error("Form catalog unavailable");
     const catalog = await response.json() as { forms: { id: string; slots: SlotDetail[] }[] };
     const schema = catalog.forms.find((entry) => entry.id === ID);
-    if (!schema || schema.slots.length !== 74) throw new Error("Unexpected form schema");
+    // The catalog's slot list must match the fill map's slots, so every input reaches the PDF.
+    const mapKeys = Object.keys((await source.map()).slots);
+    if (!schema || !schema.slots.length || schema.slots.length !== mapKeys.length || schema.slots.some((s) => !mapKeys.includes(s.key))) throw new Error("Unexpected form schema");
     if (closed) return;
-    buildFields(form, schema.slots);
+    buildFields(form, schema.slots, info.pages ?? {});
     if (!closed) schedule(true);
   } catch { if (!closed) fail(); }
 }
 
-function buildFields(form: HTMLFormElement, slots: SlotDetail[]): void {
-  for (const page of [1, 2]) {
+function buildFields(form: HTMLFormElement, slots: SlotDetail[], titles: Record<number, string>): void {
+  for (const page of [...new Set(slots.map((s) => s.page))].sort((a, b) => a - b)) {
     const section = document.createElement("section");
     const title = document.createElement("h3");
-    title.textContent = page === 1 ? "1쪽 · 재해자와 재해 내용" : "2쪽 · 다른 보상과 개인정보 동의";
+    title.textContent = titles[page] ?? `${page}쪽`;
     section.append(title);
     const groups = new Set<string>();
     for (const slot of slots.filter((s) => s.page === page)) {
@@ -260,7 +273,9 @@ function field(slot: SlotDetail): HTMLLabelElement {
   const label = document.createElement("label");
   label.className = slot.kind === "check" ? "editor-choice" : "editor-field";
   const text = document.createElement("span");
-  text.textContent = slot.kind === "check" && slot.selection_group && slot.label.includes(":") ? slot.label.slice(slot.label.indexOf(":") + 1).trim() : slot.label;
+  const shown = slot.kind === "check" && slot.selection_group && slot.label.includes(":") ? slot.label.slice(slot.label.indexOf(":") + 1).trim() : slot.label;
+  // Display only: drop the form's empty check box "( )" at the end. The map and describeForm keep the original label.
+  text.textContent = slot.kind === "check" ? shown.replace(/\(\s*\)\s*$/, "").trim() : shown;
   const input = slot.kind === "multiline" ? document.createElement("textarea") : document.createElement("input");
   input.dataset.slot = slot.key;
   input.autocomplete = "off";
