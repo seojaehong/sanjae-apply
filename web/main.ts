@@ -2,6 +2,7 @@
 // 선택지의 문구는 index.html 에 있다(고치기 쉽게). 숫자·서식 표는 빌드 때 index.html 에 구워져 있다(scripts/build_web_data.mjs).
 import { buildPackage, normalizeInput, toCheckArgs, type ClaimInput, type Package } from "./engine.js";
 import { lawUrl } from "./law.js";
+import { editorForm } from "./editor-forms.js";
 
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector(sel) as T | null;
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -68,7 +69,8 @@ function render(pkg: Package, input: ClaimInput, animate: boolean) {
 
   const formRows = forms.map((f) => {
     const fill = fillable.get(f.id);
-    const fillNote = f.id === "F_YOYANG_APPLY" ? `<button type="button" class="fill-note editor-link" data-open-editor>여기서 요양급여 PDF 채우기</button>` : fill ? `<a class="fill-note" href="#form-${f.id}">${fill.hwpx ? "PDF·한글로 채울 수 있음" : "PDF로 채울 수 있음"}</a>` : "";
+    const editable = editorForm(f.id);
+    const fillNote = editable ? `<button type="button" class="fill-note editor-link" data-open-editor="${f.id}">여기서 ${esc(editable.title)} PDF 채우기</button>` : fill ? `<a class="fill-note" href="#form-${f.id}">${fill.hwpx ? "PDF·한글로 채울 수 있음" : "PDF로 채울 수 있음"}</a>` : "";
     return `<li class="r-row">
       <div class="r-head"><span class="r-title">${esc(f.title)}</span><span class="tag tag-${f.status}">${FORM_STATUS[f.status]}</span></div>
       ${f.condition ? `<p class="r-cond">${esc(f.condition)}</p>` : ""}
@@ -175,11 +177,12 @@ function initCopy() {
 function initEditor() {
   document.addEventListener("click", async (event) => {
     const button = (event.target as Element).closest<HTMLButtonElement>("[data-open-editor]");
-    if (!button) return;
+    const formId = button?.dataset.openEditor;
+    if (!button || !formId) return;
     button.disabled = true;
     try {
       const { openEditor } = await import("./editor.js");
-      await openEditor();
+      await openEditor(formId);
     } catch {
       console.error("PDF editor could not start");
       const error = document.getElementById("editor-start-error");

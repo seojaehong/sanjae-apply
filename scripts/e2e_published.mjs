@@ -6,6 +6,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { FORBIDDEN } from "./forbidden_words.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const [cli, outDir] = process.argv.slice(2);
@@ -14,7 +15,6 @@ if (!cli || !outDir) {
   process.exit(2);
 }
 mkdirSync(outDir, { recursive: true });
-const FORBIDDEN = /승인\s*가능|확률|적중|승소|노무사가\s*대신/;
 const results = [];
 const rec = (area, name, ok, detail) => {
   results.push({ area, name, ok, detail });
