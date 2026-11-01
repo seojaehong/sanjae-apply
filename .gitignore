@@ -23,3 +23,6 @@ public/app/
 public/data/
 public/assets/
 public/fonts/ui/
+
+# 웹 검증 스킬 증거(.claude/skills/verify-sanjae) — 채운 PDF(합성 값)·스크린샷
+artifacts/
