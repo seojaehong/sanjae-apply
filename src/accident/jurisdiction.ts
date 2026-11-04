@@ -334,6 +334,8 @@ export function findOffice(address: string, data: LaborOfficeData, opts: { const
 
 /** 지방청 접수 과 미확정·단일 출처 팩스·번호 미확인일 때 붙이는 표시(문구 그대로) */
 export const CALL_BEFORE_SUBMIT = "제출 전 전화 확인 권장";
+/** 관서 화면에서 직접 확인하지 못한 팩스 번호에 붙이는 표시(여수지청 — 재홍님 결정 2026-11-04) */
+export const FAX_CHECK_NEEDED = "확인 필요";
 
 export type OfficeLookupStatus =
   /** 데이터 파일이 없다 — fallback 만 쓴다 */
@@ -364,6 +366,8 @@ export interface ReportDesk {
   fax_verification: string | null;
   /** 팩스 번호를 어디서 읽었나 */
   fax_source: string | null;
+  /** 「확인 필요」 — 팩스 번호가 관서 화면에서 직접 확인한 값이 아닐 때(예: 여수지청, 단일 출처). 아니면 null */
+  fax_check: string | null;
   /** 번호를 확인한 관서 화면 */
   source_url: string | null;
   /** 건설업 전담 과로 안내했는가 */
@@ -455,6 +459,7 @@ function desk(c: ReportTo | RawContact, role: "기본" | "보조"): ReportDesk {
     phone_verification: c.phone_verification ?? null,
     fax_verification: c.fax_verification ?? null,
     fax_source: c.fax_source ?? null,
+    fax_check: c.fax && c.fax_verification && c.fax_verification !== OFFICIAL ? FAX_CHECK_NEEDED : null,
     source_url: c.source ?? null,
     construction_desk: c.kind === "construction",
     notes: [...(c.notes ?? [])],
@@ -487,8 +492,10 @@ function shape(s: RawSummary): OfficeContact | null {
     if (!report_to_alt.phone && !report_to_alt.fax) cautions.push(`${report_to_alt.department} 번호는 관서 화면에 없어 미확인이다 — 관서 대표전화로 확인`);
   }
   if (!report_to.fax) cautions.push(`${report_to.department} 팩스 번호 미확인 — 전화로 확인`);
-  else if (report_to.fax_verification && report_to.fax_verification !== OFFICIAL) {
-    cautions.push(`${report_to.department} 팩스 번호 확인방법 = ${report_to.fax_verification}${report_to.fax_source ? `(${report_to.fax_source})` : ""}. ${CALL_BEFORE_SUBMIT}`);
+  else if (report_to.fax_check) {
+    cautions.push(
+      `${report_to.department} 팩스 ${report_to.fax} — ${report_to.fax_check}. 확인방법 = ${report_to.fax_verification}${report_to.fax_source ? `(${report_to.fax_source})` : ""}. ${CALL_BEFORE_SUBMIT}`,
+    );
   }
   if (report_to.phone_verification && report_to.phone_verification !== OFFICIAL) {
     cautions.push(`${report_to.department} 전화 번호 확인방법 = ${report_to.phone_verification}. ${CALL_BEFORE_SUBMIT}`);

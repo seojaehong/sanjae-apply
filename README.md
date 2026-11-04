@@ -11,7 +11,7 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20http-7c3aed)](https://modelcontextprotocol.io)
-[![tests](https://img.shields.io/badge/tests-293%20passing-2ea44f)](test/)
+[![tests](https://img.shields.io/badge/tests-294%20passing-2ea44f)](test/)
 
 <img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서. 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
 
@@ -210,7 +210,7 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
 | 서식 대장 | 코드의 서식 ↔ `forms/catalog.json` sha256 | 16종 |
 | PDF 채우기 | 13종 전부 글자 위치 + **픽셀 비교**(백지 출력 사고 방지) + 육안 | 약 660칸 |
 | 한글 채우기 | 12종 전부 zip 안 글자·체크 수·글자색 + **한글이 실제로 열어 PDF 로 그리는지**(COM) + 쪽수가 원본과 같은지 + 육안 | 약 720칸 |
-| 관할 찾기 | 원본 시험 15건과 같은 사례(같은 이름 구·세종·제주·영월·칠곡 등) + 관할표 전 구역 출력 검사(금지어·절대 경로·성명 모양) | 24건 |
+| 관할 찾기 | 원본 시험 15건과 같은 사례(같은 이름 구·세종·제주·영월·칠곡 등) + 관할표 전 구역 출력 검사(금지어·절대 경로·성명 모양) | 25건 |
 | MCP | http · stdio 양쪽 initialize / tools/list / tools/call | SDK 클라이언트 |
 | 운영 드라이런 | Vercel 운영 끝점에 공식 SDK 로 31건 | 전부 통과 |
 
@@ -248,7 +248,7 @@ api/mcp      Vercel 함수
 web/         안내 페이지 스크립트(engine.ts = src/core 브라우저 번들 · main.ts = 화면). npm run build:web → public/app · public/data
 forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 13) · bundled/(동봉 PDF 13) · hwpx/(변환 hwpx 12) · hwpx_maps/(한글 지도 12)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
-test/        vitest 293 (formal_rules.test.ts 전수 10,368건 포함)
+test/        vitest 294 (formal_rules.test.ts 전수 10,368건 포함)
 docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드 · 산업재해조사표 작성방법 · SafeClaw 연동 설계
 ```
 

@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   CALL_BEFORE_SUBMIT,
+  FAX_CHECK_NEEDED,
   findOffice,
   loadLaborOfficeData,
   lookupLaborOffice,
@@ -179,7 +180,7 @@ describe("관할 찾기 도구 출력(lookupLaborOffice)", () => {
     expect(r.status).toBe("CONFIRMED");
     const o = r.office!;
     expect(o).toMatchObject({ office_name: "서울지방고용노동청", office_kind: "지방청", labor_office_value: "서울", confirm_before_submit: CALL_BEFORE_SUBMIT });
-    expect(o.report_to).toMatchObject({ role: "기본", department: "산재예방감독과", phone_verification: "공식 직접 확인", fax_verification: "공식 직접 확인" });
+    expect(o.report_to).toMatchObject({ role: "기본", department: "산재예방감독과", phone_verification: "공식 직접 확인", fax_verification: "공식 직접 확인", fax_check: null });
     expect(o.report_to.phone).toMatch(/^\d{2,4}-\d{3,4}-\d{4}$/);
     expect(o.report_to.fax).toMatch(/^\d{2,4}-\d{3,4}-\d{4}$/);
     expect(o.report_to_alt).toMatchObject({ role: "보조", department: "광역산재예방감독과" });
@@ -212,9 +213,12 @@ describe("관할 찾기 도구 출력(lookupLaborOffice)", () => {
     expect(g.cautions.some((c) => c.includes("미확인"))).toBe(true);
   });
 
-  it("여수지청 팩스는 확인방법 「단일 출처」와 출처·표시를 함께 낸다", () => {
+  it("여수지청 팩스는 0503-8803-0638 에 「확인 필요」, 확인방법 「단일 출처」와 출처·표시를 함께 낸다(재홍님 결정)", () => {
     const o = lookupLaborOffice(ROOT, "전라남도 여수시 시청로 1").office!;
     expect(o.office_name).toBe("여수지청");
+    expect(o.report_to.fax).toBe("0503-8803-0638");
+    expect(o.report_to.fax_check).toBe(FAX_CHECK_NEEDED);
+    expect(o.cautions.some((c) => c.includes("0503-8803-0638") && c.includes(FAX_CHECK_NEEDED))).toBe(true);
     expect(o.report_to.fax_verification).toBe("단일 출처");
     expect(o.report_to.phone_verification).toBe("공식 직접 확인");
     expect(o.report_to.fax_source).toContain("전자팩스번호표");
@@ -282,5 +286,16 @@ describe("관할 찾기 도구 출력(lookupLaborOffice)", () => {
       }
     }
     expect(seen.size).toBe(49);
+  });
+
+  it("「확인 필요」는 관서 화면에서 직접 확인하지 못한 팩스(여수 하나)에만 붙는다", () => {
+    const flagged = new Set<string>();
+    for (const [sido, m] of Object.entries(data.jurisdiction.jurisdiction)) {
+      for (const sgg of Object.keys(m)) {
+        const r = lookupLaborOffice(ROOT, sgg === "*" ? `${sido} 1` : `${sido} ${sgg} 1`);
+        for (const o of [r.office, ...(r.candidates ?? [])]) if (o?.report_to.fax_check) flagged.add(o.office_id);
+      }
+    }
+    expect([...flagged]).toEqual(["yeosu"]);
   });
 });

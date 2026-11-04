@@ -85,16 +85,18 @@ function pack(meta: Record<string, unknown>, bytes: Uint8Array, file: { uri: str
 }
 
 const ACCIDENT_REPORT = "F_INDUSTRIAL_ACCIDENT_REPORT";
+/** 서식의 「건설업만 작성」 칸 — 발주자·원수급·현장명·공사종류·공정률·공사금액 */
+const CONSTRUCTION_ONLY = /^(orderer|main_contractor_|site_name$|construction_|progress_rate$)/;
 
 /**
- * 산업재해조사표 결과에 붙이는 관할 관서 안내 — workplace_address 로 찾고, 건설업 칸(construction_*)에 값이 있으면 건설 전담 과로.
+ * 산업재해조사표 결과에 붙이는 관할 관서 안내 — workplace_address 로 찾고, 건설업 칸(CONSTRUCTION_ONLY)에 값이 있으면 건설 전담 과로.
  * labor_office 칸은 고치지 않는다(적은 값과 제안 값을 나란히 보여 줄 뿐).
  */
 function laborOfficeFor(formId: string, values: Record<string, string | boolean>): Record<string, unknown> {
   if (formId !== ACCIDENT_REPORT) return {};
   const addr = typeof values.workplace_address === "string" ? values.workplace_address.trim() : "";
   if (!addr) return { labor_office: { status: "NO_ADDRESS", note: "workplace_address(사업장 소재지)를 넣으면 관할 관서·접수 부서·전화·팩스를 함께 돌려준다" } };
-  const construction = Object.entries(values).some(([k, v]) => k.startsWith("construction_") && v !== "" && v !== false);
+  const construction = Object.entries(values).some(([k, v]) => CONSTRUCTION_ONLY.test(k) && v !== "" && v !== false);
   const lookup = lookupLaborOffice(packageRoot(), addr, construction);
   const written = typeof values.labor_office === "string" && values.labor_office.trim() ? values.labor_office.trim() : null;
   return { labor_office: { ...lookup, slot: { written, suggested: lookup.office?.labor_office_value ?? null } } };
@@ -159,7 +161,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
       title: "서식 채우기(정본 PDF 오버레이 · 한글)",
       description:
         "form_id 의 정본 서식에 값을 넣어 base64 로 돌려준다. format='pdf'(기본)는 정본 PDF 오버레이, format='hwpx'는 한글 문서(한글 2014+ 로 열어 고칠 수 있다). 먼저 get_form_catalog(form_id) 의 slot_labels 로 칸을 고른다(칸 이름은 두 형식이 같다). 서식의 선택지(사업주여부·친인척여부·근로자유형·신청 구분·예/아니오·개인정보 동의 등)는 해당 체크 칸에 true 를 넣어야 찍힌다. 아는 값은 빠짐없이 넣는다. 서버에 저장하지 않는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다). 사용자가 도장·날인·인감을 말하면 stamp 를 넣는다(넣지 않으면 서명란이 빈다). " +
-        "F_INDUSTRIAL_ACCIDENT_REPORT(산업재해조사표)는 고용노동부(관할 지방고용노동관서)에 내는 서식이다 — 서술 칸은 get_accident_report_guide 로 쓰고 check_accident_report 로 점검한 뒤 채운다. 칸이 모자란 서술은 칸에 「(별지에 적음)」을 쓰고 끝에 별지 쪽을 붙인다(report.annexed). 도장 기본 자리는 사업주(applicant)이고, 근로자대표 확인란(worker_rep)은 근로자대표 본인 것만 spot='worker_rep' 로 따로 찍는다. 결과의 labor_office 에 workplace_address 로 찾은 관할 관서·접수 부서·전화·팩스·확인방법(find_labor_office 와 같은 내용)과, labor_office 칸에 적은 값·제안 값(slot)을 붙인다.",
+        "F_INDUSTRIAL_ACCIDENT_REPORT(산업재해조사표)는 고용노동부(관할 지방고용노동관서)에 내는 서식이다 — 서술 칸은 get_accident_report_guide 로 쓰고 check_accident_report 로 점검한 뒤 채운다. 칸이 모자란 서술은 칸에 「(별지에 적음)」을 쓰고 끝에 별지 쪽을 붙인다(report.annexed). 도장 기본 자리는 사업주(applicant)이고, 근로자대표 확인란(worker_rep)은 근로자대표 본인 것만 spot='worker_rep' 로 따로 찍는다. 결과의 labor_office 에 workplace_address 로 찾은 관할 관서·접수 부서·전화·팩스·확인방법(find_labor_office 와 같은 내용)과, labor_office 칸에 적은 값·제안 값(slot)을 붙인다. 건설업 칸(발주자·원수급·현장명·공사종류·공정률·공사금액)에 값이 있으면 건설 전담 과로 찾는다.",
       inputSchema: {
         form_id: z.string().describe("예: F_YOYANG_APPLY, F_HUYEOP_CLAIM …"),
         values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("칸 이름 → 값"),
@@ -196,7 +198,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
       description:
         "사업장 주소로 관할 지방고용노동관서(「고용노동부와 그 소속기관 직제 시행규칙」 별표 1 관할 구역)와 산업재해조사표를 받는 부서의 전화·팩스·부서 주소·출처(고용노동부 누리집 관서 화면)·확인방법(공식 직접 확인 / 두 리서치 일치 / 단일 출처 / 미확인)을 돌려준다. 근로복지공단이 아니다. " +
         "status: CONFIRMED(관서 하나) / CANDIDATES(시도가 빠져 같은 이름 시군구가 여럿이거나 칠곡군 석적읍처럼 법령이 읍·리 단위로 가르는데 주소에 그 단위가 없음 — 하나로 추정하지 않는다) / NOT_FOUND. " +
-        "지방청 직할 구역은 접수 과가 확정되지 않아 산재예방감독과(기본)와 광역산재예방감독과(보조) 번호를 함께 주고 confirm_before_submit='제출 전 전화 확인 권장'을 붙인다. 출처가 하나뿐인 팩스(여수지청)도 같은 표시와 확인방법을 낸다. " +
+        "지방청 직할 구역은 접수 과가 확정되지 않아 산재예방감독과(기본)와 광역산재예방감독과(보조) 번호를 함께 주고 confirm_before_submit='제출 전 전화 확인 권장'을 붙인다. 관서 화면에서 직접 확인하지 못한 팩스(여수지청 0503-8803-0638, 단일 출처)는 fax_check='확인 필요'와 같은 표시·확인방법을 낸다. " +
         "labor_office_value 는 서식 「(  )지방고용노동청장(지청장) 귀하」 괄호 값 제안이다(칸에 자동으로 넣지 않는다). 팩스를 보내지 않는다. 직원 성명은 없다. 입력을 저장하지 않는다. 데이터 확인일은 data.checked_at.",
       inputSchema: {
         address: z.string().min(1).max(200).describe("사업장 소재지(도로명·지번). 시도부터 넣으면 정확하다"),

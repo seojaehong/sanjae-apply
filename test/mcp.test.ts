@@ -121,7 +121,7 @@ describe("MCP 출구", () => {
     expect(s.office.report_to_alt).toMatchObject({ role: "보조", department: "광역산재예방감독과" });
     expect(s.office.confirm_before_submit).toBe("제출 전 전화 확인 권장");
     const y = JSON.parse((await call(41, { address: "전라남도 여수시 시청로 1" })).json.result.content[0].text);
-    expect(y.office.report_to.fax_verification).toBe("단일 출처");
+    expect(y.office.report_to).toMatchObject({ fax: "0503-8803-0638", fax_check: "확인 필요", fax_verification: "단일 출처" });
     const c = JSON.parse((await call(42, { address: "서울특별시 종로구 세종대로 209", construction: true })).json.result.content[0].text);
     expect(c.office.report_to.department).toBe("건설산재예방감독과");
     expect((await call(43, { address: "" })).json.result.isError).toBe(true);
@@ -137,6 +137,9 @@ describe("MCP 출구", () => {
     expect(r.labor_office.slot).toEqual({ written: "서울", suggested: "서울강남" });
     const h = JSON.parse((await call(51, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", format: "hwpx", values: { workplace_address: "서울특별시 종로구 세종대로 209", construction_amount: "850" } })).json.result.content[0].text);
     expect(h.labor_office.office.report_to.department).toBe("건설산재예방감독과");
+    // construction_* 가 비어도 다른 「건설업만 작성」 칸(발주자 등)에 값이 있으면 건설 전담 과
+    const o = JSON.parse((await call(54, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", values: { workplace_address: "서울특별시 종로구 세종대로 209", orderer_government: true, site_name: "합성 현장" } })).json.result.content[0].text);
+    expect(o.labor_office.office.report_to.department).toBe("건설산재예방감독과");
     const none = JSON.parse((await call(52, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", values: { name: "홍길동" } })).json.result.content[0].text);
     expect(none.labor_office.status).toBe("NO_ADDRESS");
     const other = JSON.parse((await call(53, { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" } })).json.result.content[0].text);
