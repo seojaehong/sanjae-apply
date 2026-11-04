@@ -8,6 +8,9 @@
     "source": "github"
   },
   "websiteUrl": "https://sanjae-apply.vercel.app/",
+  "icons": [
+    { "src": "https://sanjae-apply.vercel.app/icon.svg", "mimeType": "image/svg+xml", "sizes": ["any"] }
+  ],
   "version": "0.5.6",
   "packages": [
     {

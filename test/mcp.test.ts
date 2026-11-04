@@ -24,9 +24,23 @@ async function rpc(body: unknown, token: string | null = TOKEN, sessionId?: stri
 const INIT = { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "vitest", version: "0" } } };
 
 describe("MCP 출구", () => {
-  it("토큰이 없거나 틀리면 401", async () => {
-    expect((await rpc(INIT, null)).status).toBe(401);
+  it("토큰이 틀리면 401(초기화도)", async () => {
     expect((await rpc(INIT, "wrong")).status).toBe(401);
+  });
+
+  it("토큰 없이: initialize·tools/list 는 보이고 도구 실행은 401", async () => {
+    const init = await rpc(INIT, null);
+    expect(init.status).toBe(200);
+    const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, null, init.sessionId);
+    expect(list.status).toBe(200);
+    expect(list.json.result.tools.length).toBe(5);
+    const call = await rpc({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "make_seal", arguments: { name: "홍길동" } } }, null, init.sessionId);
+    expect(call.status).toBe(401);
+    // 공개 메서드 사이에 tools/call 을 끼운 묶음도 막는다
+    const batch = await rpc([{ jsonrpc: "2.0", id: 4, method: "tools/list" }, { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "make_seal", arguments: {} } }], null);
+    expect(batch.status).toBe(401);
+    const bad = await handler(new Request(URL, { method: "POST", headers: { "content-type": "application/json" }, body: "{not json" }));
+    expect(bad.status).toBe(401);
   });
 
   it("initialize → tools/list 에 도구 5개", async () => {
