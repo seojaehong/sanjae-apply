@@ -5,13 +5,13 @@
 **산재 신청 도우미 · MCP 서버 + CLI**
 
 급여 종류와 재해 상황을 말하면 **필요한 서식·첨부·근거 조문**을 알려 줍니다.
-근로복지공단 **정본 PDF 12종**도 그 자리에서 채워 줍니다.
+근로복지공단 **정본 PDF 12종**과, 관할 지방고용노동관서에 내는 **산업재해조사표**도 그 자리에서 채워 줍니다.
 
 [![release](https://img.shields.io/github/v/release/seojaehong/sanjae-apply?label=release&color=2ea44f)](https://github.com/seojaehong/sanjae-apply/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20http-7c3aed)](https://modelcontextprotocol.io)
-[![tests](https://img.shields.io/badge/tests-227%20passing-2ea44f)](test/)
+[![tests](https://img.shields.io/badge/tests-293%20passing-2ea44f)](test/)
 
 <img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서. 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
 
@@ -33,6 +33,8 @@
 | ⚖️ **근거 조문** | 산재보험법·시행령·시행규칙 조문 번호와 제목을 함께 붙입니다(법제처 국가법령정보 Open API) |
 | ❓ **남은 질문** | 아직 답이 없는 분기는 `open_confirmations` 로 되돌려 줍니다. 모르는 것을 지어내지 않습니다 |
 | 🖨️ **PDF 채우기** | 공단 서식자료실 정본 PDF 위에 값을 얹어 돌려줍니다. 신청인 칸만 채우고 의사·사업주·공단 칸은 비웁니다 |
+| 🏭 **산업재해조사표** | 산업안전보건법 시행규칙 별지 제30호서식(고용노동부 제출, 근로복지공단 서식 아님). 작성 지침·값 점검(읽기 전용)과 채우기. 칸이 모자란 서술은 별지 쪽에 적습니다 |
+| 🏢 **관할 관서 찾기** | 사업장 주소 → 관할 지방고용노동관서·조사표 접수 부서·전화·팩스·출처·확인방법. 팩스는 보내지 않습니다 |
 
 > [!IMPORTANT]
 > **승인 여부는 다루지 않습니다.** 결과의 `READY_TO_SUBMIT` 은 「제출할 수 있는 상태」이지 승인이 아닙니다.
@@ -135,20 +137,25 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 - 새 서식을 한글로 채우게 만드는 법은 [`docs/한글지도_작성법.md`](docs/한글지도_작성법.md) 에 있습니다.
 
 <details>
-<summary>🔧 MCP 도구 5개</summary>
+<summary>🔧 MCP 도구 8개</summary>
 
-| 도구 | 하는 일 |
-|---|---|
-| `list_required_forms` | 급여·재해 분기 → 서식·첨부·조문·절차·남은 질문 |
-| `get_form_catalog` | 공단 정본 대장(파일명·개정일·sha256·게시글 URL)과 채울 수 있는 서식(`fillable` PDF · `fillable_hwpx` 한글)·칸 이름·도장 자리 이름(`stamps`) |
-| `fill_form` | `form_id` + 값 (+ `format: "pdf" | "hwpx"`, + `stamp: { name }` 또는 `{ png_base64 }`, `spot`) → 채운 파일(base64). 로컬 설치면 `save_to`(절대 경로)로 파일에 바로 저장 |
-| `make_seal` | 이름 → 성명인(원·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(base64). 로컬 설치면 `save_to` 로 바로 저장 |
-| `fill_yoyang_apply` | v0.1 호환. `fill_form(form_id="F_YOYANG_APPLY")` 과 같습니다 |
+| 도구 | 읽기/쓰기 | 하는 일 |
+|---|---|---|
+| `list_required_forms` | 읽기 | 급여·재해 분기 → 서식·첨부·조문·절차·남은 질문 |
+| `get_form_catalog` | 읽기 | 정본 대장(파일명·개정일·sha256·출처 URL)과 채울 수 있는 서식(`fillable` PDF · `fillable_hwpx` 한글)·칸 이름·도장 자리 이름(`stamps`) |
+| `fill_form` | 파일 생성 | `form_id` + 값 (+ `format: "pdf" | "hwpx"`, + `stamp: { name }` 또는 `{ png_base64 }`, `spot`) → 채운 파일(base64). 로컬 설치면 `save_to`(절대 경로)로 파일에 바로 저장. 산업재해조사표는 결과에 관할 관서(`labor_office`)를 붙입니다 |
+| `make_seal` | 파일 생성 | 이름 → 성명인(원·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(base64). 로컬 설치면 `save_to` 로 바로 저장 |
+| `fill_yoyang_apply` | 파일 생성 | v0.1 호환. `fill_form(form_id="F_YOYANG_APPLY")` 과 같습니다 |
+| `get_accident_report_guide` | 읽기 전용 | 산업재해조사표 제출 의무·기한·과태료, 칸별 작성법, 서술 칸 요소·점검표, 분류코드, 자주 틀리는 것, 제출 경로 |
+| `check_accident_report` | 읽기 전용 | 산업재해조사표 값 점검(빈 칸·하나만 고르는 칸·날짜와 요일·휴업일수·원인 4요인·재발방지 기한과 담당·기한 참고일). 고치지 않습니다 |
+| `find_labor_office` | 읽기 전용 | 사업장 주소 → 관할 지방고용노동관서·조사표 접수 부서·전화·팩스·출처·확인방법. 지방청 직할 구역은 두 부서 번호와 「제출 전 전화 확인 권장」 |
+
+산업재해조사표 쓰는 법과 관할 데이터는 [`docs/산업재해조사표_작성방법.md`](docs/산업재해조사표_작성방법.md), [`data/labor-offices/README.md`](data/labor-offices/README.md).
 </details>
 
 ---
 
-## 📄 채울 수 있는 서식 12종
+## 📄 채울 수 있는 서식 13종
 
 | 서식 | 칸 수 | PDF | 한글 | 도장 자리 |
 |---|---:|:-:|:-:|:-:|
@@ -164,8 +171,9 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 | 장해급여 묶음 (청구서 + 소음작업 확인서 + 선택 확인서) | 159 | ✅ | ✅ | 5 |
 | 추가상병 신청서 | 40 | ✅ | ✅ | 3 |
 | 재요양 신청서 | 54 | ✅ | ✅ | 3 |
+| 산업재해조사표 (산업안전보건법 시행규칙 별지 제30호, 2025.10.1 개정 — 고용노동부 제출) | 73 | ✅ | ✅ | 2 |
 
-- 정본은 **근로복지공단 서식자료실** 파일만 씁니다. 좌표 지도는 정본의 `sha256` 에 묶여 있어 공단이 서식을 바꾸면 시험이 먼저 깨집니다.
+- 정본은 **근로복지공단 서식자료실** 파일을 씁니다. 산업재해조사표만 **법제처 국가법령정보센터**의 별지 서식을 씁니다. 좌표 지도는 정본의 `sha256` 에 묶여 있어 서식이 바뀌면 시험이 먼저 깨집니다.
 - 공단이 HWP 만 주는 서식은 한글에서 PDF 로 바꿔 동봉했습니다.
 - 이 도구의 범위는 채운 출력물을 만드는 것까지입니다. 온라인 접수(토탈서비스)는 범위 밖입니다.
 
@@ -178,7 +186,7 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
   --header "Authorization: Bearer <발급받은 토큰>"
 ```
 
-같은 도구 5개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다.
+같은 도구 8개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다.
 
 <details>
 <summary>🏠 직접 호스팅하기(Vercel)</summary>
@@ -198,10 +206,11 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
 | 층 | 내용 | 수 |
 |---|---|---:|
 | 규칙 | 급여 9종 × 분기, 금지어 필터 자기시험 | vitest |
-| 조문 대조 | 코드의 근거 조문 ↔ 법제처에서 받은 조문 XML 제목 | 18건 |
-| 서식 대장 | 코드의 서식 ↔ `forms/catalog.json` sha256 | 15종 |
-| PDF 채우기 | 12종 전부 글자 위치 + **픽셀 비교**(백지 출력 사고 방지) + 육안 | 약 590칸 |
-| 한글 채우기 | 11종 전부 zip 안 글자·체크 수·글자색 + **한글이 실제로 열어 PDF 로 그리는지**(COM) + 쪽수가 원본과 같은지 + 육안 | 약 650칸 |
+| 조문 대조 | 코드의 근거 조문 ↔ 법제처에서 받은 조문 XML 제목 | 24건 |
+| 서식 대장 | 코드의 서식 ↔ `forms/catalog.json` sha256 | 16종 |
+| PDF 채우기 | 13종 전부 글자 위치 + **픽셀 비교**(백지 출력 사고 방지) + 육안 | 약 660칸 |
+| 한글 채우기 | 12종 전부 zip 안 글자·체크 수·글자색 + **한글이 실제로 열어 PDF 로 그리는지**(COM) + 쪽수가 원본과 같은지 + 육안 | 약 720칸 |
+| 관할 찾기 | 원본 시험 15건과 같은 사례(같은 이름 구·세종·제주·영월·칠곡 등) + 관할표 전 구역 출력 검사(금지어·절대 경로·성명 모양) | 24건 |
 | MCP | http · stdio 양쪽 initialize / tools/list / tools/call | SDK 클라이언트 |
 | 운영 드라이런 | Vercel 운영 끝점에 공식 SDK 로 31건 | 전부 통과 |
 
@@ -231,14 +240,16 @@ src/core     규칙 S-01~S-13 · 서식/첨부 카탈로그 · 금지어 필터(
 src/fill     overlay.ts  pdf-lib 오버레이(text / boxes / check / multiline)
              hwpx.ts     한글 hwpx 채우기(cell / after / check / digits / boxes / group, 글자색·크기 교정)
 src/stamp    seal.ts 도장 PNG 생성(글리프 윤곽 래스터) · resolve.ts 자리 선택. PDF·hwpx 날인은 overlay.ts·hwpx.ts 의 stamps
-src/mcp      도구 5개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
+src/accident 산업재해조사표 지침(guide.ts) · 값 점검(check.ts) · 관할 관서 찾기(jurisdiction.ts)
+src/mcp      도구 8개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
 src/laws     법제처 Open API 클라이언트
+data/        labor-offices/ 관할(직제 시행규칙 별표 1)·관서 49곳 조사표 접수 부서 연락처(확인일 2026-11-04)
 api/mcp      Vercel 함수
 web/         안내 페이지 스크립트(engine.ts = src/core 브라우저 번들 · main.ts = 화면). npm run build:web → public/app · public/data
-forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 12) · bundled/(동봉 PDF 12) · hwpx/(변환 hwpx 11) · hwpx_maps/(한글 지도 11)
+forms/       catalog.json(정본 대장) · maps/(PDF 좌표 지도 13) · bundled/(동봉 PDF 13) · hwpx/(변환 hwpx 12) · hwpx_maps/(한글 지도 12)
 scripts/     comwel_forms.py(서식자료실 수집) · verify_fill.py · probe_form.py · hwp_to_hwpx.py · probe_hwpx.py · verify_hwpx_fill.py · hwpx_stamp_anchors.py(도장 앵커) · verify_hwpx_stamps.py(한글 날인 실측) · mcp_dryrun.mjs
-test/        vitest 227 (formal_rules.test.ts 전수 10,368건 포함)
-docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드
+test/        vitest 293 (formal_rules.test.ts 전수 10,368건 포함)
+docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배포·연결 가이드 · 산업재해조사표 작성방법 · SafeClaw 연동 설계
 ```
 
 ---
@@ -259,4 +270,4 @@ docs/        좌표지도 작성법 · 한글지도 작성법 · 패키징·배�
 
 ## 📜 라이선스
 
-MIT. 동봉 글꼴 나눔고딕은 SIL OFL 1.1([`fonts/OFL.txt`](fonts/OFL.txt)). 공단 서식 PDF 는 근로복지공단 공개 자료입니다.
+MIT. 동봉 글꼴 나눔고딕은 SIL OFL 1.1([`fonts/OFL.txt`](fonts/OFL.txt)). 공단 서식 PDF 는 근로복지공단 공개 자료이고, 산업재해조사표는 법제처 국가법령정보센터에 실린 법령 서식입니다. 관할 관서 연락처는 고용노동부 누리집 관서 안내 화면에서 확인한 공개 정보입니다(직원 성명 없음).

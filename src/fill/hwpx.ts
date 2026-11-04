@@ -11,7 +11,9 @@ import { pngInfo, type PngInfo } from "../stamp/png.js";
 
 export type HwpxOp =
   /** size: 글자 크기(1pt = 100). 원본 빈 문단보다 클 때만 키운다 */
-  | { kind: "cell"; t: number; r: number; c: number; p?: number; s?: number; size?: number }
+  /** annex: 글자를 7pt 까지 줄여도 칸 높이를 넘으면 칸에는 「(별지에 적음)」만 쓰고 전문은 문서 끝에 덧붙인 별지 쪽에 적는다 — PDF 지도 multiline 의 overflow:"annex" 와 짝.
+   *  칸이 늘어나 뒤 행(서명란·도장 자리)이 밀리는 것을 막는다. label = 별지 항목 제목, paraPr = 그 칸 문단에 쓸 문단 모양 id(원본 줄 간격이 너무 넓을 때) */
+  | { kind: "cell"; t: number; r: number; c: number; p?: number; s?: number; size?: number; annex?: { label: string; paraPr?: number } }
   | { kind: "after"; t: number; r: number; c: number; label: string; s?: number }
   | { kind: "check"; t: number; r: number; c: number; n?: number; s?: number }
   /** take: 값이 상자보다 길면 앞 take 자만(재해발생일시 12자 → YYYYMMDD 8상자). digitsOnly: 숫자 아닌 글자(-, 공백)는 버린다 */
@@ -49,6 +51,8 @@ export interface HwpxMap {
   slots: Record<string, HwpxOp>;
   templates?: Record<string, HwpxTemplate>;
   stamps?: Record<string, HwpxStampSpot>;
+  /** 별지 쪽 제목(칸 op 의 annex 를 쓰는 서식) */
+  annex_title?: string;
   _about?: string;
 }
 
@@ -56,6 +60,8 @@ export interface HwpxFillReport {
   filled: string[];
   skipped: string[];
   errors: string[];
+  /** 칸이 모자라 별지 쪽에 적은 칸 */
+  annexed?: string[];
   stamped?: string[];
   stamps_skipped?: string[];
 }
@@ -322,6 +328,13 @@ class CharPrFixer {
     return newId;
   }
 
+  /** 문단 모양의 줄 간격(%) — 비율(PERCENT)이 아니면 한글 기본 160 으로 본다 */
+  lineSpacing(paraPrId: string): number {
+    const m = new RegExp(`<hh:paraPr id="${paraPrId}"[^>]*>(.*?)</hh:paraPr>`, "s").exec(this.header);
+    const ls = m ? /<hh:lineSpacing type="PERCENT" value="(\d+)"/.exec(m[1]!) : null;
+    return ls ? Number(ls[1]) : 160;
+  }
+
   get changed(): boolean {
     return this.added > 0;
   }
@@ -335,6 +348,34 @@ function textWidthHwp(s: string, height: number): number {
   let w = 0;
   for (const ch of s) w += /[ᄀ-ᇿ　-〿㄰-㆏가-힯一-鿿＀-￯]/.test(ch) ? height : height / 2;
   return w;
+}
+
+const ANNEX_NOTE = "(별지에 적음)";
+const ANNEX_MIN_SIZE = 700; // 별지로 넘기기 전 글자를 줄여 보는 하한(7pt)
+
+/** 글이 base 크기에서 7pt 사이 어느 크기로든 칸 높이(줄 수 × 크기 × 줄 간격) 안에 들어가나. 폭 추정은 근사치라 10% 여유 */
+function fitsCellAtSomeSize(text: string, base: number, spacingPct: number, width: number, height: number): boolean {
+  if (!width || !height) return true;
+  const lines = text.split(/\r?\n/);
+  for (let sz = base; sz >= ANNEX_MIN_SIZE; sz -= 50) {
+    const n = lines.reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, sz) / (width * 0.9))), 0);
+    if (n * sz * (spacingPct / 100) <= height) return true;
+  }
+  return false;
+}
+
+/** 문서 끝(섹션 마지막)에 별지 쪽 문단들 — 새 쪽에서 시작, 제목·항목 제목·본문 줄. 칸 문단의 문단 모양과 검정 글자 모양을 쓴다 */
+function annexParagraphs(title: string, items: { label: string; text: string; paraPr: string; charPr: string }[]): string {
+  const p = (paraPr: string, charPr: string, t: string, pageBreak = false) =>
+    `<hp:p id="0" paraPrIDRef="${paraPr}" styleIDRef="0" pageBreak="${pageBreak ? 1 : 0}" columnBreak="0" merged="0"><hp:run charPrIDRef="${charPr}">${t ? `<hp:t>${esc(t)}</hp:t>` : ""}</hp:run></hp:p>`;
+  const first = items[0]!;
+  let out = p(first.paraPr, first.charPr, `별지 — ${title}`, true);
+  for (const it of items) {
+    out += p(it.paraPr, it.charPr, "");
+    out += p(it.paraPr, it.charPr, `○ ${it.label}`);
+    for (const line of it.text.split(/\r?\n/)) out += p(it.paraPr, it.charPr, line);
+  }
+  return out;
 }
 
 /** 글자 폭 근사치 — 한글·한자·전각 2, 그 밖 1 */
@@ -420,6 +461,7 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
   const tablesBySection = xmls.map(allTables);
   const cellCache = new Map<string, Cell[]>();
   const edits: Edit[][] = xmls.map(() => []);
+  const annex: { label: string; text: string; paraPr: string; charPr: string }[] = [];
 
   const cellOf = (s: number, t: number, r: number, c: number): Cell => {
     const key = `${s}/${t}`;
@@ -463,8 +505,19 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
       }
       // 값 칸: 여러 줄로 감기는 글은 칸 높이 안에 들어가게 줄이고, 감긴 줄 수만큼 뒤따르는 빈 문단을 지워 표가 커지지 않게 한다
       // (상황도·경위 칸은 빈 문단 10여 개로 높이를 잡아 둔 서식이 많다 — 261027 출퇴근 발생신고서가 한 쪽 밀린 원인)
-      const text = String(value);
-      edit.push({ ...para, text: setParagraph(xml.slice(para.start, para.end), text, fixer, cell.width, cell.height, 0, o.size ?? 0) });
+      let text = String(value);
+      let pxml = xml.slice(para.start, para.end);
+      const annexOp = (op as HwpxOp).kind === "cell" ? (op as Extract<HwpxOp, { kind: "cell" }>).annex : undefined;
+      if (annexOp) {
+        if (annexOp.paraPr !== undefined) pxml = pxml.replace(/paraPrIDRef="\d+"/, `paraPrIDRef="${annexOp.paraPr}"`);
+        const charId = fixer.black(/charPrIDRef="(\d+)"/.exec(pxml)?.[1] ?? "0");
+        if (!fitsCellAtSomeSize(text, fixer.height(charId), fixer.lineSpacing(/paraPrIDRef="(\d+)"/.exec(pxml)?.[1] ?? "0"), cell.width, cell.height)) {
+          annex.push({ label: annexOp.label, text, paraPr: /paraPrIDRef="(\d+)"/.exec(pxml)?.[1] ?? "0", charPr: charId });
+          (report.annexed ??= []).push(name);
+          text = ANNEX_NOTE;
+        }
+      }
+      edit.push({ ...para, text: setParagraph(pxml, text, fixer, cell.width, cell.height, 0, o.size ?? 0) });
       if (cell.width > 0) {
         const h = fixer.height(fixer.black(/charPrIDRef="(\d+)"/.exec(xml.slice(para.start, para.end))?.[1] ?? "0"));
         const wrapped = text.split(/\r?\n/).reduce((a, l) => a + Math.max(1, Math.ceil(textWidthHwp(l, h) / cell.width)), 0);
@@ -658,9 +711,11 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
   if (report.errors.length) throw new Error(report.errors.join(" | "));
 
   // 편집 적용 — 겹치면 지도 오류
-  edits.forEach((list, s) => {
-    if (!list.length) return;
-    list.sort((a, b) => a.start - b.start || a.end - b.end);
+  edits.forEach((raw, s) => {
+    if (!raw.length) return;
+    raw.sort((a, b) => a.start - b.start || a.end - b.end);
+    // 같은 문단에 after 를 둘 쓰면(「국적: … 체류자격: …」) 그 문단 linesegarray 삭제가 똑같이 두 번 들어온다 — 같은 편집은 하나로
+    const list = raw.filter((e, i) => i === 0 || !(e.start === raw[i - 1]!.start && e.end === raw[i - 1]!.end && e.text === raw[i - 1]!.text));
     for (let i = 1; i < list.length; i++) {
       const prev = list[i - 1]!;
       const cur = list[i]!;
@@ -675,6 +730,15 @@ export async function fillHwpx(hwpxBytes: Uint8Array, map: HwpxMap, opts: FillHw
     }
     files[sections[s]!] = strToU8(out);
   });
+
+  if (annex.length) {
+    // 별지는 마지막 섹션 끝에 — 원본 쪽들 뒤에 새 쪽으로 붙어 앞쪽 배치(서명란·도장 자리)는 그대로다
+    const last = sections.at(-1)!;
+    const sec = strFromU8(files[last]!);
+    const end = sec.lastIndexOf("</hs:sec>");
+    if (end < 0) throw new Error("섹션 끝 </hs:sec> 이 없다");
+    files[last] = strToU8(sec.slice(0, end) + annexParagraphs(map.annex_title ?? map.form_id, annex) + sec.slice(end));
+  }
 
   if (fixer.changed) files[headerName] = strToU8(fixer.xml);
 

@@ -2,10 +2,10 @@
 // 사람이 눈으로 본 것은 근거가 아니다. 이 시험이 지킨다.
 import { readFileSync, existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { ACT, REF, RULE } from "../src/core/catalog.js";
+import { ACT, OSH_ACT, OSH_RULE, REF, RULE } from "../src/core/catalog.js";
 
 function fixturePath(mst: string, jo: string): string {
-  const pre = mst === ACT ? "act" : mst === RULE ? "rule" : "unknown";
+  const pre = mst === ACT ? "act" : mst === RULE ? "rule" : mst === OSH_ACT ? "osh_act" : mst === OSH_RULE ? "osh_rule" : "unknown";
   return `fixtures/laws/${pre}_${mst}_jo${jo}.xml`;
 }
 

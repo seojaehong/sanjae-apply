@@ -7,13 +7,13 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 const CLI = "dist/src/cli.js";
 
 describe.skipIf(!existsSync(CLI))("stdio MCP", () => {
-  it("initialize → tools/list 5 → list_required_forms → fill_form", async () => {
+  it("initialize → tools/list 8 → list_required_forms → fill_form → find_labor_office", async () => {
     const client = new Client({ name: "vitest", version: "0" });
     await client.connect(new StdioClientTransport({ command: process.execPath, args: [CLI, "mcp"] }));
     try {
       expect(client.getServerVersion()?.name).toBe("sanjae-apply");
       const names = (await client.listTools()).tools.map((t) => t.name).sort();
-      expect(names).toEqual(["fill_form", "fill_yoyang_apply", "get_form_catalog", "list_required_forms", "make_seal"]);
+      expect(names).toEqual(["check_accident_report", "fill_form", "fill_yoyang_apply", "find_labor_office", "get_accident_report_guide", "get_form_catalog", "list_required_forms", "make_seal"]);
       const r = await client.callTool({ name: "list_required_forms", arguments: { claim: "HUYEOP", accidentKind: "WORK_ACCIDENT", thirdParty: false, treatmentEnded: false } });
       const pkg = JSON.parse((r.content as { text: string }[])[0]!.text);
       expect(pkg.rules_applied).toContain("S-06");
@@ -22,6 +22,9 @@ describe.skipIf(!existsSync(CLI))("stdio MCP", () => {
       expect(JSON.parse(content[0]!.text!).report.written.sort()).toEqual(["apply_year", "name"]);
       expect(content[1]!.resource!.mimeType).toBe("application/pdf");
       expect(Buffer.from(content[1]!.resource!.blob, "base64").subarray(0, 5).toString()).toBe("%PDF-");
+      // 빌드본(dist)에서도 패키지 안 data/labor-offices 를 읽는다
+      const lo = await client.callTool({ name: "find_labor_office", arguments: { address: "경기도 부천시 길주로 210" } });
+      expect(JSON.parse((lo.content as { text: string }[])[0]!.text).office.office_name).toBe("부천지청");
     } finally {
       await client.close();
     }
