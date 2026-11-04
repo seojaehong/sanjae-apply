@@ -33,7 +33,7 @@ describe("MCP 출구", () => {
     expect(init.status).toBe(200);
     const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, null, init.sessionId);
     expect(list.status).toBe(200);
-    expect(list.json.result.tools.length).toBe(5);
+    expect(list.json.result.tools.length).toBe(8);
     const call = await rpc({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "make_seal", arguments: { name: "홍길동" } } }, null, init.sessionId);
     expect(call.status).toBe(401);
     // 공개 메서드 사이에 tools/call 을 끼운 묶음도 막는다
@@ -43,13 +43,13 @@ describe("MCP 출구", () => {
     expect(bad.status).toBe(401);
   });
 
-  it("initialize → tools/list 에 도구 5개", async () => {
+  it("initialize → tools/list 에 도구 8개", async () => {
     const init = await rpc(INIT);
     expect(init.status).toBe(200);
     expect(init.json.result.serverInfo.name).toBe("sanjae-apply");
     const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, TOKEN, init.sessionId);
     const names = list.json.result.tools.map((t: { name: string }) => t.name).sort();
-    expect(names).toEqual(["fill_form", "fill_yoyang_apply", "get_form_catalog", "list_required_forms", "make_seal"]);
+    expect(names).toEqual(["check_accident_report", "fill_form", "fill_yoyang_apply", "find_labor_office", "get_accident_report_guide", "get_form_catalog", "list_required_forms", "make_seal"]);
   });
 
   it("fill_form: form_id 로 범용 채우기, 없는 id 는 isError", async () => {
@@ -91,6 +91,59 @@ describe("MCP 출구", () => {
     expect(badPng.json.result.isError).toBe(true);
     const hanja = await call(25, "make_seal", { name: "洪吉童" });
     expect(hanja.json.result.isError).toBe(true);
+  }, 60000);
+
+  it("산업재해조사표: 지침·점검·관할 찾기는 읽기 전용이고, 대장에 법제처 출처·2025-10-01 개정으로 있다", async () => {
+    const init = await rpc(INIT);
+    const call = (id: number, name: string, args: unknown) => rpc({ jsonrpc: "2.0", id, method: "tools/call", params: { name, arguments: args } }, TOKEN, init.sessionId);
+    const list = await rpc({ jsonrpc: "2.0", id: 30, method: "tools/list", params: {} }, TOKEN, init.sessionId);
+    for (const n of ["get_accident_report_guide", "check_accident_report", "find_labor_office"]) {
+      expect(list.json.result.tools.find((t: { name: string }) => t.name === n).annotations.readOnlyHint, n).toBe(true);
+    }
+    const g = JSON.parse((await call(31, "get_accident_report_guide", { section: "narrative", workplace_address: "서울특별시 중구 세종대로 110" })).json.result.content[0].text);
+    expect(g.narrative.cause.factors).toHaveLength(4);
+    expect(g.labor_office_lookup.status).toBe("CONFIRMED");
+    expect(g.labor_office_lookup.office.office_name).toBe("서울지방고용노동청");
+    const c = JSON.parse((await call(32, "check_accident_report", { values: { name: "홍길동", accident_year: "2026", accident_month: "10", accident_day: "15", accident_weekday: "금" }, today: "2026-10-26" })).json.result.content[0].text);
+    expect(c.issues.some((i: { keys: string[]; level: string }) => i.level === "error" && i.keys.includes("accident_weekday"))).toBe(true);
+    expect(c.deadline.reference_deadline).toBe("2026-11-15");
+    const cat = JSON.parse((await call(33, "get_form_catalog", { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT" })).json.result.content[0].text);
+    expect(cat.entries[0].revised).toBe("2025-10-01");
+    expect(cat.entries[0].view_url).toContain("law.go.kr");
+    expect(cat.stamps).toEqual(expect.arrayContaining(["applicant", "worker_rep"]));
+  });
+
+  it("find_labor_office: 지방청은 두 번호와 「제출 전 전화 확인 권장」, 여수는 확인방법 「단일 출처」, 빈 주소는 거부", async () => {
+    const init = await rpc(INIT);
+    const call = (id: number, args: unknown) => rpc({ jsonrpc: "2.0", id, method: "tools/call", params: { name: "find_labor_office", arguments: args } }, TOKEN, init.sessionId);
+    const s = JSON.parse((await call(40, { address: "서울특별시 중구 세종대로 110" })).json.result.content[0].text);
+    expect(s.office.report_to).toMatchObject({ role: "기본", department: "산재예방감독과" });
+    expect(s.office.report_to_alt).toMatchObject({ role: "보조", department: "광역산재예방감독과" });
+    expect(s.office.confirm_before_submit).toBe("제출 전 전화 확인 권장");
+    const y = JSON.parse((await call(41, { address: "전라남도 여수시 시청로 1" })).json.result.content[0].text);
+    expect(y.office.report_to).toMatchObject({ fax: "0503-8803-0638", fax_check: "확인 필요", fax_verification: "단일 출처" });
+    const c = JSON.parse((await call(42, { address: "서울특별시 종로구 세종대로 209", construction: true })).json.result.content[0].text);
+    expect(c.office.report_to.department).toBe("건설산재예방감독과");
+    expect((await call(43, { address: "" })).json.result.isError).toBe(true);
+  });
+
+  it("fill_form(산업재해조사표): 결과에 관할 관서(labor_office)와 칸 값·제안 값이 붙고, 다른 서식에는 붙지 않는다", async () => {
+    const init = await rpc(INIT);
+    const call = (id: number, args: unknown) => rpc({ jsonrpc: "2.0", id, method: "tools/call", params: { name: "fill_form", arguments: args } }, TOKEN, init.sessionId);
+    const r = JSON.parse((await call(50, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", values: { workplace_address: "서울특별시 강남구 테헤란로 152", labor_office: "서울", construction_type: "" } })).json.result.content[0].text);
+    expect(r.labor_office.status).toBe("CONFIRMED");
+    expect(r.labor_office.office.office_name).toBe("서울강남지청");
+    expect(r.labor_office.office.report_to.construction_desk).toBe(false);
+    expect(r.labor_office.slot).toEqual({ written: "서울", suggested: "서울강남" });
+    const h = JSON.parse((await call(51, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", format: "hwpx", values: { workplace_address: "서울특별시 종로구 세종대로 209", construction_amount: "850" } })).json.result.content[0].text);
+    expect(h.labor_office.office.report_to.department).toBe("건설산재예방감독과");
+    // construction_* 가 비어도 다른 「건설업만 작성」 칸(발주자 등)에 값이 있으면 건설 전담 과
+    const o = JSON.parse((await call(54, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", values: { workplace_address: "서울특별시 종로구 세종대로 209", orderer_government: true, site_name: "합성 현장" } })).json.result.content[0].text);
+    expect(o.labor_office.office.report_to.department).toBe("건설산재예방감독과");
+    const none = JSON.parse((await call(52, { form_id: "F_INDUSTRIAL_ACCIDENT_REPORT", values: { name: "홍길동" } })).json.result.content[0].text);
+    expect(none.labor_office.status).toBe("NO_ADDRESS");
+    const other = JSON.parse((await call(53, { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" } })).json.result.content[0].text);
+    expect(other.labor_office).toBeUndefined();
   }, 60000);
 
   it("get_form_catalog: F_YOYANG_APPLY 는 2026-07-07 개정본 해시를 가진다", async () => {

@@ -41,6 +41,11 @@ export interface MultilineSlot {
   y1: number;
   size?: number;
   lineHeight?: number;
+  /**
+   * "annex" = 칸이 모자라면 글을 자르지 않고 칸에는 「별지에 적음」만 쓰고 전문을 덧붙인 별지 쪽에 적는다.
+   * 한 줄 높이 칸에 서술을 받는 서식(산업재해조사표 「재해발생 당시 상황」 등)용. 없으면 종전처럼 넘친 줄을 버리고 shrunk 에 적는다.
+   */
+  overflow?: "annex";
 }
 /** label = 서식 원문 글자로 쓴 칸 설명. AI 클라이언트가 칸 이름을 고를 때 본다(get_form_catalog 의 slot_labels) */
 export type Slot = (TextSlot | BoxesSlot | CheckSlot | MultilineSlot) & { label?: string };
@@ -64,6 +69,8 @@ export interface FormMap {
   check_groups?: { id: string; label: string; exclusive: boolean; keys: string[] }[];
   /** applicant = 신청인 본인 서명란. 그 밖(consent·delegation 등)은 서식마다 */
   stamps?: Record<string, StampSpot>;
+  /** overflow:"annex" 칸이 넘칠 때 덧붙이는 별지 쪽의 제목(서식 이름) */
+  annex_title?: string;
 }
 
 export interface FillOptions {
@@ -84,6 +91,46 @@ export interface FillReport {
   /** 찍은 도장 자리 */
   stamped?: string[];
   stamps_skipped?: string[];
+  /** 칸이 모자라 전문을 별지 쪽에 옮겨 적은 칸(overflow:"annex") */
+  annexed?: string[];
+}
+
+const ANNEX_NOTE = "(별지에 적음)";
+
+/** 넘친 칸의 전문을 서식 뒤에 덧붙인 별지 쪽에 적는다. 쪽 크기는 1쪽과 같고 넘치면 쪽을 더한다 */
+/** 칸 라벨의 원문자(⑲)·로마 숫자(Ⅳ)는 동봉 글꼴에 글자가 없어 빈칸으로 찍힌다(실측) — 별지 항목 제목에서는 (19)·IV 로 바꾼다 */
+function plainLabel(s: string): string {
+  const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  return s
+    .replace(/[①-⑳]/g, (ch) => `(${ch.codePointAt(0)! - 0x2460 + 1})`)
+    .replace(/[Ⅰ-Ⅻ]/g, (ch) => roman[ch.codePointAt(0)! - 0x2160]!);
+}
+
+function drawAnnex(doc: PDFDocument, font: PDFFont, title: string, items: { label: string; text: string }[]): void {
+  const first = doc.getPages()[0]!;
+  const W = first.getWidth();
+  const H = first.getHeight();
+  const M = 56;
+  const size = 10;
+  const lh = 15;
+  const black = rgb(0, 0, 0);
+  let page = doc.addPage([W, H]);
+  let y = H - M;
+  const line = (s: string, sz: number) => {
+    if (y < M + lh) {
+      page = doc.addPage([W, H]);
+      y = H - M;
+    }
+    page.drawText(s, { x: M, y, size: sz, font, color: black });
+    y -= lh;
+  };
+  line(`별지 — ${title}`, 12);
+  y -= 6;
+  for (const it of items) {
+    y -= 4;
+    line(`○ ${plainLabel(it.label)}`, size);
+    for (const ln of wrap(font, it.text, size, W - 2 * M - 10)) line(`  ${ln}`, size);
+  }
 }
 
 function flipY(page: PDFPage, yTop: number): number {
@@ -122,6 +169,7 @@ export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOpti
   const pages = doc.getPages();
   const report: FillReport = { written: [], skipped: [], shrunk: [] };
   const black = rgb(0, 0, 0);
+  const annex: { label: string; text: string }[] = [];
 
   for (const [key, slot] of Object.entries(map.slots)) {
     const v = opt.values[key];
@@ -145,8 +193,14 @@ export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOpti
     } else if (slot.kind === "multiline") {
       const size = slot.size ?? 8.5;
       const lh = slot.lineHeight ?? size * 1.45;
-      const lines = wrap(font, String(v), size, slot.x1 - slot.x0 - 4);
-      const maxLines = Math.floor((slot.y1 - slot.y0 - 2) / lh);
+      const text = String(v);
+      let lines = wrap(font, text, size, slot.x1 - slot.x0 - 4);
+      const maxLines = Math.max(1, Math.floor((slot.y1 - slot.y0 - 2) / lh));
+      if (lines.length > maxLines && slot.overflow === "annex") {
+        annex.push({ label: slot.label ?? key, text });
+        (report.annexed ??= []).push(key);
+        lines = [ANNEX_NOTE];
+      }
       lines.slice(0, maxLines).forEach((ln, i) => {
         page.drawText(ln, { x: slot.x0 + 2, y: flipY(page, slot.y0 + 1 + lh * (i + 1)) + size * 0.25, size, font, color: black });
       });
@@ -160,6 +214,8 @@ export async function fillForm(pdfBytes: Uint8Array, map: FormMap, opt: FillOpti
     }
     report.written.push(key);
   }
+  // 도장보다 먼저 덧붙여도 도장 자리는 원래 쪽 번호를 가리키므로 영향이 없다
+  if (annex.length) drawAnnex(doc, font, map.annex_title ?? map.form_id, annex);
   if (opt.stamps) {
     report.stamped = [];
     report.stamps_skipped = [];

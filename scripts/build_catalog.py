@@ -36,6 +36,30 @@ MAP: dict[str, tuple[list[str], str]] = {
 }
 
 
+# 공단 자료실이 아니라 법제처 별표·서식에서 받은 서식(고용노동부 제출). 다운로드 대장에 없으므로 파일 해시를 forms/raw/<폴더> 에서 직접 잰다.
+LAWGO: list[dict] = [
+    {
+        "ids": ["F_INDUSTRIAL_ACCIDENT_REPORT"],
+        "article_no": "lawgo-osh-rule-byl-30",
+        "article_title": "[별지 제30호서식] 산업재해조사표(산업안전보건법 시행규칙) <개정 2025. 10. 1.>",
+        "revised": "2025-10-01",
+        "view_url": "https://www.law.go.kr/법령/산업안전보건법시행규칙",
+        "dir": "lawgo_byl_0030",
+        "note": "법제처 국가법령정보센터 > 산업안전보건법 시행규칙 > 별표·서식 > 별지 제30호서식(HWP·PDF). 제출처는 근로복지공단이 아니라 관할 지방고용노동관서(법 제57조제3항·시행규칙 제73조).",
+    },
+]
+
+
+def lawgo_files(d: str) -> list[dict]:
+    import hashlib
+
+    out = []
+    for p in sorted((ROOT / "forms" / "raw" / d).iterdir()):
+        b = p.read_bytes()
+        out.append({"file": p.name, "bytes": len(b), "sha256": hashlib.sha256(b).hexdigest()})
+    return out
+
+
 def revised_of(title: str) -> str | None:
     m = re.search(r"(20\d\d)[.\s]*(\d{1,2})[.\s]*(\d{1,2})", title) or re.search(r"\b(\d\d)\.(\d{1,2})\.(\d{1,2})\.", title)
     if not m:
@@ -60,6 +84,8 @@ def main() -> None:
             "view_url": f"{LIST}?mode=view&article_no={no}",
             "files": files,
         })
+    for e in LAWGO:
+        forms.append({k: v for k, v in e.items() if k != "dir"} | {"files": lawgo_files(e["dir"])})
     out = {
         "_about": "공단 서식 정본 대장. 파일은 forms/raw/(미커밋)에 두고 여기에는 파일명·개정일·sha256 만 적는다. 법제처 별표서식 API(licbyl)에는 산재 시행규칙 별지 서식이 안 잡혀(실측 261026) 정본 출처는 근로복지공단 서식자료실이다.",
         "source": {

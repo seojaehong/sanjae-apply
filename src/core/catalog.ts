@@ -1,4 +1,4 @@
-// 서식·첨부 카탈로그. 정본 파일(공단 서식자료실)의 해시·버전은 forms/catalog.json 이 유일 출처다.
+// 서식·첨부 카탈로그. 정본 파일(공단 서식자료실, 산업재해조사표는 법제처 별표·서식)의 해시·버전은 forms/catalog.json 이 유일 출처다.
 // 여기의 file 은 catalog.json 의 파일명 중 하나여야 한다 — test/forms_catalog.test.ts 가 대조한다.
 // basis 의 MST·JO 는 법제처 lawService 식별자. 실측 261026: 법 283459 · 시행령 287491 · 시행규칙 283239.
 // title 은 법제처 조문제목 그대로 — test/refs.test.ts 가 fixtures/laws 와 대조한다.
@@ -10,6 +10,12 @@ export const RULE = "283239"; // 산업재해보상보험법 시행규칙 (시�
 
 const act = (jo: string, title: string, cite: string): LawRef => ({ cite: `산업재해보상보험법 ${cite}`, title, mst: ACT, jo });
 const rule = (jo: string, title: string, cite: string): LawRef => ({ cite: `산업재해보상보험법 시행규칙 ${cite}`, title, mst: RULE, jo });
+
+// 산업재해조사표(고용노동부 제출)의 근거 — 산업안전보건법. 실측 261104: 법 291447(시행 2026-10-27) · 시행규칙 288431(시행 2026-08-01).
+export const OSH_ACT = "291447"; // 산업안전보건법
+export const OSH_RULE = "288431"; // 산업안전보건법 시행규칙
+const oshAct = (jo: string, title: string, cite: string): LawRef => ({ cite: `산업안전보건법 ${cite}`, title, mst: OSH_ACT, jo });
+const oshRule = (jo: string, title: string, cite: string): LawRef => ({ cite: `산업안전보건법 시행규칙 ${cite}`, title, mst: OSH_RULE, jo });
 
 export const REF = {
   ACT_36: act("003600", "보험급여의 종류와 산정 기준 등", "제36조(평균임금 산정)"),
@@ -30,12 +36,18 @@ export const REF = {
   RULE_20: rule("002000", "요양급여의 신청 등", "제20조"),
   RULE_31: rule("003100", "재요양의 신청 절차 등", "제31조"),
   RULE_47: rule("004700", "운동기능장해의 측정", "제47조제3항(능동·수동 측정)"),
+  OSH_ACT_54: oshAct("005400", "중대재해 발생 시 사업주의 조치", "제54조제2항(중대재해 발생 보고)"),
+  OSH_ACT_57: oshAct("005700", "산업재해 발생 은폐 금지 및 보고 등", "제57조제3항(산업재해 발생 보고)"),
+  OSH_ACT_175: oshAct("017500", "과태료", "제175조제3항제2호(보고하지 않거나 거짓 보고)"),
+  OSH_RULE_67: oshRule("006700", "중대재해 발생 시 보고", "제67조"),
+  OSH_RULE_72: oshRule("007200", "산업재해 기록 등", "제72조"),
+  OSH_RULE_73: oshRule("007300", "산업재해 발생 보고 등", "제73조(1개월 이내 산업재해조사표 제출·근로자대표 확인)"),
 } satisfies Record<string, LawRef>;
 
 export interface FormDef {
   id: string;
   title: string;
-  /** 공단 서식자료실 게시글 번호(forms/catalog.json article_no) */
+  /** 공단 서식자료실 게시글 번호(forms/catalog.json article_no). 법제처에서 받은 서식은 「lawgo-…」 키 */
   article: string;
   /** 그 게시글의 파일명 중 채우기에 쓰는 것(forms/catalog.json files[].file 과 일치해야 한다) */
   file: string;
@@ -46,6 +58,7 @@ const F = (id: string, title: string, article: string, file: string, basis: LawR
 
 const YOYANG_PDF = "요양급여신청서 및 소견서(2026.7.7. 개정).pdf";
 const COMMUTE_PDF = "(출퇴근재해)요양급여신청서및소견서(2026.7.7. 개정).pdf"; // ★ 합본 — 발생신고서가 단독 서식으로 없다
+const ACCIDENT_REPORT_PDF = "[별지 제30호서식] 산업재해조사표(산업안전보건법 시행규칙).pdf"; // 법제처 별표·서식(고용노동부 제출 서식)
 const JANGHAE_PDF = "[별지 제11호_제12호 서식] 장해급여(합병증등 예방관리) 청구(신청)서_소음작업종사사실 확인서_장해진단서_소견서_일시금연금 선택확인서(20230705 개정).pdf";
 
 export const FORMS = {
@@ -63,6 +76,7 @@ export const FORMS = {
   F_LIMB_OPINION: F("F_LIMB_OPINION", "지체장애용 소견서(척추·사지마비 / 관절 기능장해, 별지 제12호 다·라)", "1182065", JANGHAE_PDF, [REF.ACT_57, REF.RULE_47]),
   F_NOISE_WORK_CERT: F("F_NOISE_WORK_CERT", "소음작업 종사 사실확인서(별지 제11호 뒷면)", "1182065", JANGHAE_PDF, [REF.ACT_57]),
   F_ADDITIONAL_DISEASE_APPLY: F("F_ADDITIONAL_DISEASE_APPLY", "추가상병 신청서 및 소견서(별지 제30호·제31호서식)", "1182798", "[별지 제30,31호서식] 추가상병 신청서 및 소견서.hwp", [REF.ACT_49]),
+  F_INDUSTRIAL_ACCIDENT_REPORT: F("F_INDUSTRIAL_ACCIDENT_REPORT", "산업재해조사표(산업안전보건법 시행규칙 별지 제30호서식) — 관할 지방고용노동관서 제출(근로복지공단 서식 아님)", "lawgo-osh-rule-byl-30", ACCIDENT_REPORT_PDF, [REF.OSH_ACT_57, REF.OSH_RULE_73]),
   F_RE_YOYANG_APPLY: F("F_RE_YOYANG_APPLY", "재요양 신청서 및 소견서(별지 제33호·제33호의2서식)", "1182803", "[별지 제33호,제33의2서식] 재요양 신청서 및 소견서.hwp", [REF.ACT_51, REF.RULE_31]),
 } satisfies Record<string, FormDef>;
 export type FormId = keyof typeof FORMS;

@@ -1,0 +1,561 @@
+{
+  "form_id": "F_INDUSTRIAL_ACCIDENT_REPORT",
+  "source_file": "F_INDUSTRIAL_ACCIDENT_REPORT.hwpx",
+  "source_sha256": "9c0ab79c24405f728b8f415d7d45eae1e000f3fe048b916039c9e98a9b04b786",
+  "_about": "법제처 별표·서식 HWP(산업안전보건법 시행규칙 별지 제30호서식, 개정 2025.10.1)를 한글 COM 으로 hwpx 변환. T0 = 앞쪽 큰 표(39행×43열), T1 = 주민등록번호 앞 7자리 상자(r14 c25 안, c0~c5 생년월일·c6 「-」·c7 뒤 첫 자리·c8~c13 「*」), T2 = 처리절차 흐름도, T3·T4 = 뒤쪽 작성방법. 서술 칸(r25·r26 c13, r27 c2)은 7pt 까지 줄여도 칸을 넘으면 칸에 「(별지에 적음)」을 쓰고 전문은 문서 끝 별지 쪽에 적는다(칸이 늘면 서명란이 밀려 도장이 어긋난다 — 실측 +10pt). r27 원본 줄 간격 230% 는 paraPr 51(120%)로 바꿔 쓴다. 근로자대표 성명은 첫 run(자간 −30%) 서식이 줄 전체에 퍼져 글자가 겹치므로 템플릿이 아니라 after. 국적·체류자격은 체크와 같은 문단이라 after 두 개 + check 두 개. 「그 밖의 사항 [   ]」 빈 괄호는 BOX_RE 로 7번째 상자로 세어지므로 체크는 n=6 까지, 괄호 안 글은 after.",
+  "annex_title": "산업재해조사표(산업안전보건법 시행규칙 별지 제30호서식) 서술 칸 계속",
+  "slots": {
+    "workplace_no": {
+      "kind": "cell",
+      "t": 0,
+      "r": 4,
+      "c": 9
+    },
+    "biz_reg_no": {
+      "kind": "cell",
+      "t": 0,
+      "r": 4,
+      "c": 26
+    },
+    "employer_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 5,
+      "c": 9
+    },
+    "worker_count": {
+      "kind": "cell",
+      "t": 0,
+      "r": 5,
+      "c": 26
+    },
+    "industry": {
+      "kind": "cell",
+      "t": 0,
+      "r": 6,
+      "c": 9
+    },
+    "workplace_address": {
+      "kind": "after",
+      "t": 0,
+      "r": 6,
+      "c": 26,
+      "label": "(    -    )"
+    },
+    "prime_contractor_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 7,
+      "c": 9,
+      "p": 1
+    },
+    "prime_contractor_no": {
+      "kind": "after",
+      "t": 0,
+      "r": 8,
+      "c": 9,
+      "label": "(사업개시번호) "
+    },
+    "dispatch_employer_name": {
+      "kind": "after",
+      "t": 0,
+      "r": 7,
+      "c": 34,
+      "label": "파견사업주 사업장명 "
+    },
+    "dispatch_employer_no": {
+      "kind": "after",
+      "t": 0,
+      "r": 8,
+      "c": 34,
+      "label": "(사업개시번호) "
+    },
+    "orderer_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 9,
+      "c": 15
+    },
+    "orderer_private": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 24,
+      "n": 1
+    },
+    "orderer_government": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 24,
+      "n": 2
+    },
+    "orderer_public_institution": {
+      "kind": "check",
+      "t": 0,
+      "r": 9,
+      "c": 24,
+      "n": 3
+    },
+    "main_contractor_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 10,
+      "c": 15
+    },
+    "main_contractor_no": {
+      "kind": "cell",
+      "t": 0,
+      "r": 11,
+      "c": 15
+    },
+    "site_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 10,
+      "c": 33
+    },
+    "construction_type": {
+      "kind": "cell",
+      "t": 0,
+      "r": 12,
+      "c": 15
+    },
+    "progress_rate": {
+      "kind": "group",
+      "template": "progress_rate"
+    },
+    "construction_amount": {
+      "kind": "group",
+      "template": "construction_amount"
+    },
+    "name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 14,
+      "c": 7
+    },
+    "rrn7": {
+      "kind": "boxes",
+      "cells": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          1,
+          0,
+          4
+        ],
+        [
+          1,
+          0,
+          5
+        ],
+        [
+          1,
+          0,
+          7
+        ]
+      ],
+      "digitsOnly": true
+    },
+    "address": {
+      "kind": "cell",
+      "t": 0,
+      "r": 15,
+      "c": 7
+    },
+    "mobile": {
+      "kind": "cell",
+      "t": 0,
+      "r": 15,
+      "c": 37
+    },
+    "nationality_korean": {
+      "kind": "check",
+      "t": 0,
+      "r": 16,
+      "c": 7,
+      "n": 1
+    },
+    "nationality_foreign": {
+      "kind": "check",
+      "t": 0,
+      "r": 16,
+      "c": 7,
+      "n": 2
+    },
+    "nationality": {
+      "kind": "after",
+      "t": 0,
+      "r": 16,
+      "c": 7,
+      "label": "[국적:"
+    },
+    "visa_status": {
+      "kind": "after",
+      "t": 0,
+      "r": 16,
+      "c": 7,
+      "label": "⑩체류자격:"
+    },
+    "job": {
+      "kind": "cell",
+      "t": 0,
+      "r": 16,
+      "c": 37
+    },
+    "hire_year": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "hire_month": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "hire_day": {
+      "kind": "group",
+      "template": "hire_date"
+    },
+    "same_job_years": {
+      "kind": "group",
+      "template": "same_job"
+    },
+    "same_job_months": {
+      "kind": "group",
+      "template": "same_job"
+    },
+    "employment_regular": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "n": 1
+    },
+    "employment_temporary": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "n": 2
+    },
+    "employment_daily": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "n": 3
+    },
+    "employment_unpaid_family": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "n": 4
+    },
+    "employment_self_employed": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "n": 5
+    },
+    "employment_other": {
+      "kind": "check",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "n": 6
+    },
+    "employment_other_text": {
+      "kind": "after",
+      "t": 0,
+      "r": 18,
+      "c": 7,
+      "label": "그 밖의 사항 ["
+    },
+    "shift_normal": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "n": 1
+    },
+    "shift_two": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "n": 2
+    },
+    "shift_three": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "n": 3
+    },
+    "shift_four": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "n": 4
+    },
+    "shift_part_time": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "n": 5
+    },
+    "shift_other": {
+      "kind": "check",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "n": 6
+    },
+    "shift_other_text": {
+      "kind": "after",
+      "t": 0,
+      "r": 19,
+      "c": 7,
+      "label": "그 밖의 사항 ["
+    },
+    "injury_type": {
+      "kind": "cell",
+      "t": 0,
+      "r": 20,
+      "c": 7
+    },
+    "injury_part": {
+      "kind": "cell",
+      "t": 0,
+      "r": 20,
+      "c": 22
+    },
+    "lost_days": {
+      "kind": "after",
+      "t": 0,
+      "r": 20,
+      "c": 39,
+      "label": "휴업  ["
+    },
+    "death": {
+      "kind": "check",
+      "t": 0,
+      "r": 21,
+      "c": 39,
+      "n": 1
+    },
+    "accident_year": {
+      "kind": "group",
+      "template": "accident_datetime"
+    },
+    "accident_month": {
+      "kind": "group",
+      "template": "accident_datetime"
+    },
+    "accident_day": {
+      "kind": "group",
+      "template": "accident_datetime"
+    },
+    "accident_weekday": {
+      "kind": "group",
+      "template": "accident_datetime"
+    },
+    "accident_hour": {
+      "kind": "group",
+      "template": "accident_datetime"
+    },
+    "accident_minute": {
+      "kind": "group",
+      "template": "accident_datetime"
+    },
+    "accident_place": {
+      "kind": "cell",
+      "t": 0,
+      "r": 23,
+      "c": 13
+    },
+    "work_type": {
+      "kind": "cell",
+      "t": 0,
+      "r": 24,
+      "c": 13
+    },
+    "accident_situation": {
+      "kind": "cell",
+      "t": 0,
+      "r": 25,
+      "c": 13,
+      "annex": {
+        "label": "Ⅲ.재해발생 개요: 재해발생 당시 상황(불안전한 상태와 불안전한 행동)"
+      }
+    },
+    "accident_cause": {
+      "kind": "cell",
+      "t": 0,
+      "r": 26,
+      "c": 13,
+      "annex": {
+        "label": "Ⅲ.⑲재해발생원인(인적·설비적·작업ㆍ환경적·관리적 요인)"
+      }
+    },
+    "prevention_plan": {
+      "kind": "cell",
+      "t": 0,
+      "r": 27,
+      "c": 2,
+      "annex": {
+        "label": "Ⅳ.⑳재발방지 계획(재해발생원인을 토대로)",
+        "paraPr": 51
+      }
+    },
+    "tech_support_request": {
+      "kind": "check",
+      "t": 0,
+      "r": 28,
+      "c": 28,
+      "n": 1
+    },
+    "comwel_guide_consent": {
+      "kind": "check",
+      "t": 0,
+      "r": 29,
+      "c": 28,
+      "n": 1
+    },
+    "writer_name": {
+      "kind": "cell",
+      "t": 0,
+      "r": 30,
+      "c": 8
+    },
+    "writer_phone": {
+      "kind": "cell",
+      "t": 0,
+      "r": 31,
+      "c": 8
+    },
+    "apply_year": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_month": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "apply_day": {
+      "kind": "group",
+      "template": "apply_date"
+    },
+    "owner_name": {
+      "kind": "group",
+      "template": "owner"
+    },
+    "worker_rep_name": {
+      "kind": "after",
+      "t": 0,
+      "r": 33,
+      "c": 0,
+      "label": "근로자대표(재해자) "
+    },
+    "labor_office": {
+      "kind": "group",
+      "template": "labor_office"
+    }
+  },
+  "templates": {
+    "progress_rate": {
+      "t": 0,
+      "r": 12,
+      "c": 33,
+      "p": 0,
+      "text": "{progress_rate}%"
+    },
+    "construction_amount": {
+      "t": 0,
+      "r": 12,
+      "c": 38,
+      "p": 0,
+      "text": "공사금액 {construction_amount}백만원"
+    },
+    "hire_date": {
+      "t": 0,
+      "r": 17,
+      "c": 7,
+      "p": 0,
+      "text": "     {hire_year}     년  {hire_month}   월  {hire_day}   일"
+    },
+    "same_job": {
+      "t": 0,
+      "r": 17,
+      "c": 32,
+      "p": 0,
+      "text": "       {same_job_years}       년    {same_job_months}    월"
+    },
+    "accident_datetime": {
+      "t": 0,
+      "r": 22,
+      "c": 13,
+      "p": 0,
+      "text": "[ {accident_year}     ]년 [ {accident_month}   ]월 [ {accident_day}   ]일 [ {accident_weekday}   ]요일 [ {accident_hour}   ]시 [ {accident_minute}   ]분"
+    },
+    "apply_date": {
+      "t": 0,
+      "r": 31,
+      "c": 20,
+      "p": 0,
+      "text": "작성일        {apply_year}       년     {apply_month}     월    {apply_day}    일 "
+    },
+    "owner": {
+      "t": 0,
+      "r": 32,
+      "c": 0,
+      "p": 0,
+      "text": " 사업주   {owner_name}"
+    },
+    "labor_office": {
+      "t": 0,
+      "r": 34,
+      "c": 0,
+      "p": 0,
+      "text": " (  {labor_office}    )지방고용노동청장(지청장) 귀하"
+    }
+  },
+  "stamps": {
+    "applicant": {
+      "anchor": 0,
+      "page": 1,
+      "x": 522,
+      "y": 679.6,
+      "size": 26
+    },
+    "worker_rep": {
+      "anchor": 0,
+      "page": 1,
+      "x": 493,
+      "y": 693.4,
+      "size": 26
+    }
+  }
+}

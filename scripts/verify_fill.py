@@ -64,6 +64,11 @@ def main() -> int:
             r = fitz.Rect(slot["x0"], slot["y0"], slot["x1"], slot["y1"])
             txt = pg.get_text("text", clip=r).replace("\n", "")
             ok = str(v)[:10].replace(" ", "") in txt.replace(" ", "")
+            if not ok and slot.get("overflow") == "annex" and "별지에적음" in txt.replace(" ", ""):
+                # 칸이 모자라 별지 쪽에 옮겨 적은 칸 — 원본 쪽 뒤에 덧붙은 쪽에서 찾는다
+                n0 = len(odoc) if odoc is not None else slot["page"]
+                rest = "".join(doc[i].get_text("text") for i in range(n0, len(doc))).replace("\n", "").replace(" ", "")
+                ok = len(doc) > n0 and str(v)[:10].replace(" ", "") in rest
         pix_note = ""
         if odoc is not None:
             r = slot_rect(slot)
