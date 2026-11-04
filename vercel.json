@@ -3,6 +3,7 @@
   "framework": null,
   "buildCommand": "npm run build && npm run test:web",
   "outputDirectory": "public",
+  "regions": ["icn1"],
   "headers": [
     {
       "source": "/",
