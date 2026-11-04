@@ -12,6 +12,7 @@
 [![node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20http-7c3aed)](https://modelcontextprotocol.io)
 [![tests](https://img.shields.io/badge/tests-294%20passing-2ea44f)](test/)
+[![mcptry](https://mcptry.com/badge/io.github.seojaehong/sanjae-apply)](https://mcptry.com/servers/io.github.seojaehong/sanjae-apply)
 
 <img src="docs/img/demo_yoyang.jpg" alt="합성 값으로 채운 요양급여신청서. 왼쪽 PDF 출력, 오른쪽 한글(hwpx) 출력" width="100%">
 
