@@ -19,7 +19,7 @@ import { catalogPath, fillableForms, fillableHwpxForms, fontPath, loadAssets, lo
 import { pngInfo } from "../stamp/png.js";
 import { buildStamps, resolveStamp } from "../stamp/resolve.js";
 
-export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.5" };
+export const SERVER_INFO = { name: "sanjae-apply", version: "0.5.6" };
 
 const tri = z.union([z.boolean(), z.literal("UNDECLARED")]).describe("true / false / 'UNDECLARED'(아직 모름 — 질문으로 돌려준다)");
 
@@ -193,7 +193,23 @@ export const verifyToken = async (_req: Request, bearerToken?: string): Promise<
   return { token: bearerToken, clientId: "sanjae-apply-mcp", scopes: ["tools"] };
 };
 
+/** 토큰 없이 허용하는 JSON-RPC 메서드 — 무엇을 하는 서버인지 보는 데까지만(MCP 규격 허용).
+ *  도구 실행(tools/call) 등 나머지는 전부 토큰이 있어야 한다. 목록 사이트(mcptry·Glama)의 점검용. */
+export const PUBLIC_METHODS = new Set(["initialize", "notifications/initialized", "ping", "tools/list"]);
+
+async function isPublicIntrospection(req: Request): Promise<boolean> {
+  if (req.method !== "POST" || req.headers.get("authorization")) return false;
+  try {
+    const body: unknown = JSON.parse(await req.clone().text());
+    const msgs = Array.isArray(body) ? body : [body];
+    return msgs.length > 0 && msgs.every((m) => !!m && typeof m === "object" && PUBLIC_METHODS.has(String((m as { method?: unknown }).method)));
+  } catch {
+    return false;
+  }
+}
+
 export function createHandler(basePath = "/api/mcp") {
   const base = createMcpHandler(registerTools, { serverInfo: SERVER_INFO }, { basePath, maxDuration: 60, verboseLogs: false });
-  return withMcpAuth(base, verifyToken, { required: true });
+  const authed = withMcpAuth(base, verifyToken, { required: true });
+  return async (req: Request) => ((await isPublicIntrospection(req)) ? base(req) : authed(req));
 }
