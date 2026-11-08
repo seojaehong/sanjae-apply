@@ -58,7 +58,7 @@ rec("check", "사람용 출력(비 JSON)", human.includes("요양급여 신청�
 
 // 2. catalog
 const cat = JSON.parse(run(["catalog"]));
-rec("catalog", "fillable 12 · fillable_hwpx 11", cat.fillable.length === 12 && cat.fillable_hwpx.length === 11, { pdf: cat.fillable.length, hwpx: cat.fillable_hwpx.length });
+rec("catalog", "fillable 13 · fillable_hwpx 12", cat.fillable.length === 13 && cat.fillable_hwpx.length === 12, { pdf: cat.fillable.length, hwpx: cat.fillable_hwpx.length });
 const forms = cat.fillable;
 const catRows = [];
 for (const fid of forms) {
