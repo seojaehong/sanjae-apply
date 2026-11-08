@@ -61,6 +61,13 @@ describe("로컬 save_to", () => {
     expect(json(r).unknown_keys).toEqual(["birth"]);
   });
 
+  it("로컬 서버: save_to 가 있는 도구만 쓰기 표시이고 지우지 않는다", async () => {
+    const tools = (await (await connect(true)).listTools()).tools;
+    const writers = tools.filter((t) => t.annotations?.readOnlyHint === false).map((t) => t.name).sort();
+    expect(writers).toEqual(["fill_form", "make_seal"]);
+    for (const t of tools) expect(t.annotations?.destructiveHint, t.name).toBe(false);
+  });
+
   it("원격(기본) 서버에는 save_to 가 없다", async () => {
     const c = await connect(false);
     const tools = (await c.listTools()).tools;
