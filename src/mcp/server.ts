@@ -115,7 +115,7 @@ async function fillAndPack(formId: string, values: Record<string, string | boole
 
 /** local = 로컬 stdio 서버(npx sanjae-apply mcp). 이때만 save_to(파일로 바로 저장)를 연다 */
 // 도구 표시(annotations) — 커넥터 디렉터리 심사 항목. 이 서버는 바깥(인터넷)에 나가지 않는다.
-// 조회·점검·지침 = 읽기 전용. 서식 채우기·도장 = 로컬판 save_to 로 파일을 쓸 수 있어 읽기 전용이 아니지만 지우지는 않는다.
+// fill_form·make_seal 은 save_to 가 열리는 로컬판에서만 파일을 쓴다(있는 파일은 덮어쓰지 않는다). 원격판은 전부 읽기 전용.
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
 const MAKES_FILE = { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
 
@@ -166,7 +166,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "fill_form",
     {
       title: "서식 채우기(정본 PDF 오버레이 · 한글)",
-      annotations: MAKES_FILE,
+      annotations: opts.local ? MAKES_FILE : READ_ONLY,
       description:
         "form_id 의 정본 서식에 값을 넣어 base64 로 돌려준다. format='pdf'(기본)는 정본 PDF 오버레이, format='hwpx'는 한글 문서(한글 2014+ 로 열어 고칠 수 있다). 먼저 get_form_catalog(form_id) 의 slot_labels 로 칸을 고른다(칸 이름은 두 형식이 같다). 서식의 선택지(사업주여부·친인척여부·근로자유형·신청 구분·예/아니오·개인정보 동의 등)는 해당 체크 칸에 true 를 넣어야 찍힌다. 아는 값은 빠짐없이 넣는다. 서버에 저장하지 않는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다). 사용자가 도장·날인·인감을 말하면 stamp 를 넣는다(넣지 않으면 서명란이 빈다). " +
         "F_INDUSTRIAL_ACCIDENT_REPORT(산업재해조사표)는 고용노동부(관할 지방고용노동관서)에 내는 서식이다 — 서술 칸은 get_accident_report_guide 로 쓰고 check_accident_report 로 점검한 뒤 채운다. 칸이 모자란 서술은 칸에 「(별지에 적음)」을 쓰고 끝에 별지 쪽을 붙인다(report.annexed). 도장 기본 자리는 사업주(applicant)이고, 근로자대표 확인란(worker_rep)은 근로자대표 본인 것만 spot='worker_rep' 로 따로 찍는다. 결과의 labor_office 에 workplace_address 로 찾은 관할 관서·접수 부서·전화·팩스·확인방법(find_labor_office 와 같은 내용)과, labor_office 칸에 적은 값·제안 값(slot)을 붙인다. 건설업 칸(발주자·원수급·현장명·공사종류·공정률·공사금액)에 값이 있으면 건설 전담 과로 찾는다.",
@@ -237,7 +237,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "make_seal",
     {
       title: "도장(인영) PNG 만들기",
-      annotations: MAKES_FILE,
+      annotations: opts.local ? MAKES_FILE : READ_ONLY,
       description:
         "이름으로 성명인(원형·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(투명 배경)를 만들어 base64 로 돌려준다. 본인 또는 명의자 동의가 있는 이름만 쓴다. 등록 인감을 흉내 내는 용도가 아니다(사용인감 성격). fill_form 의 stamp.name 으로 바로 찍을 수도 있다.",
       inputSchema: {

@@ -53,14 +53,12 @@ describe("MCP 출구", () => {
   });
 
   // 커넥터 디렉터리 심사는 도구마다 title 과 읽기·쓰기 표시(annotations)를 본다.
-  // 조회·점검·지침 = 읽기 전용. 서식 채우기·도장 = 로컬판에서 save_to 로 파일을 쓸 수 있어 읽기 전용이 아니지만 지우지는 않는다.
-  // fill_yoyang_apply 는 save_to 가 없어 base64 만 돌려준다 = 읽기 전용. 이 서버는 바깥(인터넷)에 나가지 않는다.
+  // 원격판에는 save_to 가 없어 도구 8개 전부 읽기 전용이다. 로컬판의 쓰기 표시는 mcp_local.test.ts 가 본다.
   it("도구마다 title 과 annotations 네 칸이 다 있다", async () => {
     const RO = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
-    const WRITE = { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false };
     const want: Record<string, typeof RO> = {
       list_required_forms: RO, get_form_catalog: RO, get_accident_report_guide: RO, find_labor_office: RO,
-      check_accident_report: RO, fill_yoyang_apply: RO, fill_form: WRITE, make_seal: WRITE,
+      check_accident_report: RO, fill_yoyang_apply: RO, fill_form: RO, make_seal: RO,
     };
     const init = await rpc(INIT);
     const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, TOKEN, init.sessionId);
