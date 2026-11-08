@@ -114,6 +114,11 @@ async function fillAndPack(formId: string, values: Record<string, string | boole
 }
 
 /** local = 로컬 stdio 서버(npx sanjae-apply mcp). 이때만 save_to(파일로 바로 저장)를 연다 */
+// 도구 표시(annotations) — 커넥터 디렉터리 심사 항목. 이 서버는 바깥(인터넷)에 나가지 않는다.
+// 조회·점검·지침 = 읽기 전용. 서식 채우기·도장 = 로컬판 save_to 로 파일을 쓸 수 있어 읽기 전용이 아니지만 지우지는 않는다.
+const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
+const MAKES_FILE = { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
+
 export function registerTools(server: McpServer, opts: { local?: boolean } = {}): void {
   const saveTo = (ext: string) =>
     opts.local ? { save_to: z.string().max(1000).optional().describe(`이 PC 에 바로 저장할 절대 경로(${ext}). 주면 base64 대신 저장 경로를 돌려준다. 이미 있는 파일은 덮어쓰지 않는다`) } : {};
@@ -121,6 +126,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "list_required_forms",
     {
       title: "필요 서식·첨부 목록",
+      annotations: READ_ONLY,
       description:
         "산재 보상 청구(요양·휴업·간병료이송비보조기·장해·유족·미지급·추가상병·재요양·본인부담치료비)에 필요한 서식(REQUIRED/CONDITIONAL/NOT_APPLICABLE)·첨부(PROVIDED/MISSING/SUBSTITUTABLE)·근거 조문·절차 안내·아직 답해야 할 질문을 돌려준다. 입력을 저장하지 않는다. READY_TO_SUBMIT 은 제출 가능이지 승인이 아니다.",
       inputSchema: {
@@ -139,6 +145,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "get_form_catalog",
     {
       title: "서식 정본 대장(근로복지공단 + 고용노동부 산업재해조사표)",
+      annotations: READ_ONLY,
       description:
         "근로복지공단 서식자료실에서 받은 산재보험 서식 13종과, 법제처에서 받은 산업재해조사표(산업안전보건법 시행규칙 별지 제30호서식 — 근로복지공단이 아니라 관할 지방고용노동관서에 내는 서식)의 파일명·개정일·sha256·출처 URL 과, 지금 채울 수 있는 서식(fillable)과 그 칸 이름(slots)·칸 설명(slot_labels, 서식 원문 글자)·도장 자리 이름(stamps). form_id 를 주면 그 서식만. fill_form 전에 이것으로 칸을 고른다.",
       inputSchema: { form_id: z.string().optional().describe("예: F_YOYANG_APPLY") },
@@ -159,6 +166,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "fill_form",
     {
       title: "서식 채우기(정본 PDF 오버레이 · 한글)",
+      annotations: MAKES_FILE,
       description:
         "form_id 의 정본 서식에 값을 넣어 base64 로 돌려준다. format='pdf'(기본)는 정본 PDF 오버레이, format='hwpx'는 한글 문서(한글 2014+ 로 열어 고칠 수 있다). 먼저 get_form_catalog(form_id) 의 slot_labels 로 칸을 고른다(칸 이름은 두 형식이 같다). 서식의 선택지(사업주여부·친인척여부·근로자유형·신청 구분·예/아니오·개인정보 동의 등)는 해당 체크 칸에 true 를 넣어야 찍힌다. 아는 값은 빠짐없이 넣는다. 서버에 저장하지 않는다. 주민번호 등은 보내지 않아도 된다(빈칸으로 남는다). 사용자가 도장·날인·인감을 말하면 stamp 를 넣는다(넣지 않으면 서명란이 빈다). " +
         "F_INDUSTRIAL_ACCIDENT_REPORT(산업재해조사표)는 고용노동부(관할 지방고용노동관서)에 내는 서식이다 — 서술 칸은 get_accident_report_guide 로 쓰고 check_accident_report 로 점검한 뒤 채운다. 칸이 모자란 서술은 칸에 「(별지에 적음)」을 쓰고 끝에 별지 쪽을 붙인다(report.annexed). 도장 기본 자리는 사업주(applicant)이고, 근로자대표 확인란(worker_rep)은 근로자대표 본인 것만 spot='worker_rep' 로 따로 찍는다. 결과의 labor_office 에 workplace_address 로 찾은 관할 관서·접수 부서·전화·팩스·확인방법(find_labor_office 와 같은 내용)과, labor_office 칸에 적은 값·제안 값(slot)을 붙인다. 건설업 칸(발주자·원수급·현장명·공사종류·공정률·공사금액)에 값이 있으면 건설 전담 과로 찾는다.",
@@ -185,7 +193,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
         workplace_address: z.string().max(200).optional().describe("사업장 소재지(관할 관서 찾기용)"),
         construction: z.boolean().optional().describe("건설업 재해인가(건설 전담 부서가 있는 관서는 그 부서로 안내)"),
       },
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      annotations: READ_ONLY,
     },
     async ({ section, workplace_address, construction }) =>
       text({ ...accidentReportGuide(section), ...(workplace_address ? { labor_office_lookup: lookupLaborOffice(packageRoot(), workplace_address, construction ?? false) } : {}) }),
@@ -204,7 +212,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
         address: z.string().min(1).max(200).describe("사업장 소재지(도로명·지번). 시도부터 넣으면 정확하다"),
         construction: z.boolean().optional().describe("건설업 재해인가(건설산재예방감독과가 있는 관서는 그 과로 안내)"),
       },
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      annotations: READ_ONLY,
     },
     async ({ address, construction }) => text(lookupLaborOffice(packageRoot(), address, construction ?? false)),
   );
@@ -219,7 +227,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
         values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("fill_form 과 같은 칸 이름 → 값"),
         today: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("기한 계산 기준일 YYYY-MM-DD(기본 = 오늘, KST)"),
       },
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      annotations: READ_ONLY,
     },
     async ({ values, today }) =>
       text(checkAccidentReport(values, { today: today ?? todayKst(), slotKeys: Object.keys(loadMap("F_INDUSTRIAL_ACCIDENT_REPORT").slots) })),
@@ -229,6 +237,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "make_seal",
     {
       title: "도장(인영) PNG 만들기",
+      annotations: MAKES_FILE,
       description:
         "이름으로 성명인(원형·사각·타원) 또는 법인형(원주 법인명 + 중심 문자 + 하단 부문자) 도장 PNG(투명 배경)를 만들어 base64 로 돌려준다. 본인 또는 명의자 동의가 있는 이름만 쓴다. 등록 인감을 흉내 내는 용도가 아니다(사용인감 성격). fill_form 의 stamp.name 으로 바로 찍을 수도 있다.",
       inputSchema: {
@@ -253,6 +262,7 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
     "fill_yoyang_apply",
     {
       title: "요양급여신청서(별지 제2호, 2026.7.7 개정) 채우기",
+      annotations: READ_ONLY,
       description: "fill_form(form_id='F_YOYANG_APPLY') 과 같다. 칸 이름: name, rrn, address, mobile, phone, accident_datetime(YYYYMMDDhhmm), hire_year/month/day, work_start, work_end, job, claim_kind_accident|disease|commute, worker_type_employee, employer_name, owner_name, workplace_phone, workplace_no(11자리), workplace_address, narrative, police_yes|no, fire_yes|no, insurer_yes|no, witness_name|phone|relation, apply_year|month|day, applicant_name",
       inputSchema: { values: z.record(z.string(), z.union([z.string(), z.boolean()])).describe("칸 이름 → 값") },
     },

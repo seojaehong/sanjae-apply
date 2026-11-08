@@ -52,6 +52,24 @@ describe("MCP 출구", () => {
     expect(names).toEqual(["check_accident_report", "fill_form", "fill_yoyang_apply", "find_labor_office", "get_accident_report_guide", "get_form_catalog", "list_required_forms", "make_seal"]);
   });
 
+  // 커넥터 디렉터리 심사는 도구마다 title 과 읽기·쓰기 표시(annotations)를 본다.
+  // 조회·점검·지침 = 읽기 전용. 서식 채우기·도장 = 로컬판에서 save_to 로 파일을 쓸 수 있어 읽기 전용이 아니지만 지우지는 않는다.
+  // fill_yoyang_apply 는 save_to 가 없어 base64 만 돌려준다 = 읽기 전용. 이 서버는 바깥(인터넷)에 나가지 않는다.
+  it("도구마다 title 과 annotations 네 칸이 다 있다", async () => {
+    const RO = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
+    const WRITE = { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false };
+    const want: Record<string, typeof RO> = {
+      list_required_forms: RO, get_form_catalog: RO, get_accident_report_guide: RO, find_labor_office: RO,
+      check_accident_report: RO, fill_yoyang_apply: RO, fill_form: WRITE, make_seal: WRITE,
+    };
+    const init = await rpc(INIT);
+    const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, TOKEN, init.sessionId);
+    for (const t of list.json.result.tools as { name: string; title?: string; annotations?: Record<string, boolean> }[]) {
+      expect(t.title, t.name).toBeTruthy();
+      expect(t.annotations, t.name).toEqual(want[t.name]);
+    }
+  });
+
   it("fill_form: form_id 로 범용 채우기, 없는 id 는 isError", async () => {
     const init = await rpc(INIT);
     const ok = await rpc({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "fill_form", arguments: { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" } } } }, TOKEN, init.sessionId);
