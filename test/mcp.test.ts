@@ -1,9 +1,8 @@
 // MCP 출구 — 핸들러를 Request 로 직접 불러 initialize → tools/list → tools/call 을 확인한다(네트워크·Vercel 불요).
 import { describe, expect, it } from "vitest";
-import { createHandler } from "../src/mcp/server.js";
+import { createHandler, RATE_LIMIT_PER_MINUTE } from "../src/mcp/server.js";
 
-const TOKEN = "test-token-for-vitest";
-process.env.SANJAE_MCP_TOKENS = `other,${TOKEN}`;
+const TOKEN = null;
 process.env.SANJAE_ROOT = process.cwd();
 const URL = "http://localhost/api/mcp/mcp";
 const handler = createHandler("/api/mcp");
@@ -24,23 +23,31 @@ async function rpc(body: unknown, token: string | null = TOKEN, sessionId?: stri
 const INIT = { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "vitest", version: "0" } } };
 
 describe("MCP 출구", () => {
-  it("토큰이 틀리면 401(초기화도)", async () => {
-    expect((await rpc(INIT, "wrong")).status).toBe(401);
-  });
-
-  it("토큰 없이: initialize·tools/list 는 보이고 도구 실행은 401", async () => {
+  it("토큰 없이 도구 8개를 전부 실행할 수 있다", async () => {
     const init = await rpc(INIT, null);
     expect(init.status).toBe(200);
     const list = await rpc({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, null, init.sessionId);
-    expect(list.status).toBe(200);
     expect(list.json.result.tools.length).toBe(8);
-    const call = await rpc({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "make_seal", arguments: { name: "홍길동" } } }, null, init.sessionId);
-    expect(call.status).toBe(401);
-    // 공개 메서드 사이에 tools/call 을 끼운 묶음도 막는다
-    const batch = await rpc([{ jsonrpc: "2.0", id: 4, method: "tools/list" }, { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "make_seal", arguments: {} } }], null);
-    expect(batch.status).toBe(401);
-    const bad = await handler(new Request(URL, { method: "POST", headers: { "content-type": "application/json" }, body: "{not json" }));
-    expect(bad.status).toBe(401);
+    const call = await rpc({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "fill_form", arguments: { form_id: "F_YOYANG_APPLY", values: { name: "홍길동" } } } }, null, init.sessionId);
+    expect(call.status).toBe(200);
+    expect(JSON.parse(call.json.result.content[0].text).report.written).toEqual(["name"]);
+  });
+
+  it("옛 토큰을 계속 보내는 클라이언트도 끊기지 않는다", async () => {
+    expect((await rpc(INIT, "old-token")).status).toBe(200);
+  });
+
+  it("같은 IP 가 분당 한도를 넘으면 429, 다른 IP 는 영향이 없다", async () => {
+    const send = (ip: string) => handler(new Request(URL, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json, text/event-stream", "x-forwarded-for": ip },
+      body: JSON.stringify(INIT),
+    }));
+    for (let i = 0; i < RATE_LIMIT_PER_MINUTE; i++) expect((await send("203.0.113.9")).status).toBe(200);
+    const over = await send("203.0.113.9");
+    expect(over.status).toBe(429);
+    expect(over.headers.get("retry-after")).toBeTruthy();
+    expect((await send("203.0.113.10")).status).toBe(200);
   });
 
   it("initialize → tools/list 에 도구 8개", async () => {

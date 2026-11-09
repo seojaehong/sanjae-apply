@@ -180,14 +180,13 @@ npx -y sanjae-apply seal --out 직인.png --shape ellipse --arc "주식회사 �
 
 ---
 
-## 🌐 원격 MCP (운영자가 토큰을 주는 경우)
+## 🌐 원격 MCP (토큰 없음)
 
 ```bash
-claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.vercel.app/api/mcp/mcp \
-  --header "Authorization: Bearer <발급받은 토큰>"
+claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.vercel.app/api/mcp/mcp
 ```
 
-같은 도구 8개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다.
+같은 도구 8개가 원격으로 돕니다. 입력은 서버에 저장되지 않지만 네트워크를 거칩니다. IP당 분당 60회로 제한합니다.
 
 <details>
 <summary>🏠 직접 호스팅하기(Vercel)</summary>
@@ -196,7 +195,6 @@ claude mcp add --transport http --scope user sanjae-apply https://sanjae-apply.v
 
 | 변수 | 뜻 |
 |---|---|
-| `SANJAE_MCP_TOKENS` | 허용할 Bearer 토큰. 쉼표로 여러 개 |
 | `LAW_GO_KR_OC` | 법제처 Open API 인증키. 조문 실시간 조회를 쓸 때만 |
 </details>
 
@@ -242,7 +240,7 @@ src/fill     overlay.ts  pdf-lib 오버레이(text / boxes / check / multiline)
              hwpx.ts     한글 hwpx 채우기(cell / after / check / digits / boxes / group, 글자색·크기 교정)
 src/stamp    seal.ts 도장 PNG 생성(글리프 윤곽 래스터) · resolve.ts 자리 선택. PDF·hwpx 날인은 overlay.ts·hwpx.ts 의 stamps
 src/accident 산업재해조사표 지침(guide.ts) · 값 점검(check.ts) · 관할 관서 찾기(jurisdiction.ts)
-src/mcp      도구 8개 · 원격(mcp-handler, Bearer) · 로컬(stdio)
+src/mcp      도구 8개 · 원격(mcp-handler, 무인증) · 로컬(stdio)
 src/laws     법제처 Open API 클라이언트
 data/        labor-offices/ 관할(직제 시행규칙 별표 1)·관서 49곳 조사표 접수 부서 연락처(확인일 2026-11-04)
 api/mcp      Vercel 함수

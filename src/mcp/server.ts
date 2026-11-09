@@ -6,8 +6,7 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, isAbsolute } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
-import { createMcpHandler, withMcpAuth } from "mcp-handler";
+import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import { FORMS } from "../core/catalog.js";
 import { findOutcomeLanguage } from "../core/filter.js";
@@ -270,31 +269,34 @@ export function registerTools(server: McpServer, opts: { local?: boolean } = {})
   );
 }
 
-/** env SANJAE_MCP_TOKENS(콤마 구분)에 든 Bearer 토큰만 통과. env 가 비어 있으면 전부 401. */
-export const verifyToken = async (_req: Request, bearerToken?: string): Promise<AuthInfo | undefined> => {
-  if (!bearerToken) return undefined;
-  const allowed = (process.env.SANJAE_MCP_TOKENS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-  if (!allowed.includes(bearerToken)) return undefined;
-  return { token: bearerToken, clientId: "sanjae-apply-mcp", scopes: ["tools"] };
-};
+export const RATE_LIMIT_PER_MINUTE = 60;
+const WINDOW_MS = 60_000;
 
-/** 토큰 없이 허용하는 JSON-RPC 메서드 — 무엇을 하는 서버인지 보는 데까지만(MCP 규격 허용).
- *  도구 실행(tools/call) 등 나머지는 전부 토큰이 있어야 한다. 목록 사이트(mcptry·Glama)의 점검용. */
-export const PUBLIC_METHODS = new Set(["initialize", "notifications/initialized", "ping", "tools/list"]);
-
-async function isPublicIntrospection(req: Request): Promise<boolean> {
-  if (req.method !== "POST" || req.headers.get("authorization")) return false;
-  try {
-    const body: unknown = JSON.parse(await req.clone().text());
-    const msgs = Array.isArray(body) ? body : [body];
-    return msgs.length > 0 && msgs.every((m) => !!m && typeof m === "object" && PUBLIC_METHODS.has(String((m as { method?: unknown }).method)));
-  } catch {
-    return false;
-  }
+/** 무인증 공개 끝점의 IP별 호출 한도. 함수 인스턴스별 메모리라 대략의 상한이고, 입력은 어떤 것도 저장하지 않는다. */
+function createIpLimiter() {
+  const windows = new Map<string, { startedAt: number; count: number }>();
+  return (ip: string, now = Date.now()): number | null => {
+    for (const [key, w] of windows) if (now - w.startedAt >= WINDOW_MS) windows.delete(key);
+    const current = windows.get(ip) ?? { startedAt: now, count: 0 };
+    windows.set(ip, current);
+    if (current.count >= RATE_LIMIT_PER_MINUTE) return Math.ceil((current.startedAt + WINDOW_MS - now) / 1000);
+    current.count += 1;
+    return null;
+  };
 }
 
 export function createHandler(basePath = "/api/mcp") {
   const base = createMcpHandler(registerTools, { serverInfo: SERVER_INFO }, { basePath, maxDuration: 60, verboseLogs: false });
-  const authed = withMcpAuth(base, verifyToken, { required: true });
-  return async (req: Request) => ((await isPublicIntrospection(req)) ? base(req) : authed(req));
+  const retryAfterSeconds = createIpLimiter();
+  return async (req: Request) => {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+    const wait = ip ? retryAfterSeconds(ip) : null;
+    if (wait !== null) {
+      return Response.json(
+        { jsonrpc: "2.0", id: null, error: { code: -32000, message: "요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요." } },
+        { status: 429, headers: { "retry-after": String(wait) } },
+      );
+    }
+    return base(req);
+  };
 }
